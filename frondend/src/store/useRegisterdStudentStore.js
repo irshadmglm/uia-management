@@ -1,0 +1,88 @@
+import { create } from "zustand";
+import toast from "react-hot-toast";
+import { axiosInstance } from "../lib/axios";
+
+
+export const useRegisterdStudentStore = create((set, get) => ({
+  Registeredstudents: [],
+  filteredStudents: [],
+  studentsLoading: false,
+ 
+  newAdmission: async (data) => {
+    set({ studentsLoading: true }); 
+
+      try {
+        const response = await axiosInstance.post("/admission", data, {
+          headers: { "Content-Type": "application/json" },
+        });
+        
+        console.log(response.data); 
+        toast.success(response.data.message);
+    
+      } catch (error) {
+        console.error(error.response?.data?.message || "An error occurred");
+        toast.error(error.response?.data?.message || "An error occurred");
+      } finally {
+        set({ studentsLoading: false });
+      }
+    },
+    
+    getRegisteredStudents: async () => {
+      set({ studentsLoading: true }); 
+    
+      try {
+        const res = await axiosInstance.get("/admission");
+    
+        if (res.data && res.data.students) {
+          set({ Registeredstudents: res.data.students });
+          set({ filteredStudents: res.data.students });
+        } else {
+          console.warn("Unexpected response format:", res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      } finally {
+        set({ studentsLoading: false });
+      }
+    },
+    filteringBatch: (selectedBatch) => {
+      const { Registeredstudents } = get(); 
+      let filteredStudents = null;
+      if(selectedBatch === "All Batch"){
+        filteredStudents = Registeredstudents;
+      }else{
+        filteredStudents = Registeredstudents.filter((student) => student.selectedBatch === selectedBatch);
+      }
+      set({ filteredStudents }); 
+    },
+    
+    selectStudent : async (id, isSelected) => {
+      try {
+        
+          const response = await axiosInstance.post('/admission/selected', {id, isSelected});
+        console.log(response.data.message);
+        
+        toast.success(response.data.message);
+
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || "An error occurred");
+      }
+    }
+    
+    // editStudent : async (data) => {
+    //   try {
+    //     const response = await axiosInstance.post(`/users/edit`, data, {
+    //       headers: { "Content-Type": "application/json" },
+    //     });
+         
+    //     console.log(response.data); 
+    //     toast.success("Account updated successfully");
+    //   } catch (error) {
+    //     console.error(error.response?.data?.message || "An error occurred");
+    //     toast.error(error.response?.data?.message || "An error occurred");
+    //   }
+    // },
+    
+    
+}));

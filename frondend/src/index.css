@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PDF Generation Safelist */
+@layer utilities {
+  /* Safe-list the required colors */
+  .bg-pdf-gray-50 {
+    @apply bg-[#f9fafb] !important;
+  }
+  
+  .bg-pdf-indigo-100 {
+    @apply bg-[#e0e7ff] !important;
+  }
+
+  .text-pdf-indigo-600 {
+    @apply text-[#4f46e5] !important;
+  }
+
+  .border-pdf-gray-200 {
+    @apply border-[#e5e7eb] !important;
+  }
+  @layer utilities {
+    .pdf-bg-gray-50 { background-color: #f9fafb !important; }
+    .pdf-bg-indigo-100 { background-color: #e0e7ff !important; }
+    .pdf-text-indigo-600 { color: #4f46e5 !important; }
+    .pdf-border-gray-200 { border-color: #e5e7eb !important; }
+  }
+}

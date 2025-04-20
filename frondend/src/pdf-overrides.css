@@ -1,0 +1,9 @@
+@layer utilities {
+    .pdf-bg-gray-50 { background-color: #f9fafb !important; }
+    .pdf-bg-indigo-100 { background-color: #e0e7ff !important; }
+    .pdf-text-indigo-600 { color: #4f46e5 !important; }
+    .pdf-border-gray-200 { border-color: #e5e7eb !important; }
+    .pdf-bg-white { background-color: #ffffff !important; }
+    .pdf-text-gray-900 { color: #111827 !important; }
+    .pdf-bg-indigo-600 { background-color: #4f46e5 !important; }
+  }
