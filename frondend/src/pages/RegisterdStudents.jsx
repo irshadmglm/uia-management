@@ -4,7 +4,7 @@ import Header from "../components/Header";
 
 const RegisterdStudents = () => {
   const [openDetails, setOpenDetails] = useState({});
-  const { getRegisteredStudents, filteredStudents: students, studentsLoading, selectStudent, filteringBatch } = useRegisterdStudentStore();
+  const { getRegisteredStudents, filteredStudents: students, isLoading, selectStudent, filteringBatch } = useRegisterdStudentStore();
 
     const [selectedBatch, setSelectedBatch] = useState("All Batch");
 

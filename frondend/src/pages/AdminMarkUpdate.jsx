@@ -32,7 +32,7 @@ useEffect(() => {
             {batches.map((batch, index) => (
               <React.Fragment key={batch.id || index}>
                
-                                <div className="relative block" onClick={() => navigate(`/dashboard/admin/batches/${batch._id}`)}>
+                                <div className="relative block" onClick={() => navigate(`/dashboard/admin/batches/marklist/${batch._id}`)}>
                 <div className="bg-white dark:bg-gray-700 rounded-xl shadow-lg dark:shadow-gray-900 p-6 transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl cursor-pointer relative">
                     
                     {/* 🔹 Badge for Pending Approvals */}

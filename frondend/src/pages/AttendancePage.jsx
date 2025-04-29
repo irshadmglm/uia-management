@@ -47,7 +47,7 @@ const DayAttendence = () => {
   let { classname } = useParams();
   classname = decodeURIComponent(classname);
   
-  const { getStudents, students, studentsLoading } = useStudentStore();
+  const { getStudents, students } = useStudentStore();
   const { getBatch, batches, isLoading, submitAttendance } = useStaffStore();
   const [attendance, setAttendance] = useState([]);
   const [date, setDate] = useState("");
@@ -115,7 +115,7 @@ const DayAttendence = () => {
     <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 pt-12">
       <Header page={"Attendance Sheet"} />
       
-      {studentsLoading || isLoading ? (
+      { isLoading ? (
         <motion.div
           className="flex items-center justify-center h-40"
           initial={{ opacity: 0 }}

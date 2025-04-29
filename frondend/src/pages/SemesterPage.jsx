@@ -31,7 +31,7 @@ const SemesterPage = () => {
     if (newSubject.name && newSubject.mark) {
       try {
         const response = await axiosInstance.post(`mng/subjects/${semesterId}`, {
-          name: newSubject.name.trim(), mark: newSubject.mark
+          name: newSubject.name.trim(), mark: newSubject.mark, CEmark: newSubject.CEmark
         });
         setSubjects((prevSubjects) => [...prevSubjects, response.data.newSubject]);
         setNewSubject({});
@@ -69,7 +69,7 @@ const SemesterPage = () => {
             {showAddCard ? (
             <div className="w-full flex flex-col gap-4">
             {/* Input fields in one line */}
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-4">
               <Input
                 autoFocus
                 placeholder="Subject name"
@@ -90,6 +90,21 @@ const SemesterPage = () => {
                 }))}
                 className="w-1/2 p-3 rounded-lg border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+             <select
+              value={newSubject.CEmark}
+               className="input input-bordered w-full pl-10 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+               onChange={(e) =>
+              setNewSubject((prev) => ({
+               ...prev,
+             CEmark: e.target.value === "true"
+              }))
+            }
+              >
+              <option value="">CE Mark</option>
+              <option value="true">Yes</option>
+             <option value="false">No</option>
+              </select>
+
             </div>
           
             {/* Buttons aligned to the right */}
@@ -128,7 +143,8 @@ const SemesterPage = () => {
               className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
             >
               <h3 className=" font-semibold mb-2">Name:{subject.name}</h3>
-              <p className=" font-semibold mb-2">mark:{subject.mark}</p>
+              <p className=" font-semibold mb-2">Mark:{subject.mark}</p>
+              <p className=" font-semibold mb-2">CE Mark:{subject.CEmark ? "Yes" : "No"}</p>
               {/* You can add more subject details or actions here */}
             </div>
           ))}

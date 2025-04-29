@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
 export const useFeeStore = create((set, get) => ({
   fees: {},
@@ -89,5 +90,19 @@ export const useFeeStore = create((set, get) => ({
       totalAmount: `₹${(totalPaid * monthlyFee).toLocaleString()}`
     };
   },
+
+  getStudentFeeStatus: async () => {
+    set({ isLoading: true });
+   try {
+    const authUser = useAuthStore.getState().authUser;
+    const res = await axiosInstance.get(`/fees/get-std-fees/${authUser._id}`);
+    console.log(res.data);
+    set({fees: res.data})
+   } catch (error) {
+    console.error("Error in getCurruntSemSubjects:", error);
+  } finally {
+    set({ isLoading: false });
+  }
+  } 
   
 }));

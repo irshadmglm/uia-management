@@ -6,10 +6,10 @@ import { axiosInstance } from "../lib/axios";
 export const useRegisterdStudentStore = create((set, get) => ({
   Registeredstudents: [],
   filteredStudents: [],
-  studentsLoading: false,
+  isLoading: false,
  
   newAdmission: async (data) => {
-    set({ studentsLoading: true }); 
+    set({ isLoading: true }); 
 
       try {
         const response = await axiosInstance.post("/admission", data, {
@@ -23,12 +23,12 @@ export const useRegisterdStudentStore = create((set, get) => ({
         console.error(error.response?.data?.message || "An error occurred");
         toast.error(error.response?.data?.message || "An error occurred");
       } finally {
-        set({ studentsLoading: false });
+        set({ isLoading: false });
       }
     },
     
     getRegisteredStudents: async () => {
-      set({ studentsLoading: true }); 
+      set({ isLoading: true }); 
     
       try {
         const res = await axiosInstance.get("/admission");
@@ -42,7 +42,7 @@ export const useRegisterdStudentStore = create((set, get) => ({
       } catch (error) {
         console.error("Error fetching students:", error);
       } finally {
-        set({ studentsLoading: false });
+        set({ isLoading: false });
       }
     },
     filteringBatch: (selectedBatch) => {

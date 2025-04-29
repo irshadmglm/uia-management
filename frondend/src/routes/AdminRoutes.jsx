@@ -14,6 +14,8 @@ import AdminMarkUpdate from "../pages/AdminMarkUpdate";
 import MarkSubmitedStudentsPage from "../pages/MarkSubmitedStudentsPage";
 import AdminsideMarkListes from "../pages/AdminsideMarkListes ";
 import FeesDashboard from "../pages/FeesDashbord";
+import CEMarkAdmin from "../pages/CEMarkAdmin";
+import IRMarkAdmin from "../pages/IRMarkAdmin";
 
 const AdminRoutes = () => {
   return (
@@ -32,9 +34,11 @@ const AdminRoutes = () => {
       <Route path="attendance/:batchname" element={<AdminAttendance />} />
       <Route path="semester/:semesterId" element={<SemesterPage />} />
       <Route path="batches" element={<AdminMarkUpdate />} />
-      <Route path="batches/:batchId" element={<MarkSubmitedStudentsPage />} />
+      <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} />
       <Route path="marklistes/:studentId" element={<AdminsideMarkListes />} />
       <Route path="ishthiraq" element={<FeesDashboard />} />
+      <Route path="ce-mark" element={<CEMarkAdmin />} />
+      <Route path="ir-mark" element={<IRMarkAdmin />} />
       
 
       {/* teachers singup form */}

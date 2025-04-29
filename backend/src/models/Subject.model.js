@@ -12,6 +12,10 @@ const subjectSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    CEmark: {
+     type: Boolean,
+     default: false
+    },
     code: {
       type: String,
       unique: true,
@@ -21,6 +25,10 @@ const subjectSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Semester",
       required: true, 
+    },
+    subTeacher: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Staff",
     },
     description: {
       type: String,

@@ -29,6 +29,19 @@ export const getFeesByBatch = async (req, res) => {
   }
 };
 
+export const getFeesByStd = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const stdFees = await Fee.find({ studentId: studentId });
+
+    res.status(200).json(stdFees); 
+  } catch (error) {
+    console.error(error); 
+    res.status(500).json({ message: 'Error fetching fees' });
+  }
+};
+
+
 // export const updateMonth = async (req, res) => {
 //   try {
 //     const { feeId } = req.params;

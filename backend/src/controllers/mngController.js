@@ -95,6 +95,23 @@ export const getBatches = async (req, res) => {
 
 export const getBatch = async (req, res) => {
   try {
+    const { batchId } = req.params;
+
+    const batch = await Batch.findById(batchId);
+    
+    if (!batch) {
+      return res.status(404).json({ status: false, message: "Batch Not Found" });
+    }
+
+    res.status(200).json({ status: true, batch });
+  } catch (error) {
+    console.error("Error fetching class:", error);
+    res.status(500).json({ status: false, message: "Server error", error: error.message });
+  }
+};
+
+export const getAssignedBatch = async (req, res) => {
+  try {
     const { teacherId } = req.params;
 
     const assignedbatches = await Batch.find({ classTeacher: teacherId });
@@ -130,6 +147,56 @@ export const postbatches = async (req, res) => {
   }
 };
 
+export const CELinkUpdate = async (req, res) => {
+  console.log(req.body);
+  
+  try {
+    const { batchId, CEmarkListLink } = req.body;
+
+    if (!batchId || !CEmarkListLink) {
+      return res.status(400).json({ message: "Missing batchId or CEmarkList" });
+    }
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    batch.CEmarkList = CEmarkListLink;
+    await batch.save();
+
+    return res.status(200).json({ message: "CE Marklist link updated successfully", batch });
+  } catch (error) {
+    console.error("Error updating CE Marklist link:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const IRLinkUpdate = async (req, res) => {
+  
+  try {
+    const { batchId, IRmarkListLink } = req.body;
+
+    if (!batchId || !IRmarkListLink) {
+      return res.status(400).json({ message: "Missing batchId or CEmarkList" });
+    }
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    batch.IRmarkList = IRmarkListLink;
+    await batch.save();
+
+    return res.status(200).json({ message: "IR Marklist link updated successfully", batch });
+  } catch (error) {
+    console.error("Error updating CE Marklist link:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
 export const getSubjects = async (req,res) => {
   try {
     let {semesterId} = req.params;
@@ -153,7 +220,7 @@ export const postSubject = async (req, res) => {
     let {semesterId} = req.params;
  console.log(semesterId);
  
-    const { name, mark } = req.body;
+    const { name, mark, CEmark } = req.body;
 
     if (!name || !mark) {
       return res.status(400).json({ message: "Subject name and mark are required" });
@@ -165,7 +232,7 @@ export const postSubject = async (req, res) => {
       return res.status(400).json({ message: "This subject already exists" });
     }
 
-    const newSubject = new Subject({ name, mark, semester: semesterId });
+    const newSubject = new Subject({ name, mark, CEmark, semester: semesterId });
     await newSubject.save();
 
     const SelectedSemester = await Semester.findById(semesterId);
@@ -200,23 +267,166 @@ export const asignBatchTeacher = async (req, res) => {
   }
 };
 
-export const asignSubject = async (req, res) => {
+export const asignClassLeader = async (req, res) => {
+   try {
+    const {classId, studentId} = req.body;
+    const selectedBatch = await Batch.findById(classId);
+    if(!selectedBatch){
+     return res.status(404).json({status: false, message:"Batch not found"});
+    }
+    
+    selectedBatch.classLeader = mongoose.Types.ObjectId.isValid(studentId) ? studentId : null;
+     
+    await selectedBatch.save();
+
+    res.status(200).json({ status: true, message: "Class Leader assigned successfully", selectedBatch });
+  } catch (error) {
+     res.status(500).json({ status: false, message: "Internal server error", error: error.message });
+  }
+};
+
+export const asignsemester = async (req, res) => {
+   try {
+    const {classId, semesterId} = req.body;
+    const selectedBatch = await Batch.findById(classId);
+    if(!selectedBatch){
+     return res.status(404).json({status: false, message:"Batch not found"});
+    }
+    
+    selectedBatch.currentSemester = mongoose.Types.ObjectId.isValid(semesterId) ? semesterId : null;
+     
+    await selectedBatch.save();
+
+    res.status(200).json({ status: true, message: "Semester assigned successfully", selectedBatch });
+  } catch (error) {
+     res.status(500).json({ status: false, message: "Internal server error", error: error.message });
+  }
+};
+
+export const asignSubteacher = async (req, res) => {
   try {
-    const { subjects, teacherId } = req.body;
+    const { subjectId, teacherId } = req.body;
     
     const teacher = await Staff.findById(teacherId);
     if (!teacher) {
        return res.status(404).json({ status: false, message: "Teacher not found" });
     }
+    
+    const subject = await Subject.findById(subjectId);
+    if (!subject) {
+      return res.status(404).json({ status: false, message: "Subject not found" });
+   }
+   subject.subTeacher = teacherId;
+    await subject.save();
 
-    teacher.subjects = subjects; 
-    await teacher.save();
-
-    res.status(200).json({ status: true, message: "Subject assigned successfully", teacher });
+    res.status(200).json({ status: true, message: "Subject assigned successfully", subject });
  } catch (error) {
     res.status(500).json({ status: false, message: "Internal server error", error: error.message });
  }
 }
+
+
+export const assignedSubjects = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    const subjects = await Subject.aggregate([
+      {
+        $match: { subTeacher: new mongoose.Types.ObjectId(teacherId) }
+      },
+      {
+        $lookup: {
+          from: "batches",
+          let: { semesterId: "$semester" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [
+                    "$currentSemester",
+                    "$$semesterId"
+                  ]
+                }
+              }
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                CEmarkList:1,
+                currentSemester: 1
+              }
+            }
+          ],
+          as: "batchDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$batchDetails",
+          preserveNullAndEmptyArrays: true // If you want to see subjects even without batch match
+        }
+      }
+    ]);
+
+    return res.status(200).json(subjects);
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export const curruntSemSubjects = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    if (!batch.currentSemester) {
+
+      return res.status(400).json({ message: "Semester not assigned" });
+    }
+
+
+    const subjects = await Subject.aggregate([
+      {
+        $match: { semester: batch.currentSemester }
+      },
+      {
+        $lookup: {
+          from: "staffs", 
+          localField: "subTeacher",   
+          foreignField: "_id",    
+          as: "subTeacherInfo"    
+        }
+      },
+      {
+        $project:{
+          name: 1,
+          mark: 1,
+          "subTeacherInfo.name": 1
+        }
+      }
+    ])
+
+    return res.status(200).json(subjects);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+
 
 export const postAttendance = async (req, res) => {
 try {

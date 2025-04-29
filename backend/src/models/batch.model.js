@@ -11,6 +11,14 @@ const batchSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staff",
     },
+    classLeader: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+    },
+    currentSemester: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Semester",
+    },
     students: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,8 +28,15 @@ const batchSchema = new mongoose.Schema(
     attendance: {
       type: Object,
       default: {},
-    }    
-    
+    },    
+    CEmarkList: {
+      type: String,
+      default: null,
+    },
+    IRmarkList: {
+      type: String,
+      default: null,
+    }
   },
   { timestamps: true }
 );

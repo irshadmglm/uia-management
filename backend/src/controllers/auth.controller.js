@@ -204,6 +204,8 @@ export const fetchGoogleSheetData = async (req, res) => {
 
 export const checkAuth = (req, res) => {
   try {
+    console.log(req.user);
+    
     res.status(200).json(req.user);
   } catch (error) {
     console.log("Error in checkAuth controller", error.message);

@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken"
 import User from "../models/student.model.js"
 import Staff from "../models/staff.model.js";
+import Batch from "../models/batch.model.js";
+import Semester from "../models/semester.model.js";
 
 export const protectRoute = async (req,res,next) => {
 try {
@@ -21,9 +23,34 @@ try {
     if (!user) {
       user = await Staff.findById(decoded.userId).select("-password");
     }
+
+    if (user.role === "student") {
+        const batch = await Batch.findById(user.batchId);
+       
+        if (batch) {
+          user.batchName = batch.name || "Unknown Batch";
+    
+          const [semester, staff] = await Promise.all([
+            batch.currentSemester ? Semester.findById(batch.currentSemester) : null,
+            batch.classTeacher ? Staff.findById(batch.classTeacher) : null
+          ])
+    
+          user.semester = semester?.name || "Unknown Semester";
+          user.classTeacher = staff?.name || "Unknown Teacher";
+          console.log(user.semester, user.classTeacher);
+          
+        }
+    }
+    
+    req.user = user.toObject();  
+
+    req.user.semester = user.semester;
+    req.user.classTeacher = user.classTeacher;
+    console.log(req.user);
+    
     
 
-    req.user = user;
+    
     
     next();
 } catch (error) {

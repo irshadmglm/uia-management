@@ -40,10 +40,12 @@ export const useAdminStore = create((set, get) => ({
   },
 
 
-  getSubjects: async () => {
+  getSubjects: async (semesterId) => {
+    console.log(semesterId);
+    
     set({isLoading: true});
     try {
-        const res = await axiosInstance.get("/mng/subjects");
+        const res = await axiosInstance.get(`/mng/subjects/${semesterId}`);
         console.log(res.data);
         
         set({subjects: res.data});
@@ -67,6 +69,32 @@ export const useAdminStore = create((set, get) => ({
     set({isLoading: false});
     }
   },
+  addBatchCemarklink: async (link, batchId) => {
+    try {
+      const res = await axiosInstance.patch("/mng/update-ce-link", {
+        batchId,
+        CEmarkListLink: link,
+      });
+      return res.data; // Optional: return response if needed
+    } catch (error) {
+      console.error("Error updating CE mark list:", error);
+      throw error;
+    }
+  },
+  addBatchIRmarklink: async (link, batchId) => {
+    try {
+      const res = await axiosInstance.patch("/mng/update-ir-link", {
+        batchId,
+        IRmarkListLink: link,
+      });
+      return res.data; 
+    } catch (error) {
+      console.error("Error updating CE mark list:", error);
+      throw error;
+    }
+  },
+  
+
   updateSelectedTab: async (selectedTab, newItemName) => {
     set({ isLoading: true });
     try {

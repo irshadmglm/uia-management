@@ -1,12 +1,15 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
 
 export const useStudentStore = create((set) => ({
   students: [],
   batchStudents: [],
-  studentsLoading: false,
+  semSubjects: [],
+  feeStatus: [],
+  isLoading: false,
   responseMessage: { text: "", type: "" },
   formData: { 
     studentName: "",
@@ -48,7 +51,7 @@ export const useStudentStore = create((set) => ({
     },
     
     getStudents: async () => {
-      set({ studentsLoading: true }); 
+      set({ isLoading: true }); 
     
       try {
         const res = await axiosInstance.get("/users");
@@ -61,11 +64,11 @@ export const useStudentStore = create((set) => ({
       } catch (error) {
         console.error("Error fetching students:", error);
       } finally {
-        set({ studentsLoading: false });
+        set({ isLoading: false });
       }
     },
     getBatchStudents: async (batchId) => {
-      set({ studentsLoading: true }); 
+      set({ isLoading: true }); 
     
       try {
         const res = await axiosInstance.get(`/users/${batchId}`);
@@ -80,7 +83,7 @@ export const useStudentStore = create((set) => ({
       } catch (error) {
         console.error("Error fetching students:", error);
       } finally {
-        set({ studentsLoading: false });
+        set({ isLoading: false });
       }
     },
     
@@ -98,7 +101,20 @@ export const useStudentStore = create((set) => ({
       }
     },
 
-    
+    getCurruntSemSubjects: async () => {
+       const authUser = useAuthStore.getState().authUser;
+      set({isLoading: true});
+      try {
+        const res = await axiosInstance.get(`/mng/currunt-sem-subjects/${authUser.batchId}`);
+        set({semSubjects: res.data})
+        
+      } catch (error) {
+        console.error("Error in getCurruntSemSubjects:", error);
+      } finally {
+        set({ isLoading: false });
+      }
+    },
+   
     
 
     

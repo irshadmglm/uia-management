@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
-import { ListTodo, Table2Icon } from "lucide-react";
+import { BookOpenText, ListTodo, Table2Icon, Users2 } from "lucide-react";
 import { useStaffStore } from "../store/useStaffStore";
 import { useEffect } from "react";
 
@@ -18,9 +18,9 @@ const TeacherHome = () => {
   
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-20 w-full max-w-4xl p-4">
     {batches.map((c) => (
-      <Card key={c._id} title={`Attendents ${c.name}`} icon={Table2Icon} route={`/dashboard/teacher/attendance/${c.name}`} />
+      <Card key={c._id} title={c.name} icon={Users2} route={`/dashboard/teacher/calss-teacher-home/${c._id}`} />
     ))}
-    <Card title="Grace Mark" icon={ListTodo} route="/dashboard/teacher/grace-mark" />
+    <Card title="Assigned Subjects" icon={BookOpenText} route="/dashboard/teacher/assigned-subjects" />
 
   </div>
 </div>

@@ -36,12 +36,7 @@ const Header = ({ page, user }) => {
             className="text-3xl cursor-pointer hover:text-blue-500 transition-colors duration-200"
             onClick={() => setIsSidebarOpen(true)}
           />
-          <ArrowLeft
-            onClick={() => canGoBack && navigate(-1)}
-            className={`cursor-pointer text-3xl transition-colors duration-200 ${
-              canGoBack ? "hover:text-blue-500" : "text-gray-400 cursor-not-allowed"
-            }`}
-          />
+      
         </div>
 
         {/* Page Title */}
@@ -49,52 +44,80 @@ const Header = ({ page, user }) => {
 
         {/* Right Side: Theme Toggle & Profile Dropdown */}
         <div className="flex items-center gap-4">
+      
+
+
+        <div className="relative">
+  {/* Profile Dropdown Trigger */}
+  <button
+    className="flex items-center gap-3 p-2 rounded-xl bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+    onClick={() => setDropdownOpen(!dropdownOpen)}
+    aria-haspopup="true"
+    aria-expanded={dropdownOpen}
+  >
+    <img
+      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYzrKwzB9qf6z1LUGt9CMjPzC5zBy87WL6Fw&s"
+      alt="User profile"
+      className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700 object-cover"
+    />
+    <span className="hidden sm:inline text-sm font-medium text-gray-900 dark:text-gray-100">
+      {user?.name || "Guest User"}
+    </span>
+  </button>
+
+  {/* Dropdown Content */}
+  {dropdownOpen && (
+    <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-xl overflow-hidden z-50 animate-fadeInUp">
+      <div className="py-2">
+        {/* Profile Section */}
+        <Link
+          to="/dashboard/student/profile"
+          className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
+        >
+          <User className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            My Profile
+          </span>
+        </Link>
+
+        {/* Theme Toggle */}
+        <div className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
+          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            Appearance
+          </span>
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="relative w-14 h-7 flex items-center bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"
+            aria-label="Toggle theme"
           >
-            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-
-          <div className="relative">
             <div
-              className="flex items-center cursor-pointer gap-2 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className={`absolute w-6 h-6 bg-white dark:bg-gray-200 rounded-full shadow-sm transform transition-transform duration-300 ${
+                theme === "dark" ? "translate-x-7" : "translate-x-1"
+              }`}
             >
-              
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYzrKwzB9qf6z1LUGt9CMjPzC5zBy87WL6Fw&s"
-                alt="Profile"
-                className="w-8 h-8 rounded-full border"
-              />
-              <span className="hidden sm:inline font-medium text-gray-800 dark:text-white">
-                {user?.name || "User"}
-              </span>
+              {theme === "light" ? (
+                <Moon className="w-4 h-4 text-gray-700 m-1" />
+              ) : (
+                <Sun className="w-4 h-4 text-yellow-500 m-1" />
+              )}
             </div>
+          </button>
+        </div>
 
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden z-20 animate-fadeIn">
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                >
-                  <User size={16} /> Profile
-                </Link>
-                <Link
-                  to="/settings"
-                  className="flex items-center gap-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                >
-                  <Settings size={16} /> Settings
-                </Link>
-                <button
-                  onClick={logout}
-                  className="w-full flex items-center gap-2 p-3 text-left hover:bg-red-100 dark:hover:bg-red-700 text-red-600 dark:text-red-400 transition"
-                >
-                  <LogOut size={16} /> Logout
-                </button>
-              </div>
-            )}
-          </div>
+        {/* Logout Action */}
+        <button
+          onClick={logout}
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+        >
+          <LogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
+          <span className="text-sm font-medium text-red-600 dark:text-red-400">
+            Sign Out
+          </span>
+        </button>
+      </div>
+    </div>
+  )}
+</div>
         </div>
       </header>
 

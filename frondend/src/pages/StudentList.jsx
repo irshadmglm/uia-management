@@ -6,7 +6,7 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 import { useStudentStore } from "../store/studentStore";
 
 const StudentList = () => {
-  const { getStudents, students, studentsLoading } = useStudentStore();
+  const { getStudents, students, isLoading } = useStudentStore();
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const StudentList = () => {
     <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <Header user={true} />
 
-      {studentsLoading ? (
+      {isLoading ? (
         <div className="mt-10 text-center">
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-gray-500"></div>

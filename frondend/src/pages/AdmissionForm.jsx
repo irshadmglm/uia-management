@@ -12,7 +12,7 @@ import { useAdminStore } from "../store/useAdminMngStore";
 
 const AdmissionForm = () => {
   const { id } = useParams();
-  const {newAdmission, studentsLoading} = useRegisterdStudentStore()
+  const {newAdmission, isLoading} = useRegisterdStudentStore()
   const {batches, getBatches} = useAdminStore();
   const buttonRef = useRef(null);
   const popoverRef = useRef(null);
@@ -180,9 +180,9 @@ const AdmissionForm = () => {
               <button
                 type="submit"
                 className="btn btn-primary w-full mt-4"
-                disabled={studentsLoading}
+                disabled={isLoading}
               >
-                {studentsLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Register"}
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Register"}
               </button>
             </div>
           </form>

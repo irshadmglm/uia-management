@@ -8,7 +8,9 @@ export const useStaffStore = create((set, get) => ({
   teachers: [],
   isLoading: false,
   batches: [],
+  batch: {},
   attendance:{},
+  assignedSubjects: [],
 
   getTeachers: async () => {
     set({isLoading: true});
@@ -42,6 +44,41 @@ export const useStaffStore = create((set, get) => ({
     }finally{
     set({isLoading: false});
     }
+  },
+
+  getBatchById: async (batchId)=> {
+    set({isLoading: true});
+    try {
+      const res = await axiosInstance.get(`/mng/batch/${batchId}`)
+      set({batch: res.data.batch});
+    } catch (error) {
+      console.log("Error in getTeachers:", error);
+    }finally{
+    set({isLoading: false});
+    }
+  },
+  getStudentBatch: async () => {
+  const authUser = useAuthStore.getState().authUser;
+  try {
+    await get().getBatchById(authUser.batchId);
+  } catch (error) {
+    console.error("Error in getStudentBatch:", error);
+  }
+},
+
+  getAssignedSubjects: async () => {
+    set({isLoading: true});
+    const authUser = useAuthStore.getState().authUser;
+    try {
+      const res = await axiosInstance.get(`/mng/assigned-subjects/${authUser._id}`);
+      console.log(res.data);
+      
+      set({assignedSubjects: res.data})
+    } catch (error) {
+      console.log("Error in getAssignedSubjects:", error);
+    }finally{
+      set({isLoading: false});
+      }
   },
 
   submitAttendance: async (classId, attendance, date) => {
