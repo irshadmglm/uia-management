@@ -23,16 +23,19 @@ const UserSchema = new mongoose.Schema(
     trim: true,
   },
   phoneNumber: {
-    type: String,
+    type: Number,
     trim: true,
   },
   whatsupNumber: {
-    type: String,
+    type: Number,
     trim: true,
   },
   parentNumber: {
-    type: String,
+    type: Number,
     trim: true,
+  },
+  dateOfBirth: {
+    type: Date,
   },
   email: {
     type: String,

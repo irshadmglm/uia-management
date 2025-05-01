@@ -6,7 +6,7 @@ import { useAuthStore } from "../store/useAuthStore";
 
 const Header = ({ page, user }) => {
   const { theme, toggleTheme } = useThemeStore();
-  const { logout } = useAuthStore();
+  const { logout, authUser } = useAuthStore();
   const navigate = useNavigate();
 
   const [canGoBack, setCanGoBack] = useState(false);
@@ -70,15 +70,15 @@ const Header = ({ page, user }) => {
     <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-xl overflow-hidden z-50 animate-fadeInUp">
       <div className="py-2">
         {/* Profile Section */}
-        <Link
-          to="/dashboard/student/profile"
+       {authUser && ( <Link
+          to={`/dashboard/${authUser.role}/profile`}
           className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
         >
           <User className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
             My Profile
           </span>
-        </Link>
+        </Link>)}
 
         {/* Theme Toggle */}
         <div className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">

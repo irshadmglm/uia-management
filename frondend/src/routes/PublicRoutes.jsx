@@ -1,7 +1,7 @@
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import LoginPage from "../pages/LoginPage";
-import SignupPage from "../pages/SignupPage";
+import SignupPage from "../pages/admin/SignupPage";
 
 const PublicRoutes = () => {
   const { authUser } = useAuthStore();

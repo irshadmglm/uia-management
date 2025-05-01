@@ -7,6 +7,7 @@ import { useAuthStore } from "./useAuthStore";
 export const useStudentStore = create((set) => ({
   students: [],
   batchStudents: [],
+  student: {},
   semSubjects: [],
   feeStatus: [],
   isLoading: false,
@@ -86,20 +87,34 @@ export const useStudentStore = create((set) => ({
         set({ isLoading: false });
       }
     },
-    
-    editStudent : async (data) => {
-      try {
-        const response = await axiosInstance.post(`/users/edit`, data, {
-          headers: { "Content-Type": "application/json" },
-        });
-         
-        console.log(response.data); 
-        toast.success("Account updated successfully");
-      } catch (error) {
-        console.error(error.response?.data?.message || "An error occurred");
-        toast.error(error.response?.data?.message || "An error occurred");
-      }
+
+    getStudent: async (studentId) => {
+      set({ isLoading: true }); 
+     try {
+      const res = await axiosInstance.get(`/users/student/${studentId}`)
+      console.log(res.data);
+      set({student: res.data})
+      
+     } catch (error) {
+      console.error("Error fetching student:", error);
+    } finally {
+      set({ isLoading: false });
+    }
+
     },
+    
+ editStudent: async (data, studentId) => {
+  try {
+    const response = await axiosInstance.put(`/users/student/edit/${studentId}`, data);
+    
+    console.log(response.data);
+    toast.success("Account updated successfully");
+  } catch (error) {
+    console.error(error.response?.data?.message || "An error occurred");
+    toast.error(error.response?.data?.message || "An error occurred");
+  }
+},
+
 
     getCurruntSemSubjects: async () => {
        const authUser = useAuthStore.getState().authUser;

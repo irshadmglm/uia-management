@@ -1,12 +1,13 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import StudentHome from "../pages/StudentHome";
-import StudentSemesterListing from "../pages/StudentSemesterListing";
+import StudentHome from "../pages/student/StudentHome";
+import StudentSemesterListing from "../pages/student/StudentSemesterListing";
+import MarkListPage from "../pages/student/MarkListPage";
+import CurruntSemSubjects from "../pages/student/CurruntSemSubjects";
+import StudentFees from "../pages/student/StudentFees";
+import StudentProfile from "../pages/student/StudentProfile";
 import NotFound from "../pages/NotFound"; 
-import MarkListPage from "../pages/MarkListPage";
-import CurruntSemSubjects from "../pages/CurruntSemSubjects";
-import StudentFees from "../pages/StudentFees";
-import StudentProfile from "../pages/StudentProfile";
+
 
 const StudentRoutes = () => {
   return (

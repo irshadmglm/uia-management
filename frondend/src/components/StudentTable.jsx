@@ -56,7 +56,7 @@ const StudentTable = ({ students, onDelete }) => {
               filteredStudents.map((student, i) => (
                 <React.Fragment key={student._id}>
                   <tr
-                    className="cursor-pointer hover:bg-gray-400 transition duration-200"
+                    className="cursor-pointer hover:bg-gray-400 dark:hover:bg-gray-800 transition duration-200"
                     onClick={() => toggleDetails(student._id)}
                   >
                     <td className="p-3">{i + 1}</td>
@@ -65,7 +65,7 @@ const StudentTable = ({ students, onDelete }) => {
                         <img
                           src={
                             student.profileImage ||
-                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYzrKwzB9qf6z1LUGt9CMjPzC5zBy87WL6Fw&s"
+                            "https://st.depositphotos.com/55903428/53633/v/450/depositphotos_536336440-stock-illustration-icon-islamic-man-glyph-style.jpg"
                           }
                           alt={student.name}
                           className="w-full h-full object-cover"
@@ -81,29 +81,29 @@ const StudentTable = ({ students, onDelete }) => {
                       className="p-3 flex gap-2"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <button
+                      {/* <button
                         onClick={() => toggleDetails(student._id)}
                         className="text-blue-500 hover:text-blue-700"
                       >
                         <Eye size={16} />
-                      </button>
+                      </button> */}
                       <Link
-                        to={`/users/edit/${student._id}`}
-                        className="text-green-500 hover:text-green-700"
+                        to={`/dashboard/admin/std-edit/${student._id}`}
+                        className="text-sky-500 hover:text-green-700"
                       >
                         <Pencil size={16} />
                       </Link>
-                      <button
+                      {/* <button
                         onClick={() => onDelete(student._id)}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash size={16} />
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                   {expandedRow === student._id && (
                     <tr className="md:hidden">
-                      <td colSpan="8" className="p-2 bg-gray-50">
+                      <td colSpan="8" className="p-2 bg-gray-100 dark:bg-gray-800">
                         <div className="text-sm space-y-1">
                           <p>
                             <strong>Batch:</strong> {student.batchName}

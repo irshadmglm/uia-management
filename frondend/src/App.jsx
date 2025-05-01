@@ -8,13 +8,14 @@ import { Loader } from "lucide-react";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-  const theme = useThemeStore();
+  const theme = useThemeStore((state) => state.theme);
+  const initializeTheme = useThemeStore((state) => state.initializeTheme);
 
   // Check Authentication on Mount
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
-console.log("checkAuth:", authUser);
+    initializeTheme();
+  }, [checkAuth, initializeTheme]);
 
   // Show Loader while checking authentication
   if (isCheckingAuth) {

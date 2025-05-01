@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router-dom";
-import AttendancePage from "../pages/AttendancePage";
-import RegisterdStudents from "../pages/RegisterdStudents";
-import TeacherHome from "../pages/TeacherHome";
-import TeacherAddGraceMark from "../pages/TeacherAddGraceMark";
-import CalssTeacherHome from "../pages/CalssTeacherHome";
-import BatchStudentsDetails from "../pages/BatchStudentsDetails";
-import AssignedSubjects from "../pages/AssignedSubjects";
-import FeesTeacher from "../pages/feesTeacher";
+import AttendancePage from "../pages/staff/AttendancePage";
+import TeacherHome from "../pages/staff/TeacherHome";
+import TeacherAddGraceMark from "../pages/staff/TeacherAddGraceMark";
+import CalssTeacherHome from "../pages/staff/CalssTeacherHome";
+import BatchStudentsDetails from "../pages/staff/BatchStudentsDetails";
+import AssignedSubjects from "../pages/staff/AssignedSubjects";
+import StaffProfile from "../pages/admin/StaffProfile";
+import FeesTeacher from "../pages/staff/FeesTeacher";
 
 const TeacherRoutes = () => {
   return (
@@ -18,6 +18,8 @@ const TeacherRoutes = () => {
       <Route path="grace-mark" element={<TeacherAddGraceMark />} />
       <Route path="assigned-subjects" element={<AssignedSubjects />} />
       <Route path="ishthiraq/:batchId" element={<FeesTeacher />} />
+      <Route path="profile" element={<StaffProfile />} />
+
       {/* Fallback for unknown teacher routes */}
       <Route path="*" element={<TeacherHome />} />
     </Routes>

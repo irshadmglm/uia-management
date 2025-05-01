@@ -1,21 +1,24 @@
 import { Routes, Route } from "react-router-dom";
-import StudentList from "../pages/StudentList";
-import StudentForm from "../pages/StudentForm";
-import AdmissionForm from "../pages/AdmissionForm";
-import AdminHome from "../pages/AdminHome";
-import RegisterdStudents from "../pages/RegisterdStudents";
-import TimetableAsigment from "../pages/TimetableAsigment";
-import TeacherAssignmentPage from "../pages/TeacherAssignmentPage";
-import ManagementPage from "../pages/ManagementPage";
-import SignupPage from "../pages/SignupPage";
-import AdminAttendance from "../pages/AdminAttendance";
-import SemesterPage from "../pages/SemesterPage";
-import AdminMarkUpdate from "../pages/AdminMarkUpdate";
-import MarkSubmitedStudentsPage from "../pages/MarkSubmitedStudentsPage";
-import AdminsideMarkListes from "../pages/AdminsideMarkListes ";
-import FeesDashboard from "../pages/FeesDashbord";
-import CEMarkAdmin from "../pages/CEMarkAdmin";
-import IRMarkAdmin from "../pages/IRMarkAdmin";
+import AdminHome from "../pages/admin/AdminHome";
+import StudentList from "../pages/admin/StudentList";
+import StudentForm from "../pages/admin/StudentForm";
+import AdmissionForm from "../pages/admin/AdmissionForm";
+import RegisterdStudents from "../pages/admin/RegisterdStudents";
+import TimetableAsigment from "../pages/admin/TimetableAsigment";
+import TeacherAssignmentPage from "../pages/admin/TeacherAssignmentPage";
+import ManagementPage from "../pages/admin/ManagementPage";
+import AdminAttendance from "../pages/admin/AdminAttendance";
+import SemesterPage from "../pages/admin/SemesterPage";
+import AdminMarkUpdate from "../pages/admin/AdminMarkUpdate";
+import MarkSubmitedStudentsPage from "../pages/admin/MarkSubmitedStudentsPage";
+import AdminsideMarkListes from "../pages/admin/AdminsideMarkListes ";
+// import FeesDashboard from "../pages/admin/FeesDashboard";
+import CEMarkAdmin from "../pages/admin/CEMarkAdmin";
+import IRMarkAdmin from "../pages/admin/IRMarkAdmin";
+import StaffProfile from "../pages/admin/StaffProfile";
+import SignupPage from "../pages/admin/SignupPage";
+import FeesDashboard from "../pages/admin/FeesDashbord";
+
 
 const AdminRoutes = () => {
   return (
@@ -39,6 +42,10 @@ const AdminRoutes = () => {
       <Route path="ishthiraq" element={<FeesDashboard />} />
       <Route path="ce-mark" element={<CEMarkAdmin />} />
       <Route path="ir-mark" element={<IRMarkAdmin />} />
+      <Route path="profile" element={<StaffProfile />} />
+      <Route path="std-edit/:studentId" element={<AdmissionForm />} />
+
+
       
 
       {/* teachers singup form */}

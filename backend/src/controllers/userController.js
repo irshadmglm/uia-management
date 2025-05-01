@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import Staff from "../models/staff.model.js";
 import Student from "../models/student.model.js";
 
@@ -59,6 +60,49 @@ export const getStudents = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const getStudent = async (req, res) => {
+  try {
+    const {studentId} = req.params;
+
+    const student = await Student.findById(studentId);
+
+    res.status(200).json(student);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+export const editStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const updateData = req.body;
+    let hashedPassword;
+
+  if(updateData.password){
+    const salt = await bcrypt.genSalt(10);
+     hashedPassword = await bcrypt.hash(updateData.password, salt);
+     updateData.password = hashedPassword;
+  }else{
+    delete updateData.password;
+  }
+
+    const student = await Student.findByIdAndUpdate(studentId, updateData, {
+      new: true,
+      runValidators: true, 
+    });
+
+    if (!student) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    res.status(200).json({ success: true, student });
+  } catch (error) {
+    console.error("Error updating student:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 
 export const getUser = async (req,res) => {
   try {
