@@ -20,7 +20,6 @@ const TeacherRoutes = () => {
       <Route path="ishthiraq/:batchId" element={<FeesTeacher />} />
       <Route path="profile" element={<StaffProfile />} />
 
-      {/* Fallback for unknown teacher routes */}
       <Route path="*" element={<TeacherHome />} />
     </Routes>
   );

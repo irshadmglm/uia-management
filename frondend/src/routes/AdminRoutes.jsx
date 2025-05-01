@@ -12,7 +12,6 @@ import SemesterPage from "../pages/admin/SemesterPage";
 import AdminMarkUpdate from "../pages/admin/AdminMarkUpdate";
 import MarkSubmitedStudentsPage from "../pages/admin/MarkSubmitedStudentsPage";
 import AdminsideMarkListes from "../pages/admin/AdminsideMarkListes ";
-// import FeesDashboard from "../pages/admin/FeesDashboard";
 import CEMarkAdmin from "../pages/admin/CEMarkAdmin";
 import IRMarkAdmin from "../pages/admin/IRMarkAdmin";
 import StaffProfile from "../pages/admin/StaffProfile";
@@ -24,11 +23,9 @@ const AdminRoutes = () => {
   return (
     <Routes>
       <Route index element={<AdminHome />} />
-      {/* Manage user list */}
       <Route path="users" element={<StudentList />} />
       <Route path="users/add" element={<StudentForm />} />
       <Route path="users/edit/:id" element={<StudentForm edit />} />
-      {/* Admission form route */}
       <Route path="admission-form" element={<AdmissionForm />} />
       <Route path="registered-students" element={<RegisterdStudents />} />
       <Route path="timetable-Assign" element={<TimetableAsigment />} />
@@ -48,10 +45,8 @@ const AdminRoutes = () => {
 
       
 
-      {/* teachers singup form */}
       <Route path="signup" element={<SignupPage />} />
 
-      {/* Fallback for unknown admin routes */}
       <Route path="*" element={<AdminHome />} />
     </Routes>
   );

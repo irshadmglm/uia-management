@@ -16,13 +16,10 @@ const StudentRoutes = () => {
       <Route path="semester-list" element={<StudentSemesterListing />} />
       <Route path="semester/:semesterid" element={<MarkListPage />} />
       <Route path="subjects" element={<CurruntSemSubjects />} />
-      {/* <Route path="ce-mark" element={<MarkListPage />} />
-      <Route path="ir-mark" element={<MarkListPage />} /> */}
       <Route path="ishthiraq" element={<StudentFees />} />
       <Route path="profile" element={<StudentProfile />} />
 
 
-      {/* Show a 404 Page instead of redirecting to StudentHome */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

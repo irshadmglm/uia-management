@@ -4,10 +4,8 @@ import { useAuthStore } from "../store/useAuthStore";
 const RoleBasedRoutes = () => {
   const { authUser } = useAuthStore();
 
-  // If not logged in, redirect to login
   if (!authUser) return <Navigate to="/auth/login" replace />;
 
-  // Redirect based on role (ensure roles are in lowercase for consistency)
   switch (authUser.role.toLowerCase()) {
     case "admin":
       return <Navigate to="/dashboard/admin" replace />;

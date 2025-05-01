@@ -1,12 +1,10 @@
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import LoginPage from "../pages/LoginPage";
-import SignupPage from "../pages/admin/SignupPage";
 
 const PublicRoutes = () => {
   const { authUser } = useAuthStore();
 
-  // If user is already authenticated, redirect to home (role‑based)
   if (authUser) {
     return <Navigate to="/" replace />;
   }
@@ -15,7 +13,6 @@ const PublicRoutes = () => {
     <Routes>
       <Route element={<Outlet />}>
         <Route path="login" element={<LoginPage />} />
-        {/* For any unmatched /auth route, redirect to login */}
         <Route path="*" element={<Navigate to="login" replace />} />
       </Route>
     </Routes>
