@@ -44,7 +44,6 @@ export const useMarksStore = create((set, get) => ({
         try {
             const res = await axiosInstance.get(`/marklist/?batchId=${batchId}`);
             set({markList: res.data})
-        console.log("markList:", res.data);
         
         } catch (error) {
             toast.error(error.message);
@@ -55,7 +54,6 @@ export const useMarksStore = create((set, get) => ({
     getcountToApprove: async () => {
         try {
             const res =await axiosInstance.get('/marklist/countToApprove');
-            console.log("count",res.data);
             
             set({countToApprove: res.data})
         } catch (error) {
@@ -68,7 +66,6 @@ export const useMarksStore = create((set, get) => ({
     
         try {
             const res = await axiosInstance.get('/mng/curriculum'); 
-            console.log(res.data);
     
             set({ semesters: res.data });
         } catch (error) {

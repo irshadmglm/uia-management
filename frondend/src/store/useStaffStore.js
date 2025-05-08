@@ -16,7 +16,6 @@ export const useStaffStore = create((set, get) => ({
     set({isLoading: true});
     try {
         const res = await axiosInstance.get("/users/teachers");
-        console.log(res.data);
         
         set({teachers: res.data.teachers});
     } catch (error) {
@@ -33,9 +32,7 @@ export const useStaffStore = create((set, get) => ({
     if (!authUser) {
       console.error("User is not authenticated!");
     } else {
-      console.log("authUser:", authUser);
      const res = await axiosInstance.get(`/mng/class/${authUser._id}`)
-     console.log("data:",res.data.assignedbatches);
      
      set({batches: res.data.assignedbatches});
     }
@@ -71,7 +68,6 @@ export const useStaffStore = create((set, get) => ({
     const authUser = useAuthStore.getState().authUser;
     try {
       const res = await axiosInstance.get(`/mng/assigned-subjects/${authUser._id}`);
-      console.log(res.data);
       
       set({assignedSubjects: res.data})
     } catch (error) {
@@ -84,12 +80,10 @@ export const useStaffStore = create((set, get) => ({
   submitAttendance: async (classId, attendance, date) => {
     set({isLoading: true});
     try {
-      console.log(classId, attendance, date);
       
       // date = new Date(date).toISOString();
       const res = await axiosInstance.post('/mng/mark-attendance',{classId, attendance, date})
 
-      console.log("Attendance submitted successfully:", res.data);
 
       await useStaffStore.getState().getBatch(); 
       

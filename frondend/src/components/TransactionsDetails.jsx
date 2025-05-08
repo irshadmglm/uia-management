@@ -27,8 +27,6 @@ const TransactionsDetails = ({ details }) => {
   };
 
   
-
-  // Filter the details based on the search query
   const filteredBooks = details.filter((book) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -38,7 +36,6 @@ const TransactionsDetails = ({ details }) => {
     );
   });
 
-  // Sort the filtered books by due date
   const sortedBooks = filteredBooks.sort((a, b) => {
     const dateA = new Date(a.dueDate);
     const dateB = new Date(b.dueDate);
@@ -51,7 +48,6 @@ const TransactionsDetails = ({ details }) => {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 mt-">
-      {/* Search and Sort Controls */}
       <div className="flex flex-row items-center justify-between mb-4 gap-4 mt-20">
         <input
           type="text"
@@ -69,7 +65,6 @@ const TransactionsDetails = ({ details }) => {
 
       </div>
 
-      {/* Card Grid */}
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {sortedBooks.map((book) => {
           const isOverdue = new Date() > new Date(book.dueDate);
@@ -83,13 +78,11 @@ const TransactionsDetails = ({ details }) => {
                 hover:shadow-lg transition duration-300 relative
               `}
             >
-              {/* Overdue Badge */}
               {isOverdue && !isReturned && (
                 <div className="absolute top-2 right-2 flex items-center gap-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                   <AlertCircle size={14} /> Overdue
                 </div>
               )}
-              {/* Returned Badge */}
               {isReturned && (
                 <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
                   Returned
@@ -143,7 +136,6 @@ const TransactionsDetails = ({ details }) => {
                     <strong>Due Date:</strong>{" "}
                     {new Date(book.dueDate).toLocaleDateString()}
                   </p>
-                  {/* You can add more details here if needed */}
                 </div>
               )}
             </div>

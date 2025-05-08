@@ -9,7 +9,6 @@ export const getTimetable = async (req, res) => {
   try {
     let timetable = await Timetable.findOne();
     if (!timetable) {
-      // Initialize timetable with a grid for each weekday.
       timetable = new Timetable({
         grid: {
           Monday: Array.from({ length: 3 }, () => Array(5).fill(null)),
@@ -31,7 +30,6 @@ export const getTimetable = async (req, res) => {
 export const postTimetable = async (req, res) => {
   try {
     const { grid } = req.body;
-    console.log("Updated grid:", grid);
 
     let timetable = await Timetable.findOne();
 
@@ -51,7 +49,6 @@ export const postTimetable = async (req, res) => {
 export const getSemesters = async (req, res) => {
   try {
     const semesters = await Semester.find(); 
-    console.log(semesters);
     
     res.status(200).json(semesters); 
 
@@ -64,7 +61,6 @@ export const getSemesters = async (req, res) => {
 export const postSemester = async (req, res) => {
   try {
     const { name } = req.body;
-    console.log(req.body);
     
     const isSemester = await Semester.findOne({ name });
     if (isSemester) {
@@ -115,7 +111,6 @@ export const getAssignedBatch = async (req, res) => {
     const { teacherId } = req.params;
 
     const assignedbatches = await Batch.find({ classTeacher: teacherId });
-    console.log(assignedbatches);
     
     if (!assignedbatches) {
       return res.status(404).json({ status: false, message: "No class assigned" });
@@ -148,7 +143,6 @@ export const postbatches = async (req, res) => {
 };
 
 export const CELinkUpdate = async (req, res) => {
-  console.log(req.body);
   
   try {
     const { batchId, CEmarkListLink } = req.body;
@@ -218,7 +212,6 @@ export const getSubjects = async (req,res) => {
 export const postSubject = async (req, res) => {
   try {
     let {semesterId} = req.params;
- console.log(semesterId);
  
     const { name, mark, CEmark } = req.body;
 
@@ -364,7 +357,7 @@ export const assignedSubjects = async (req, res) => {
       {
         $unwind: {
           path: "$batchDetails",
-          preserveNullAndEmptyArrays: true // If you want to see subjects even without batch match
+          preserveNullAndEmptyArrays: true 
         }
       }
     ]);
@@ -431,7 +424,6 @@ export const curruntSemSubjects = async (req, res) => {
 export const postAttendance = async (req, res) => {
 try {
   let {attendance, classId, date} = req.body;
-console.log(req.body);
 
   if (!classId) {
     return res.status(400).json({ error: "classId is required" });
@@ -452,7 +444,6 @@ let response = await Batch.updateOne(
   { $set: { [`attendance.${monthName}.${day}`]: attendance } }
 );
 
-console.log(response);
 
  res.status(200).json({ message: "Attendance marked successfully!" });
 

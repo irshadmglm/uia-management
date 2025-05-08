@@ -10,7 +10,7 @@ import Batch from "../models/batch.model.js";
 
 const serviceAccountAuth = new JWT({
   email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Fix private key formatting
+  key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'), 
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
@@ -44,7 +44,6 @@ export const signup = async (req, res) => {
     });
 
     if (newStaff) {
-      // generate jwt token here
       // generateToken(newStaff._id, res);
       await newStaff.save();
 
@@ -67,7 +66,6 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { username, password, role} = req.body;
-  console.log(req.body);
   
   try {
     if (!role) {
@@ -93,7 +91,6 @@ export const login = async (req, res) => {
 
     generateToken(user._id, res);
 
-    // Common response structure
     const responseData = {
       _id: user._id,
       name: user.name,
@@ -127,48 +124,26 @@ export const logout = (req, res) => {
 
 export const fetchGoogleSheetData = async (req, res) => {
   try {
-    // Load the Google Sheet
     const doc = new GoogleSpreadsheet(SHEET_ID, serviceAccountAuth);
-    await doc.loadInfo(); // Load sheet properties
+    await doc.loadInfo(); 
 
     console.log(`Sheet Title: ${doc.title}`);
 
-    // Select the first sheet (tab)
-    const sheet = doc.sheetsByIndex[0]; // First worksheet
+    const sheet = doc.sheetsByIndex[0]; 
     console.log(`Worksheet Title: ${sheet.title}`);
     console.log(`Total Rows: ${sheet.rowCount}`);
 
-    // Fetch all rows
     const rows = await sheet.getRows();
-    // Print each row as JSON
-    // rows.forEach((row, index) => {
-    //   console.log(`Row ${index + 1}:`, row._rawData); // _rawData contains all column values
-    // });
+   
     const formattedData = rows.map(row => row._rawData);
     for(let c of formattedData){
 
       const batch = await Batch.findOne({ name: c[1] });
-      console.log(batch._id);
       
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(c[2], salt);
        
-    //  const newStudent = new Student({
-    //   name: c[3],
-    //   batchName: c[1],
-    //   batchId: batch._id,
-    //   cicNumber: c[2],
-    //   email: c[7],
-    //   address: c[6],
-    //   password: hashedPassword,
-    //   phoneNumber: c[4],
-    //   whatsupNumber: c[5],
-    //   parentNumber: c[8],
-
-    //  })
-    // const savedStudent = await newStudent.save();
-    //  batch.students.push(savedStudent._id)
-    //  await batch.save();
+  
     }
 
 
@@ -204,7 +179,6 @@ export const fetchGoogleSheetData = async (req, res) => {
 
 export const checkAuth = (req, res) => {
   try {
-    console.log(req.user);
     
     res.status(200).json(req.user);
   } catch (error) {

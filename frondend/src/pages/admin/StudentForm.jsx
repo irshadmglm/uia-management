@@ -11,7 +11,6 @@ import SelectField from "../../components/SelectField";
 
 const StudentForm = (props) => {
   const { id } = useParams();
-  console.log(id);
   
   const [student, setStudent] = useState([])
   const { registerStudent, isRegistering, editStudent } = useStudentStore();
@@ -58,7 +57,6 @@ const StudentForm = (props) => {
     const fetchUser = async (id) => {
       try {
         const response = await axios.get(`http://192.168.1.7:5000/api/users/${id}`);
-        console.log(response.data.user);
         setFormData({ ...response.data.user });
       } catch (error) {
         console.error("Error fetching user:", error.response ? error.response.data : error.message);

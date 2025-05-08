@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Pencil, Trash, Eye, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 
 const StudentTable = ({ students, onDelete }) => {
+    const { authUser } = useAuthStore();
+
   const [expandedRow, setExpandedRow] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -16,14 +19,14 @@ const StudentTable = ({ students, onDelete }) => {
   );
 
   return (
-    <div className="mt-24 px-4">
+    <div className="mt-[88px] px-4 pt-2">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Student List</h2>
-        <div className="relative w-1/3">
+        <div className="relative ">
           <input
             type="text"
             placeholder="Search students..."
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 bg-white"
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 bg-white dark:bg-gray-800"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -32,7 +35,7 @@ const StudentTable = ({ students, onDelete }) => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="table w-full border-collapse border border-gray-200">
+        <table className="table w-full border-collapse">
           <thead className="bg-gradient-to-r from-sky-700 to-sky-800  text-white">
             <tr>
               <th>No</th>
@@ -87,12 +90,15 @@ const StudentTable = ({ students, onDelete }) => {
                       >
                         <Eye size={16} />
                       </button> */}
+                      {authUser.role === "admin" && 
                       <Link
-                        to={`/dashboard/admin/std-edit/${student._id}`}
-                        className="text-sky-500 hover:text-green-700"
-                      >
-                        <Pencil size={16} />
-                      </Link>
+                      to={`/dashboard/admin/std-edit/${student._id}`}
+                      className="text-sky-500 hover:text-green-700"
+                    >
+                      <Pencil size={16} />
+                    </Link>
+                      }
+                      
                       {/* <button
                         onClick={() => onDelete(student._id)}
                         className="text-red-500 hover:text-red-700"

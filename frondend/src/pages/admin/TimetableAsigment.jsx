@@ -8,7 +8,6 @@ const periods = 3;
 const batches = 5;
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-// Utility: create a default grid for one day.
 const createDefaultDayGrid = () =>
   Array.from({ length: periods }, () => Array(batches).fill(null));
 
@@ -61,18 +60,15 @@ const DroppableBox = ({ onDrop, assignedTeacher }) => {
 const TimetableAssignment = () => {
   const { getTeachers, teachers } = useStaffStore();
   const [day, setDay] = useState("Monday");
-  // grid holds an object with keys for each weekday.
   const [grid, setGrid] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch teachers and timetable once on mount.
   useEffect(() => {
     getTeachers();
     fetchTimetable();
   }, []);
 
-  // When switching days, initialize the grid for the day if it doesn't exist.
   useEffect(() => {
     setGrid((prevGrid) => {
       console.log("Current grid for", day, ":", prevGrid[day]);
@@ -105,22 +101,18 @@ const TimetableAssignment = () => {
     }
   };
 
-  // Modified handleDrop to accept the day as an argument.
   const handleDrop = (targetDay, row, col, teacher) => {
     setGrid((prevGrid) => {
       const dayTable = prevGrid[targetDay] || createDefaultDayGrid();
       
-      // Check if the teacher is already assigned in this period (row)
       const isAlreadyAssigned = dayTable[row].includes(teacher);
       if (isAlreadyAssigned) {
         alert(`${teacher} is already assigned in this period!`);
-        return prevGrid; // Don't change the grid
+        return prevGrid; 
       }
   
-      // Create a deep copy of the day's grid
       const newGrid = dayTable.map((r) => [...r]);
   
-      // Assign the teacher to the selected cell
       newGrid[row][col] = teacher;
   
       const updatedGrid = { ...prevGrid, [targetDay]: newGrid };
@@ -133,7 +125,6 @@ const TimetableAssignment = () => {
   if (isLoading) return <p>Loading timetable...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
-  // Use the grid for the current day; if not available, create a default grid.
   const currentGrid = grid[day] || createDefaultDayGrid();
 
   return (
@@ -185,7 +176,6 @@ const TimetableAssignment = () => {
                     {row.map((teacher, colIndex) => (
                       <td key={colIndex} className="border border-gray-300 p-2">
                         <DroppableBox
-                          // Force remount on day change by using a key that includes the day.
                           key={`${day}-${rowIndex}-${colIndex}`}
                           assignedTeacher={teacher}
                           onDrop={(name) =>

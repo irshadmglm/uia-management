@@ -20,7 +20,6 @@ router.delete("/delete/:userId", deleteUser);
 
 router.get("/:batchId", getStudents);
 
-// router.get('/:userId', getUser)
 
 
 

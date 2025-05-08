@@ -56,19 +56,16 @@ module.exports = {
         })
     },
     exeldata:function(){
-        // Step 1: Download the Excel file from the URL
 axios({
     method: 'get',
     url: fileUrl,
     responseType: 'stream',
   })
     .then((response) => {
-      // Save the file locally
       const writer = fs.createWriteStream(filePath);
       response.data.pipe(writer);
   
       writer.on('finish', async() => {
-        // Step 2: Read the downloaded Excel file
         const workbook = xlsx.readFile(filePath);
         const sheet_name_list = workbook.SheetNames;
         const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
@@ -79,7 +76,6 @@ axios({
             author: item['NAME OF AUTHOR'],
             status: 'available'
           }));
-        console.log(transformedData); 
         await db.get().collection(collections.BOOK_COLLECTION).insertMany(transformedData);
       });
   

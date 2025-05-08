@@ -96,7 +96,6 @@ export const useFeeStore = create((set, get) => ({
    try {
     const authUser = useAuthStore.getState().authUser;
     const res = await axiosInstance.get(`/fees/get-std-fees/${authUser._id}`);
-    console.log(res.data);
     set({fees: res.data})
    } catch (error) {
     console.error("Error in getCurruntSemSubjects:", error);

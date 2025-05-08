@@ -15,7 +15,6 @@ const AdminMarkUpdate = () => {
 
 useEffect(() => {
     getcountToApprove();
-    console.log(countToApprove);
 }, [])
 
   const navigate = useNavigate();

@@ -17,7 +17,6 @@ const ManagementPage = () => {
   const [newItemName, setNewItemName] = useState("");
   const navigate = useNavigate();
 
-  // Update items based on selectedTab and fetched data
   useEffect(() => {
     if (selectedTab === "batches") {
       setItems(batches);
@@ -30,7 +29,6 @@ const ManagementPage = () => {
     }
   }, [selectedTab, batches, semesters, teachers]);
 
-  // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,14 +61,11 @@ const ManagementPage = () => {
     if (newItemValue.trim()) {
       try {
         const updatedValue = newItemValue.trim();
-        // Optionally update the backend here, e.g.:
-        // await axiosInstance.patch(`/${selectedTab}/${itemId}`, { name: updatedValue });
 
         const updatedItems = [...items];
         updatedItems[index] = updatedValue;
         setItems(updatedItems);
 
-        // Also update the corresponding state array for consistency
         if (selectedTab === "batches") {
           const updatedbatches = [...batches];
           updatedbatches[index] = updatedValue;
@@ -93,7 +88,6 @@ const ManagementPage = () => {
     <div className=" mx-auto  min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
      
       <Header page={"Management"} />
-      {/* Tabs and Search */}
      <div className="p-5 mt-16" >
      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 ">
         <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 w-full sm:w-auto">

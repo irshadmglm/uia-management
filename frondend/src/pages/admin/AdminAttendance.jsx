@@ -29,7 +29,6 @@ const AdminAttendance = () => {
       setSelectedBatch(selected);
       if (selected ) {
         const batchStudents = students.filter((s) => selected.students.includes(s._id));
-        console.log("batchStudents:", batchStudents);
         
         setBatchStudents(batchStudents);
       }

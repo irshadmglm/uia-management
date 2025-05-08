@@ -1,4 +1,3 @@
-// AdminInput.jsx
 import React from "react";
 
 const AdminInput = ({ className, ...props }) => {

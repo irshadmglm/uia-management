@@ -7,7 +7,7 @@ import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo
 const AdminHome = () => {
   const cards = [
     { title: "Students", icon: Users, route: "/dashboard/admin/users" },
-    { title: "Teachers", icon: GraduationCap, route: "/dashboard/admin/teachers-Assign" },
+    { title: "Assignment", icon: GraduationCap, route: "/dashboard/admin/teachers-Assign" },
     { title: "Management", icon: Settings2Icon, route: "/dashboard/admin/management" },
     { title: "MarkList Update", icon: LineChart, route: "/dashboard/admin/batches" },
     { title: "CE Mark", icon: MousePointer2, route: "/dashboard/admin/ce-mark" },

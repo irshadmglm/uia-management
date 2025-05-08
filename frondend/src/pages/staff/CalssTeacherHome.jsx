@@ -51,6 +51,7 @@ const CalssTeacherHome = () => {
             </div>
             </a>
             <Card title="Ishthiraq" icon={ClipboardPenLineIcon} route={`/dashboard/teacher/ishthiraq/${batchId}`} />
+            <Card title="Marklist" icon={ListTodo} route={`/dashboard/teacher/marklistes/${batchId}`} />
       </div>
     </div>
   );

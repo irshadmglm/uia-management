@@ -3,7 +3,6 @@ import { Eye, EyeOff, Loader2, User, School, List, Lock, UserCheck2Icon } from "
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import Header from "../components/Header";
-import Footer from "../components/Footer";
 import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
 import { MdEmail } from "react-icons/md";
@@ -11,7 +10,6 @@ import { useAuthStore } from "../store/useAuthStore";
 
 const LoginPage = (props) => {
   const { id } = useParams();
-  // console.log(id);
   const {login, isLoggingIn } = useAuthStore();
   const [student, setStudent] = useState([])
   const [showConfetti, setShowConfetti] = useState(false);
@@ -81,7 +79,6 @@ const LoginPage = (props) => {
           </form>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

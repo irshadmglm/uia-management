@@ -7,6 +7,8 @@ import BatchStudentsDetails from "../pages/staff/BatchStudentsDetails";
 import AssignedSubjects from "../pages/staff/AssignedSubjects";
 import StaffProfile from "../pages/admin/StaffProfile";
 import FeesTeacher from "../pages/staff/FeesTeacher";
+import MarkSubmitedStudentsPage from "../pages/admin/MarkSubmitedStudentsPage";
+import AdminsideMarkListes from "../pages/admin/AdminsideMarkListes ";
 
 const TeacherRoutes = () => {
   return (
@@ -19,6 +21,8 @@ const TeacherRoutes = () => {
       <Route path="assigned-subjects" element={<AssignedSubjects />} />
       <Route path="ishthiraq/:batchId" element={<FeesTeacher />} />
       <Route path="profile" element={<StaffProfile />} />
+      <Route path="marklistes/:batchId" element={<MarkSubmitedStudentsPage />} />
+      <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />
 
       <Route path="*" element={<TeacherHome />} />
     </Routes>

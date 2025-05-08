@@ -7,7 +7,7 @@ const SearchBar = ({ onSearch }) => {
   const handleSearch = (e) => {
     const value = e.target.value;
     setQuery(value);
-    onSearch(value); // Automatically filters results as user types
+    onSearch(value); 
   };
 
   return (

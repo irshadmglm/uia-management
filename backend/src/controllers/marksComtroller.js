@@ -11,7 +11,6 @@ export const addMarkList = async (req, res) => {
         }
 
         const student = await Student.findById(studentId);
-        console.log(student);
         const cicNumber = Number(student.cicNumber)
         if (!student) {
             return res.status(404).json({ message: "Student not found" });
@@ -65,12 +64,10 @@ export const getMarkList = async (req, res) => {
 export const getCountToApprove = async (req, res) => {
     try {
         const pendingMarkLists = await Marklist.find({ isApproved: false });
-        console.log("Pending MarkLists:", pendingMarkLists);
         const counts = await Marklist.aggregate([
-            { $match: { isApproved: false } }, // ✅ Filter only unapproved mark lists
-            { $group: { _id: "$batchId", count: { $sum: 1 } } } // ✅ Group by batchId and count them
+            { $match: { isApproved: false } },
+            { $group: { _id: "$batchId", count: { $sum: 1 } } } 
         ]);
-        console.log(counts);
         
         res.status(200).json(counts);
     } catch (error) {
@@ -83,7 +80,6 @@ export const updateStatus = async (req, res) => {
     try {
       const { status } = req.body; 
       const { marklistId } = req.params;
-      console.log(status, marklistId);
       
   
       

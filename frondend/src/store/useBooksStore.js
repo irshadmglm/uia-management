@@ -19,14 +19,12 @@ export const useBooksStore = create((set,get) => ({
         }
     },
     bookBorrow: async (data) => {
-        console.log(data);
         
         try {
           const response = await axiosInstance.post("/transactions/borrow", data, {
             headers: { "Content-Type": "application/json" },
           });
       
-          console.log(response.data.message);
           toast.success(response.data.message);
       
         } catch (error) {
@@ -44,7 +42,6 @@ export const useBooksStore = create((set,get) => ({
               headers: { "Content-Type": "application/json" },
             }
           );
-          console.log(response.data.message);
       
           toast.success(response.data.message);
         } catch (error) {

@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useStudentStore } from "../../store/studentStore";
 import { useMarksStore } from "../../store/useMarksStore";
 import Header from "../../components/Header";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const MarkSubmitedStudentsPage = () => {
   const { batchId } = useParams();
@@ -11,6 +12,7 @@ const MarkSubmitedStudentsPage = () => {
   const { getBatchStudents, batchStudents } = useStudentStore();
   const [students, setStudents] = useState([]);
   const { getMarkListToapprove, markList } = useMarksStore();
+  const {authUser} = useAuthStore();
 
   useEffect(() => {
     getBatchStudents(batchId);
@@ -18,7 +20,7 @@ const MarkSubmitedStudentsPage = () => {
   }, [batchId]);
 
   useEffect(() => {
-    if (batchStudents?.length > 0 && markList?.length > 0) {
+    if (batchStudents?.length > 0) {
       setStudents(
         [...batchStudents]
       );
@@ -65,7 +67,11 @@ const MarkSubmitedStudentsPage = () => {
             {filteredStudents.map((student, index) => (
               <Link
               key={student._id}
-              to={`/dashboard/admin/marklistes/${student._id}`}
+              to={
+                authUser.role === "admin"
+                  ? `/dashboard/admin/marklistes/${student._id}`
+                  : `/dashboard/teacher/marklist/${student._id}`
+              }
             >
                  <div
                 key={student._id}

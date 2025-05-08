@@ -11,13 +11,11 @@ function App() {
   const theme = useThemeStore((state) => state.theme);
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
 
-  // Check Authentication on Mount
   useEffect(() => {
     checkAuth();
     initializeTheme();
   }, [checkAuth, initializeTheme]);
 
-  // Show Loader while checking authentication
   if (isCheckingAuth) {
     return (
       <div className="flex items-center justify-center h-screen">

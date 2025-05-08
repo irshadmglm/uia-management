@@ -13,7 +13,6 @@ const AdminsideMarkListes = () => {
   const { semesters, getSemesters, markList, addMarkList, getMarkList } = useMarksStore();
   const { authUser } = useAuthStore();
 
-  // original fetched data for diffing
   const [originalData, setOriginalData] = useState({});
   const [marksData, setMarksData] = useState({});
   const [saving, setSaving] = useState({});
@@ -26,7 +25,6 @@ const AdminsideMarkListes = () => {
     getMarkList(studentId);
   }, []);
 
-  // build local state when fetched
   useEffect(() => {
     const allMarks = {};
     for (const sem of semesters) {
@@ -58,7 +56,6 @@ const AdminsideMarkListes = () => {
     }
   };
 
-  // detect if any change in a semester
   const isDirty = (semId) => {
     return JSON.stringify(marksData[semId]) !== JSON.stringify(originalData[semId]);
   };
@@ -69,7 +66,6 @@ const AdminsideMarkListes = () => {
       const ml = marksData[semId];
       await addMarkList(ml.studentId, semId, ml.subjects);
       toast.success("Marks updated successfully!");
-      // reset original to new
       setOriginalData((o) => ({ ...o, [semId]: JSON.parse(JSON.stringify(marksData[semId])) }));
     } catch {
       toast.error("Failed to save changes");
@@ -99,7 +95,7 @@ const AdminsideMarkListes = () => {
       <Header />
       <div className="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2">
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-8 text-center font-oswald">
-          Admin Panel - All Semester Mark Lists
+         All Semester Mark Lists
         </h2>
 
         {semesters.map((sem) => {
@@ -213,7 +209,6 @@ const AdminsideMarkListes = () => {
                       ) : (
                         <Save size={18} />
                       )}
-                      {/* visually hidden text for a11y */}
                       <span className="sr-only">Save</span>
                     </button>
 

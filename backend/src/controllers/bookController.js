@@ -18,21 +18,17 @@ export const addBook = async (req, res) => {
     try {
       let { title, bookNumber, author } = req.body;
   
-      // Validate required fields
       if (!title || !bookNumber || !author) {
         return res.status(400).json({ success: false, message: "Missing required fields: title, author, or bookNumber" });
       }
   
-      // Convert bookNumber to integer
       bookNumber = parseInt(bookNumber, 10);
   
-      // Check if book already exists
       const existingBook = await Book.findOne({ bookNumber });
       if (existingBook) {
         return res.status(400).json({ success: false, message: "This bookNumber is already registered" });
       }
   
-      // Create new book entry
       const newBook = new Book({
         title,
         bookNumber,

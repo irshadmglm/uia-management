@@ -103,47 +103,45 @@ module.exports = {
                     },
                     {
                       $lookup: {
-                        from: 'users',  // Assuming the users collection is named 'users'
-                        localField: 'studentId',  // The field in the transaction collection
-                        foreignField: 'studentId',  // The field in the users collection
-                        as: 'userInfo'  // The alias for the joined user data
+                        from: 'users', 
+                        localField: 'studentId',  
+                        foreignField: 'studentId',  
+                        as: 'userInfo'  
                       }
                     },
                     
-                    // Lookup book information using bookId
                     {
                       $lookup: {
-                        from: 'books',  // Assuming the books collection is named 'books'
-                        localField: 'bookId',  // The field in the transaction collection
-                        foreignField: '_id',  // The field in the books collection
-                        as: 'bookInfo'  // The alias for the joined book data
+                        from: 'books',  
+                        localField: 'bookId',  
+                        foreignField: '_id',  
+                        as: 'bookInfo'  
                       }
                     },
                   
-                    // Unwind user and book arrays (since the result of $lookup is an array)
                     {
                       $unwind: {
                         path: '$userInfo',
-                        preserveNullAndEmptyArrays: true  // In case there's no matching user
+                        preserveNullAndEmptyArrays: true 
                       }
                     },
                     {
                       $unwind: {
                         path: '$bookInfo',
-                        preserveNullAndEmptyArrays: true  // In case there's no matching book
+                        preserveNullAndEmptyArrays: true 
                       }
                     },
                   
                     
                     {
                       $project: {
-                        _id: 1,  // Exclude _id from the output
-                        studentName: '$userInfo.studentName',  // Assuming the user's name is stored as 'name' in the 'users' collection
+                        _id: 1,  
+                        studentName: '$userInfo.studentName', 
                         studentId: '$userInfo.studentId', 
-                        bookTitle: '$bookInfo.title',  // Assuming the book's title is stored as 'title' in the 'books' collection
-                        bookNumber: 1,  // Include bookNumber from the transaction
-                        borrowDate: 1,  // Include borrowDate from the transaction
-                        dueDate: 1   // Include dueDate from the transaction
+                        bookTitle: '$bookInfo.title', 
+                        bookNumber: 1,  
+                        borrowDate: 1,  
+                        dueDate: 1  
                       }
                     }
                   ]).sort({ borrowDate: -1 }).toArray();

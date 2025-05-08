@@ -14,7 +14,6 @@ export const useAdminStore = create((set, get) => ({
     set({isLoading: true});
     try {
         const res = await axiosInstance.get("/users/teachers");
-        console.log(res.data);
         
         set({teachers: res.data.teachers});
     } catch (error) {
@@ -28,7 +27,6 @@ export const useAdminStore = create((set, get) => ({
     set({isLoading: true});
     try {
         const res = await axiosInstance.get("/mng/curriculum");
-        console.log(res.data);
         
         set({semesters: res.data});
     } catch (error) {
@@ -46,7 +44,6 @@ export const useAdminStore = create((set, get) => ({
     set({isLoading: true});
     try {
         const res = await axiosInstance.get(`/mng/subjects/${semesterId}`);
-        console.log(res.data);
         
         set({subjects: res.data});
     } catch (error) {
@@ -60,7 +57,6 @@ export const useAdminStore = create((set, get) => ({
     set({isLoading: true});
     try {
         const res = await axiosInstance.get("/mng/batches");
-        console.log(res.data);
         
         set({batches: res.data});
     } catch (error) {
@@ -98,13 +94,11 @@ export const useAdminStore = create((set, get) => ({
   updateSelectedTab: async (selectedTab, newItemName) => {
     set({ isLoading: true });
     try {
-      console.log("selectedtab:",selectedTab, "newItem", newItemName);
       
       const res = await axiosInstance.post(`/mng/${selectedTab}`, {
         name: newItemName.trim(),
       });
 
-      console.log(res);
 
       const { batches, subjects, teachers, semesters } = get();
 

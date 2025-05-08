@@ -46,7 +46,6 @@ try {
 
     req.user.semester = user.semester;
     req.user.classTeacher = user.classTeacher;
-    console.log(req.user);
     
     
 

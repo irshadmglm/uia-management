@@ -42,7 +42,6 @@ export const useStudentStore = create((set) => ({
           headers: { "Content-Type": "application/json" },
         });
         
-        console.log(response.data); 
         toast.success("Account created successfully");
     
       } catch (error) {
@@ -75,7 +74,6 @@ export const useStudentStore = create((set) => ({
         const res = await axiosInstance.get(`/users/${batchId}`);
     
         if (res.data && res.data.students) {
-              console.log("batchStudents",  res.data.students);
 
           set({ batchStudents: res.data.students });
         } else {
@@ -92,7 +90,6 @@ export const useStudentStore = create((set) => ({
       set({ isLoading: true }); 
      try {
       const res = await axiosInstance.get(`/users/student/${studentId}`)
-      console.log(res.data);
       set({student: res.data})
       
      } catch (error) {
@@ -107,7 +104,6 @@ export const useStudentStore = create((set) => ({
   try {
     const response = await axiosInstance.put(`/users/student/edit/${studentId}`, data);
     
-    console.log(response.data);
     toast.success("Account updated successfully");
   } catch (error) {
     console.error(error.response?.data?.message || "An error occurred");

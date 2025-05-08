@@ -3,6 +3,7 @@ import { useThemeStore } from "../store/useThemeStore";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import SocialIcons from "./SociaIcons";
 
 const Header = ({ page, user }) => {
   const { theme, toggleTheme } = useThemeStore();
@@ -60,9 +61,13 @@ const Header = ({ page, user }) => {
       alt="User profile"
       className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700 object-cover"
     />
-    <span className="hidden sm:inline text-sm font-medium text-gray-900 dark:text-gray-100">
-      {user?.name || "Guest User"}
+    <span
+      className="hidden sm:inline text-sm font-medium text-gray-900 dark:text-gray-100 
+                max-w-[100px] truncate whitespace-nowrap overflow-hidden"
+    >
+      {authUser?.name || "User"}
     </span>
+
   </button>
 
   {/* Dropdown Content */}
@@ -138,9 +143,10 @@ const Header = ({ page, user }) => {
           <Link to="/" className="block py-2 px-4 rounded hover:bg-gray-700 transition-colors">Home</Link>
           <Link to="/profile" className="block py-2 px-4 rounded hover:bg-gray-700 transition-colors">Profile</Link>
           <Link to="/settings" className="block py-2 px-4 rounded hover:bg-gray-700 transition-colors">Settings</Link>
+          {/* <SocialIcons /> */}
         </nav>
       </div>
-
+        
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div

@@ -28,8 +28,6 @@ router.post('/asign-teacher', asignBatchTeacher)
 
 router.post('/asign-semester', asignsemester)
 
-// router.post('/asign-subject', asignSubject)
-
 router.post('/asign-subteacher', asignSubteacher)
 
 router.get('/assigned-subjects/:teacherId', assignedSubjects)

@@ -16,7 +16,6 @@ export const useRegisterdStudentStore = create((set, get) => ({
           headers: { "Content-Type": "application/json" },
         });
         
-        console.log(response.data); 
         toast.success(response.data.message);
     
       } catch (error) {
@@ -60,7 +59,6 @@ export const useRegisterdStudentStore = create((set, get) => ({
       try {
         
           const response = await axiosInstance.post('/admission/selected', {id, isSelected});
-        console.log(response.data.message);
         
         toast.success(response.data.message);
 
@@ -76,7 +74,6 @@ export const useRegisterdStudentStore = create((set, get) => ({
     //       headers: { "Content-Type": "application/json" },
     //     });
          
-    //     console.log(response.data); 
     //     toast.success("Account updated successfully");
     //   } catch (error) {
     //     console.error(error.response?.data?.message || "An error occurred");

@@ -21,7 +21,7 @@ import toast from "react-hot-toast"
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const months = [ "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"]
 
 export default function FeesDashboard() {
   const { getStudents, students } = useStudentStore()
@@ -72,7 +72,6 @@ export default function FeesDashboard() {
     fetchData()
   }, [])
 
-  // Fetch fees when batch changes
   useEffect(() => {
     if (selectedBatch) {
       fetchFees(selectedBatch)
@@ -110,13 +109,12 @@ export default function FeesDashboard() {
       .filter(student => {
         const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase());
         const paidMonths = Object.values(student.status).filter(v => v).length;
-        const totalMonths = Object.values(student.status).length || 1;
+        let month = new Date().getMonth() 
+        const CurrentMonths = month >= 4 ? month - 3 : month + 9;
         
-        // Status filtering
         if (selectedStatus === "paid" && paidMonths === 0) return false;
-        if (selectedStatus === "pending" && paidMonths === totalMonths) return false;
+        if (selectedStatus === "pending" && paidMonths >= CurrentMonths) return false;
         
-        // Month filtering
         if (selectedMonths.length > 0) {
           return selectedMonths.some(m => student.status[m] !== undefined);
         }
@@ -151,7 +149,6 @@ export default function FeesDashboard() {
 
  
 
-  // Toggle sort direction
   const toggleSort = (field) => {
     if (sortBy === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
@@ -161,7 +158,6 @@ export default function FeesDashboard() {
     }
   }
 
-  // Toggle month selection for filtering
   const toggleMonthFilter = (month) => {
     setSelectedMonths((prev) => (prev.includes(month) ? prev.filter((m) => m !== month) : [...prev, month]))
   }
@@ -170,18 +166,15 @@ export default function FeesDashboard() {
   const handleDownloadPdf = () => {
     const doc = new jsPDF("landscape");
     
-    // Main Header
     doc.setFontSize(20);
     doc.setTextColor(33, 37, 41); // Dark gray
     doc.setFont("helvetica", "bold");
     doc.text(`${current.name} Fee Report`, 14, 20);
   
-    // Decorative line under header
     doc.setDrawColor(79, 70, 229); // Indigo color
     doc.setLineWidth(0.5);
     doc.line(14, 23, 280, 23);
   
-    // Subheader with date and institution info
     doc.setFontSize(12);
     doc.setTextColor(108, 117, 125); // Gray
     doc.setFont("helvetica", "normal");
@@ -193,13 +186,10 @@ export default function FeesDashboard() {
     doc.text(`Generated on ${dateString}`, 14, 30);
     doc.text("UIA Management System", 240, 30, { align: "right" });
   
-    // Add small institution logo (optional)
-    // If you have a logo image:
-    // doc.addImage(logo, 'PNG', 260, 12, 30, 10);
+
   
-    // Table styling
     autoTable(doc, {
-      startY: 35, // Start below header section
+      startY: 35, 
       head: [['Student Name', ...months, 'Progress']],
       body: filteredStudents.map(student => [
         student.name,
@@ -219,11 +209,11 @@ export default function FeesDashboard() {
         cellPadding: 5
       },
       columnStyles: {
-        0: { cellWidth: 40 }, // Name column
+        0: { cellWidth: 40 },
         ...Object.fromEntries(
-          months.map((_, i) => [i + 1, { cellWidth: 18 }]) // Month columns
+          months.map((_, i) => [i + 1, { cellWidth: 18 }]) 
         ),
-        [months.length + 1]: { cellWidth: 25 } // Progress column
+        [months.length + 1]: { cellWidth: 25 }
       }
     });
   
@@ -614,10 +604,10 @@ function Card({ title, value, icon, color }) {
         <div className={`p-2 rounded-lg ${getColorClasses()}`}>{icon}</div>
       </div>
       <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
-      <div className="mt-2 flex items-center text-xs text-green-600 dark:text-green-400">
+      {/* <div className="mt-2 flex items-center text-xs text-green-600 dark:text-green-400">
         <BarChart3 className="h-3 w-3 mr-1" />
         <span>+12% from last month</span>
-      </div>
+      </div> */}
     </div>
   )
 }

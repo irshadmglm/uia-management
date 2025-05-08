@@ -21,7 +21,6 @@ export const createFee = async (req, res) => {
 export const getFeesByBatch = async (req, res) => {
   try {
     const fees = await Fee.find({ batchId: req.query.batchId });
-    console.log(fees);
     
     res.status(200).json(fees);
   } catch (error) {

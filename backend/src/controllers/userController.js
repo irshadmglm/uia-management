@@ -4,20 +4,17 @@ import Student from "../models/student.model.js";
 
 export const addUser = async (req, res) => {
   try {
-    console.log(req.body);
     
     let {studentName, selectedBatch, rollNumber, studentId } = req.body;
 
     selectedBatch = parseInt(selectedBatch, 10);
     rollNumber = parseInt(rollNumber, 10);
 
-    // Check if student already exists
     const existingUser = await Student.findOne({ studentId });
     if (existingUser) {
       return res.status(400).json({ success: false, message: "This student is already registered." });
     }
 
-    // Create new user
     const newUser = new Student({
       studentName,
       selectedBatch,
@@ -120,11 +117,9 @@ export const getUser = async (req,res) => {
 }
 
 export const updateUser = async (req, res) => {
-  console.log("Request Body:", req.body);
 
   try {
     const { studentId } = req.body;
-    console.log("Updating Student with studentId:", studentId);
     
     const updateData = req.body;
 
@@ -147,7 +142,7 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-    const { userId } = req.params; // Get user ID from URL params
+    const { userId } = req.params;
 
     const deletedUser = await Student.findByIdAndDelete(userId);
 
@@ -162,14 +157,12 @@ export const deleteUser = async (req, res) => {
 };
 
 export const getTeachers = async (req, res) => {
-  console.log("it is caled");
   
   try {
     const teachers = await Staff.find({role: "teacher"}).sort({ name: 1 });
     if (!teachers || teachers.length === 0) {
       return res.status(200).json({ success: false, message: "No Teachers found", teachers:[]});
     }
-    console.log(teachers);
     
     res.status(200).json({ success: true, teachers });
   } catch (error) {

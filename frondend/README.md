@@ -1,8 +1,24 @@
-# React + Vite
+# School Management App - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the **frontend** of the School Management Application built with **React.js (Vite)**, **Tailwind CSS**, **Zustand** for state management, and real-time UI features using **Framer Motion** and **Socket.io-client**.
 
-Currently, two official plugins are available:
+## 🔧 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React.js (Vite)**
+- **Tailwind CSS**
+- **DaisyUI**
+- **Zustand** - State Management
+- **Framer Motion** - Animations
+- **React Hot Toast & Toastify** - Notifications
+- **Axios** - API calls
+
+## 📦 Installation
+
+```bash
+cd frontend
+npm install
+
+
+Running the App
+npm run dev
+

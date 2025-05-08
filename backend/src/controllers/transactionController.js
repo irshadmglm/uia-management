@@ -6,7 +6,6 @@ export const borrowBook = async (req, res) => {
   try {
     const { bookNumber, studentId } = req.body;
 
-    // Find the book by bookNumber
     const book = await Book.findOne({ bookNumber });
 
     if (!book) {
@@ -17,26 +16,22 @@ export const borrowBook = async (req, res) => {
       return res.status(400).json({ success: false, message: "Book is not available for borrowing" });
     }
 
-    // Find the student by studentId
     const student = await User.findOne({ studentId });
 
     if (!student) {
       return res.status(404).json({ success: false, message: "Student not registered" });
     }
 
-    // Calculate the due date (7 days from now)
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7);
 
-    // Update book status
     book.status = "borrowed";
     book.borrowedBy = studentId;
     book.studentName = student.studentName;
     book.dueDate = dueDate;
 
-    await book.save(); // Save the updated book details
+    await book.save(); 
 
-    // Create a transaction entry
     const transaction = new Transaction({
       bookId: book._id,
       bookNumber: book.bookNumber,
@@ -58,9 +53,8 @@ export const returnBook = async (req, res) => {
   try {
     let { bookNumber } = req.body;
 
-    bookNumber = parseInt(bookNumber, 10); // Ensure bookNumber is an integer
+    bookNumber = parseInt(bookNumber, 10);
 
-    // Find the book by bookNumber
     const book = await Book.findOne({ bookNumber });
 
     if (!book) {
@@ -71,15 +65,13 @@ export const returnBook = async (req, res) => {
       return res.status(400).json({ success: false, message: "This book is already available in the library" });
     }
 
-    // Update book status to "available"
     book.status = "available";
     book.borrowedBy = null;
     book.studentName = null;
     book.dueDate = null;
 
-    await book.save(); // Save the updated book details
+    await book.save(); 
 
-    // Update transaction history
     const transaction = await Transaction.findOneAndUpdate(
       { bookNumber: bookNumber, returned: false },
       { $set: { returned: true, returnDate: new Date() } },
@@ -101,41 +93,37 @@ export const borrowedBooks = async (req, res) => {
     const borrowedBooks = await Transaction.aggregate([
       {
         $match: {
-          returned: false, // Only include currently borrowed books
+          returned: false, 
         },
       },
-      // Lookup user information using studentId
       {
         $lookup: {
-          from: "users", // Collection name in MongoDB
-          localField: "studentId", // Field in Transaction collection
-          foreignField: "studentId", // Field in Users collection
-          as: "userInfo", // Alias for joined user data
+          from: "users", 
+          localField: "studentId",
+          foreignField: "studentId", 
+          as: "userInfo",
         },
       },
-      // Lookup book information using bookId
       {
         $lookup: {
-          from: "books", // Collection name in MongoDB
-          localField: "bookId", // Field in Transaction collection
-          foreignField: "_id", // Field in Books collection
-          as: "bookInfo", // Alias for joined book data
+          from: "books", 
+          localField: "bookId", 
+          foreignField: "_id", 
+          as: "bookInfo", 
         },
       },
-      // Unwind user and book arrays (since $lookup returns an array)
       {
         $unwind: {
           path: "$userInfo",
-          preserveNullAndEmptyArrays: true, // Keep null values if no matching user
+          preserveNullAndEmptyArrays: true, 
         },
       },
       {
         $unwind: {
           path: "$bookInfo",
-          preserveNullAndEmptyArrays: true, // Keep null values if no matching book
+          preserveNullAndEmptyArrays: true,
         },
       },
-      // Select only required fields
       {
         $project: {
           _id: 1,
@@ -147,7 +135,6 @@ export const borrowedBooks = async (req, res) => {
           dueDate: 1,
         },
       },
-      // Sort results by borrow date (most recent first)
       { $sort: { borrowDate: -1 } },
     ]);
 
