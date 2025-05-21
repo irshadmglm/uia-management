@@ -24,7 +24,8 @@
     "google-spreadsheet": "^4.1.4",
     "googleapis": "^148.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.10.1"
+    "mongoose": "^8.10.1",
+    "uia-management": "file:.."
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
