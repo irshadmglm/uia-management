@@ -13,14 +13,16 @@ import {
   FiCalendar,
   FiUserCheck,
   FiAlertCircle,
-  FiLoader
+  FiLoader,
+  FiList
 } from "react-icons/fi"
 import { axiosInstance } from "../../lib/axios"
 import { useAdminStore } from "../../store/useAdminMngStore"
 import { useStudentStore } from "../../store/studentStore"
 import Header from "../../components/Header"
+import { ListChecks } from "lucide-react"
+import TimetableAssignment from "./TimetableAsigment"
 
-// Reusable components for better code organization
 const StatusBadge = ({ isAssigned, label }) => (
   <span
     className={`ml-2 px-2 py-0.5 text-xs font-medium rounded-full transition-colors duration-300 ${
@@ -105,9 +107,7 @@ const EmptyState = ({ searchTerm }) => (
     <p className="text-gray-600 dark:text-gray-400 mb-6">
       {searchTerm ? "Try a different search term" : "Add items to start making assignments"}
     </p>
-    <button className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors duration-200">
-      {searchTerm ? "Clear Search" : "Add New"}
-    </button>
+  
   </div>
 )
 
@@ -212,10 +212,14 @@ function SubjectAssignment({ batches, teachers }) {
       [subjectId]: !prev[subjectId],
     }))
   }
-
-  const filteredSubjects = subjects.filter((subject) => 
-    subject.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  let filteredSubjects = [];
+  if(subjects){
+    console.log(subjects);
+    
+     filteredSubjects =  subjects.filter((subject) => 
+      subject.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -657,7 +661,8 @@ function TeacherAssignmentPage() {
     { id: "subjects", label: "Subject Assignment", icon: FiBook },
     { id: "classTeacher", label: "Batch Teachers", icon: FiUsers },
     { id: "currentSemester", label: "Current Semester", icon: FiCalendar },
-    { id: "classLeader", label: "Class Leaders", icon: FiUserCheck }
+    { id: "classLeader", label: "Class Leaders", icon: FiUserCheck },
+    { id: "timeTable", label: "Time Table", icon: FiList }
   ]
 
   return (
@@ -700,9 +705,9 @@ function TeacherAssignmentPage() {
           <BatchTeacherAssignment {...props} />
         ) : activeTab === "currentSemester" ? (
           <SemesterAssignment {...props} />
-        ) : (
-          <ClassLeaderAssignment {...props} />
-        )}
+        ) : activeTab === "classLeader" ? (
+          <ClassLeaderAssignment {...props}  />
+        ) : <TimetableAssignment /> }
       </div>
     </div>
   )

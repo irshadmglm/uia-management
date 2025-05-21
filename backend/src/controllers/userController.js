@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import Staff from "../models/staff.model.js";
 import Student from "../models/student.model.js";
+import Batch from "../models/batch.model.js";
 
 export const addUser = async (req, res) => {
   try {
@@ -82,6 +83,11 @@ export const editStudent = async (req, res) => {
      updateData.password = hashedPassword;
   }else{
     delete updateData.password;
+  }
+
+  if(updateData.batchName){
+    const batchId = await  Batch.findOne({ batchName :updateData.batchName}).batchId;
+    updateData.batchId = batchId;
   }
 
     const student = await Student.findByIdAndUpdate(studentId, updateData, {

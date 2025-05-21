@@ -1,13 +1,18 @@
 import mongoose from "mongoose";
 
+const slotSchema = new mongoose.Schema(
+  {},
+  { strict: false, _id: false } // Allow dynamic keys like batch names
+);
+
 const timetableSchema = new mongoose.Schema({
   grid: {
-    Monday: [[String]],
-    Tuesday: [[String]],
-    Wednesday: [[String]],
-    Thursday: [[String]],
-    Friday: [[String]],
-    Saturday: [[String]],
+    Monday: [slotSchema],
+    Tuesday: [slotSchema],
+    Wednesday: [slotSchema],
+    Thursday: [slotSchema],
+    Friday: [slotSchema],
+    Saturday: [slotSchema],
   },
 });
 

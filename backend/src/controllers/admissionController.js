@@ -4,12 +4,11 @@ import Student from "../models/student.model.js";
 import bcrypt from "bcryptjs";
 import Batch from "../models/batch.model.js";
 
-
 export const newAdmission = asyncHandler(async (req, res) => {
-  const { studentName, phoneNumber, password, selectedBatch, gender, dateOfBirth, profileImage } = req.body;
+  const { name, cicNumber, phoneNumber, email, whatsupNumber,parentNumber, address, password, batchName,  dateOfBirth, profileImage } = req.body;
 
-  if ( !studentName || !phoneNumber || !password || !selectedBatch || !gender || !dateOfBirth ) {
-    return res.status(400).json({ message: "All fields are required" });
+  if ( !name || !cicNumber  || !password || !batchName ) {
+    return res.status(400).json({ message: "name, cicNumber, batchName, password are required" });
   };
 
   if (password.length < 4 ) {
@@ -18,18 +17,27 @@ export const newAdmission = asyncHandler(async (req, res) => {
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
+console.log("batch", batchName);
 
-  const classId = await Batch.findOne({ name: selectedBatch }).select("_id");
+    const batch = await Batch.findOne({ name: batchName});
 
-  const newAdmission = new RegisteredUser({
-    studentName,
-    phoneNumber,
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    const newAdmission = new Student ({
+    name,
+    cicNumber,
+    phoneNumber, 
+    email, 
+    whatsupNumber,
+    parentNumber, 
+    address,
+    role: "student",
     password: hashedPassword,
-    selectedBatch,
-    classId,
-    gender,
+    batchName,
+    batchId: batch._id,
     dateOfBirth,
-    profileImage,
   });
 
   if(newAdmission){
@@ -37,13 +45,10 @@ export const newAdmission = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Form submitted successfully. We will contact you soon.",
+      message: "New Student added successfully",
       student: newAdmission,
     });
   }
-   
-
-  
 });
 
 
@@ -69,11 +74,11 @@ export const selected = asyncHandler(async (req, res) => {
       return res.status(404).json({ success: false, message: "Student not found" });
     }
   
-    const { studentName, phoneNumber, password, selectedBatch, classId, gender, dateOfBirth, profileImage } = registeredStudent;
+    const { name, phoneNumber, password, batchName, classId, gender, dateOfBirth, profileImage } = registeredStudent;
   
     // Count students in the same class & gender
     let count = await Student.countDocuments({
-      selectedBatch,
+      batchName,
       gender
     });
   
@@ -87,16 +92,16 @@ export const selected = asyncHandler(async (req, res) => {
       classMap[c.name] = alph[i] || ""; 
     });
 
-    const classPrefix = classMap[selectedBatch] || "X"; 
+    const classPrefix = classMap[batchName] || "X"; 
     const genderPrefix = gender === "Male" ? "B" : "G";
     const studentId = `${classPrefix}${genderPrefix}${rollNumber}`;
 
   
     const newStudent = new Student({
-      studentName,
+      name,
       phoneNumber,
       password,
-      selectedBatch,
+      batchName,
       classId,
       gender,
       dateOfBirth,

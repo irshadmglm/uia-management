@@ -19,7 +19,8 @@ export const useRegisterdStudentStore = create((set, get) => ({
         toast.success(response.data.message);
     
       } catch (error) {
-        console.error(error.response?.data?.message || "An error occurred");
+        console.log(error);
+        
         toast.error(error.response?.data?.message || "An error occurred");
       } finally {
         set({ isLoading: false });

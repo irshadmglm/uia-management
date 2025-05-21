@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pencil, Trash, Eye, Search } from "lucide-react";
+import { Pencil, Trash, Eye, Search, PlusCircleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -21,7 +21,15 @@ const StudentTable = ({ students, onDelete }) => {
   return (
     <div className="mt-[88px] px-4 pt-2">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Student List</h2>
+      {authUser.role === "admin" && (
+        <Link
+          to="/dashboard/admin/admission-form"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-sky-500 hover:bg-green-700 rounded-md transition"
+        >
+          <PlusCircleIcon size={16} />
+          Add Student
+        </Link>
+      )}
         <div className="relative ">
           <input
             type="text"

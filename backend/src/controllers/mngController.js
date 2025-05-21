@@ -8,19 +8,28 @@ import Semester from "../models/semester.model.js";
 export const getTimetable = async (req, res) => {
   try {
     let timetable = await Timetable.findOne();
+    let batch = await Batch.find()
+    console.log(batch);
+    
     if (!timetable) {
-      timetable = new Timetable({
-        grid: {
-          Monday: Array.from({ length: 3 }, () => Array(5).fill(null)),
-          Tuesday: Array.from({ length: 3 }, () => Array(5).fill(null)),
-          Wednesday: Array.from({ length: 3 }, () => Array(5).fill(null)),
-          Thursday: Array.from({ length: 3 }, () => Array(5).fill(null)),
-          Friday: Array.from({ length: 3 }, () => Array(5).fill(null)),
-          Saturday: Array.from({ length: 3 }, () => Array(5).fill(null)),
-        },
+      const weekdays = [ "Saturday","Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+      const periodCount = 3;
+      
+      const createEmptySlot = () =>
+        Object.fromEntries(batch.map((b) => [b.name, null]));
+      
+      const grid = {};
+      
+      weekdays.forEach((day) => {
+        grid[day] = Array.from({ length: periodCount }, createEmptySlot);
       });
-      await timetable.save();
+      console.log(grid);
+      
+     timetable = new Timetable({ grid });
+      console.log(timetable);
+      
     }
+
     res.json(timetable);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
@@ -198,7 +207,7 @@ export const getSubjects = async (req,res) => {
     const subjects = await Subject.find({semester: semesterId}); 
 
     if (subjects.length === 0) {
-      return res.status(200).json({ message: "No subjects found for this semester", subjects: [] });
+      return res.status(200).json( subjects);
     }
 
     res.status(200).json(subjects); 

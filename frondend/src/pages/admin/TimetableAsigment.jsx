@@ -3,13 +3,12 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useStaffStore } from "../../store/useStaffStore";
 import { axiosInstance } from "../../lib/axios.js";
+import InputField from "../../components/InputField.jsx";
+import { SquareActivityIcon } from "lucide-react";
+import { useAdminStore } from "../../store/useAdminMngStore.js";
 
-const periods = 3;
-const batches = 5;
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const weekdays = [ "Saturday","Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];;
 
-const createDefaultDayGrid = () =>
-  Array.from({ length: periods }, () => Array(batches).fill(null));
 
 const DraggableTeacher = ({ name }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -59,25 +58,27 @@ const DroppableBox = ({ onDrop, assignedTeacher }) => {
 
 const TimetableAssignment = () => {
   const { getTeachers, teachers } = useStaffStore();
+  const { getBatches, batches } = useAdminStore();
   const [day, setDay] = useState("Monday");
   const [grid, setGrid] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [periods] = useState(3); // fixed to 3 as per the provided structure
 
   useEffect(() => {
     getTeachers();
+    getBatches();
     fetchTimetable();
   }, []);
 
   useEffect(() => {
-    setGrid((prevGrid) => {
-      console.log("Current grid for", day, ":", prevGrid[day]);
-      if (!prevGrid[day]) {
-        return { ...prevGrid, [day]: createDefaultDayGrid() };
-      }
-      return prevGrid;
-    });
-  }, [day]);
+    if (!grid[day]) {
+      const defaultDayGrid = Array.from({ length: periods }, () =>
+        Object.fromEntries(batches.map((b) => [b.name, null]))
+      );
+      setGrid((prev) => ({ ...prev, [day]: defaultDayGrid }));
+    }
+  }, [day, batches]);
 
   const fetchTimetable = async () => {
     try {
@@ -87,7 +88,7 @@ const TimetableAssignment = () => {
       }
     } catch (error) {
       console.error("Error fetching timetable:", error);
-      setError("Failed to fetch timetable. Please try again later.");
+      setError("Failed to fetch timetable.");
     } finally {
       setIsLoading(false);
     }
@@ -101,38 +102,38 @@ const TimetableAssignment = () => {
     }
   };
 
-  const handleDrop = (targetDay, row, col, teacher) => {
+  const handleDrop = (targetDay, periodIndex, batchName, teacher) => {
     setGrid((prevGrid) => {
-      const dayTable = prevGrid[targetDay] || createDefaultDayGrid();
-      
-      const isAlreadyAssigned = dayTable[row].includes(teacher);
-      if (isAlreadyAssigned) {
-        alert(`${teacher} is already assigned in this period!`);
-        return prevGrid; 
+      const dayGrid = [...(prevGrid[targetDay] || [])];
+      const periodRow = { ...dayGrid[periodIndex] };
+
+      // Check if teacher already assigned in this period
+      if (Object.values(periodRow).includes(teacher)) {
+        alert(`${teacher} is already assigned in this period.`);
+        return prevGrid;
       }
-  
-      const newGrid = dayTable.map((r) => [...r]);
-  
-      newGrid[row][col] = teacher;
-  
-      const updatedGrid = { ...prevGrid, [targetDay]: newGrid };
+
+      periodRow[batchName] = teacher;
+      dayGrid[periodIndex] = periodRow;
+
+      const updatedGrid = { ...prevGrid, [targetDay]: dayGrid };
       saveTimetable(updatedGrid);
       return updatedGrid;
     });
   };
-  
 
   if (isLoading) return <p>Loading timetable...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
-  const currentGrid = grid[day] || createDefaultDayGrid();
+  const currentGrid = grid[day] || [];
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="p-6 ml-10 mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Teacher Period Assignment</h1>
+        <h1 className="text-2xl font-bold mb-4">Period Assignment</h1>
+        
         <div className="flex gap-4 ml-32 p-3">
-        {weekdays.map((weekday) => (
+          {weekdays.map((weekday) => (
             <button
               key={weekday}
               onClick={() => setDay(weekday)}
@@ -144,42 +145,39 @@ const TimetableAssignment = () => {
             </button>
           ))}
         </div>
+
         <div className="flex gap-6">
+          {/* Teacher List */}
           <div className="flex flex-col gap-3 p-4 bg-gray-100 rounded-md shadow-md">
             <h2 className="font-semibold mb-2">Teachers</h2>
-            {teachers.length > 0 ? (
-              teachers.map((teacher) => (
-                <DraggableTeacher key={teacher._id} name={teacher.name} />
-              ))
-            ) : (
-              <p>No teachers available.</p>
-            )}
+            {teachers.map((teacher) => (
+              <DraggableTeacher key={teacher._id} name={teacher.name} />
+            ))}
           </div>
+
+          {/* Timetable Grid */}
           <div className="overflow-auto">
             <table className="border-collapse border border-gray-300">
               <thead>
                 <tr>
                   <th className="border border-gray-300 p-2">Period</th>
-                  {Array.from({ length: batches }).map((_, i) => (
-                    <th key={i} className="border border-gray-300 p-2">
-                      Batch {i + 1}
+                  {batches.map((batch) => (
+                    <th key={batch.name} className="border border-gray-300 p-2">
+                      {batch.name}
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {currentGrid.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    <td className="border border-gray-300 p-2 font-semibold">
-                      Period {rowIndex + 1}
-                    </td>
-                    {row.map((teacher, colIndex) => (
-                      <td key={colIndex} className="border border-gray-300 p-2">
+                {currentGrid.map((periodRow, periodIndex) => (
+                  <tr key={periodIndex}>
+                    <td className="border border-gray-300 p-2 text-center font-bold">{periodIndex + 1}</td>
+                    {batches.map((batch) => (
+                      <td key={batch.name} className="border border-gray-300 p-2">
                         <DroppableBox
-                          key={`${day}-${rowIndex}-${colIndex}`}
-                          assignedTeacher={teacher}
-                          onDrop={(name) =>
-                            handleDrop(day, rowIndex, colIndex, name)
+                          assignedTeacher={periodRow[batch.name]}
+                          onDrop={(teacher) =>
+                            handleDrop(day, periodIndex, batch.name, teacher)
                           }
                         />
                       </td>
@@ -194,5 +192,6 @@ const TimetableAssignment = () => {
     </DndProvider>
   );
 };
+
 
 export default TimetableAssignment;

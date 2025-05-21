@@ -83,7 +83,7 @@ const AdmissionForm = () => {
 
   const validateForm = () => {
     if (!formData.name.trim()) return toast.error("Student Name is required");
-    if (!formData.phoneNumber) return toast.error("Phone Number is required");
+    if (!formData.cicNumber) return toast.error("Cic Number is required");
     if (!formData.batchName) return toast.error("Batch is required");
     return true;
   };
