@@ -25,7 +25,7 @@ app.use(cors({
     "http://localhost:5173",
     "http://192.168.1.7:5173",
     "https://uia-management.vercel.app",
-    "https://uia-management-kun388ug0-irshads-projects-4e38ea08.vercel.app"
+    "https://uia-app.vercel.app"
   ],
   credentials: true,
 }));
