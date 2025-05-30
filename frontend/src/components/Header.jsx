@@ -1,162 +1,224 @@
-import { Menu, Sun, Moon, ArrowLeft, ArrowRight, X, LogOut, User, Settings } from "lucide-react";
-import { useThemeStore } from "../store/useThemeStore";
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useAuthStore } from "../store/useAuthStore";
-import SocialIcons from "./SociaIcons";
+"use client"
+
+import { Menu, Sun, Moon, X, LogOut, User, Settings, Bell, Home, ChevronRight } from "lucide-react"
+import { useThemeStore } from "../store/useThemeStore"
+import { Link, useNavigate } from "react-router-dom"
+import { useState, useEffect, useRef } from "react"
+import { useAuthStore } from "../store/useAuthStore"
 
 const Header = ({ page, user }) => {
-  const { theme, toggleTheme } = useThemeStore();
-  const { logout, authUser } = useAuthStore();
-  const navigate = useNavigate();
+  const { theme, toggleTheme } = useThemeStore()
+  const { logout, authUser } = useAuthStore()
+  const navigate = useNavigate()
 
-  const [canGoBack, setCanGoBack] = useState(false);
-  const [canGoForward, setCanGoForward] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const sidebarRef = useRef(null)
 
+  // Close sidebar on escape key
   useEffect(() => {
-    const checkNavigation = () => {
-      setCanGoBack(window.history.length > 1);
-      setCanGoForward(window.history.state !== null);
-    };
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsSidebarOpen(false)
+      }
+    }
 
-    checkNavigation();
-    window.addEventListener("popstate", checkNavigation);
+    document.addEventListener("keydown", handleEscape)
     return () => {
-      window.removeEventListener("popstate", checkNavigation);
-    };
-  }, []);
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    logout()
+    setIsSidebarOpen(false)
+  }
+
+  const navigationItems = [
+    { name: "Home", href: "/", icon: Home },
+    // { name: "Profile", href: "/profile", icon: User },
+    // { name: "Settings", href: "/settings", icon: Settings },
+  ]
 
   return (
     <>
-      <header className="fixed top-0 w-full bg-white dark:bg-gray-900 shadow-md p-4 flex justify-between items-center z-10">
-        {/* Left Side: Sidebar & Navigation */}
-        <div className="flex items-center gap-4">
-          <Menu
-            className="text-3xl cursor-pointer hover:text-blue-500 transition-colors duration-200"
-            onClick={() => setIsSidebarOpen(true)}
-          />
-      
-        </div>
-
-        {/* Page Title */}
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-white">{page}</h1>
-
-        {/* Right Side: Theme Toggle & Profile Dropdown */}
-        <div className="flex items-center gap-4">
-      
-
-
-        <div className="relative">
-  {/* Profile Dropdown Trigger */}
-  <button
-    className="flex items-center gap-3 p-2 rounded-xl bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
-    onClick={() => setDropdownOpen(!dropdownOpen)}
-    aria-haspopup="true"
-    aria-expanded={dropdownOpen}
-  >
-    <img
-      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYzrKwzB9qf6z1LUGt9CMjPzC5zBy87WL6Fw&s"
-      alt="User profile"
-      className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700 object-cover"
-    />
-    <span
-      className="hidden sm:inline text-sm font-medium text-gray-900 dark:text-gray-100 
-                max-w-[100px] truncate whitespace-nowrap overflow-hidden"
-    >
-      {authUser?.name || "User"}
-    </span>
-
-  </button>
-
-  {/* Dropdown Content */}
-  {dropdownOpen && (
-    <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-xl overflow-hidden z-50 animate-fadeInUp">
-      <div className="py-2">
-        {/* Profile Section */}
-       {authUser && ( <Link
-          to={`/dashboard/${authUser.role}/profile`}
-          className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
-        >
-          <User className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            My Profile
-          </span>
-        </Link>)}
-
-        {/* Theme Toggle */}
-        <div className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            Appearance
-          </span>
+      {/* Minimal Header */}
+      <header className="fixed top-0 w-full bg-white/95 dark:bg-gray-900/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-40">
+        <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
+          {/* Left Side - Sidebar Toggle */}
           <button
-            onClick={toggleTheme}
-            className="relative w-14 h-7 flex items-center bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"
-            aria-label="Toggle theme"
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-3 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            aria-label="Open sidebar"
           >
-            <div
-              className={`absolute w-6 h-6 bg-white dark:bg-gray-200 rounded-full shadow-sm transform transition-transform duration-300 ${
-                theme === "dark" ? "translate-x-7" : "translate-x-1"
-              }`}
-            >
-              {theme === "light" ? (
-                <Moon className="w-4 h-4 text-gray-700 m-1" />
-              ) : (
-                <Sun className="w-4 h-4 text-yellow-500 m-1" />
-              )}
-            </div>
+            <Menu className="w-6 h-6" />
           </button>
-        </div>
 
-        {/* Logout Action */}
-        <button
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
-        >
-          <LogOut className="w-5 h-5 text-red-600 dark:text-red-400" />
-          <span className="text-sm font-medium text-red-600 dark:text-red-400">
-            Sign Out
-          </span>
-        </button>
-      </div>
-    </div>
-  )}
-</div>
+          {/* Right Side - App Logo */}
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-sky-500 via-sky-800 to-sky-400 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">UIA</span>
+            </div>
+            <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
+            UIA ACADEMIC
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* Sidebar */}
+      {/* Enhanced Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white shadow-lg transform transition-transform duration-300 ease-in-out z-20 ${
+        ref={sidebarRef}
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <h2 className="text-lg font-bold">Menu</h2>
-          <X
-            className="cursor-pointer text-gray-400 hover:text-white transition-colors"
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br  from-sky-500 via-sky-800 to-sky-400 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">UIA</span>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">ACADEMIC</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Wafy cic</p>
+            </div>
+          </div>
+          <button
             onClick={() => setIsSidebarOpen(false)}
-          />
+            className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Close sidebar"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <nav className="p-4">
-          <Link to="/" className="block py-2 px-4 rounded hover:bg-gray-700 transition-colors">Home</Link>
-          <Link to="/profile" className="block py-2 px-4 rounded hover:bg-gray-700 transition-colors">Profile</Link>
-          <Link to="/settings" className="block py-2 px-4 rounded hover:bg-gray-700 transition-colors">Settings</Link>
-          {/* <SocialIcons /> */}
+
+        {/* User Profile Section */}
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <div className="relative">
+              <img
+                src={
+                  authUser?.avatar ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO-15oVSs246BVTRobf0Ye3gECp5_E3-OKUGgAD4N8HZgj8xa-PElzug6S6tW0sdlT1cY&usqp=CAU" ||
+                  "/placeholder.svg"
+                }
+                alt="Profile"
+                className="w-12 h-12 rounded-full object-cover ring-3 ring-blue-500/20"
+              />
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                {authUser?.name || "John Doe"}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {authUser?.email || "john@example.com"}
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                {authUser?.role || "Administrator"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 uppercase tracking-wider">
+            Quick Actions
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Notifications */}
+            <button className="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 group">
+              <div className="relative">
+                <Bell className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                  3
+                </span>
+              </div>
+              <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Notifications</span>
+            </button>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="flex flex-col items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200 group"
+            >
+              {theme === "light" ? (
+                <Moon className="w-6 h-6 text-purple-600 dark:text-purple-400 mb-2" />
+              ) : (
+                <Sun className="w-6 h-6 text-purple-600 dark:text-purple-400 mb-2" />
+              )}
+              <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
+                {theme === "light" ? "Dark Mode" : "Light Mode"}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 px-6 py-6 overflow-y-auto">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 uppercase tracking-wider">
+            Navigation
+          </h3>
+          <div className="space-y-2">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={() => setIsSidebarOpen(false)}
+                className="flex items-center justify-between px-4 py-3 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 group"
+              >
+                <div className="flex items-center space-x-3">
+                  <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
+                  <span className="font-medium group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-200">
+                    {item.name}
+                  </span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200" />
+              </Link>
+            ))}
+
+            {/* Profile Link */}
+            {authUser && (
+              <Link
+                to={`/dashboard/${authUser.role}/profile`}
+                onClick={() => setIsSidebarOpen(false)}
+                className="flex items-center justify-between px-4 py-3 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 group"
+              >
+                <div className="flex items-center space-x-3">
+                  <User className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
+                  <span className="font-medium group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-200">
+                    My Profile
+                  </span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200" />
+              </Link>
+            )}
+          </div>
         </nav>
+
+        {/* Sidebar Footer */}
+        <div className="p-6 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center space-x-3 px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-200 group"
+          >
+            <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+            <span className="font-medium">Sign Out</span>
+          </button>
+        </div>
       </div>
-        
+
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-10"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
           aria-hidden="true"
-        ></div>
+        />
       )}
     </>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
