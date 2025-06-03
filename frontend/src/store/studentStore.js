@@ -100,16 +100,38 @@ export const useStudentStore = create((set) => ({
 
     },
     
- editStudent: async (data, studentId) => {
-  try {
-    const response = await axiosInstance.put(`/users/student/edit/${studentId}`, data);
-    
-    toast.success("Account updated successfully");
-  } catch (error) {
-    console.error(error.response?.data?.message || "An error occurred");
-    toast.error(error.response?.data?.message || "An error occurred");
-  }
-},
+    editStudent: async (data, studentId) => {
+      try {
+        const response = await axiosInstance.put(`/users/student/edit/${studentId}`, data);
+        
+        toast.success("Account updated successfully");
+      } catch (error) {
+        console.error(error.response?.data?.message || "An error occurred");
+        toast.error(error.response?.data?.message || "An error occurred");
+      }
+    },
+
+    deleteStudent: async (studentId) => {
+      try {
+        const response = await axiosInstance.delete(`/users/student/delete/${studentId}`);
+        if (response.status === 200) {
+          toast.success("Student deleted successfully");
+
+          set((state) => ({
+            students: state.students.filter(student => student._id !== studentId)
+          }));
+
+          return true;
+        } else {
+          toast.error("Failed to delete the student");
+          return false;
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred while deleting the student");
+        return false;
+      }
+    },
 
 
     getCurruntSemSubjects: async () => {

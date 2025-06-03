@@ -22,8 +22,15 @@ const PrivateRoutes = () => {
       )}
       <Route
         path="*"
-        element={<Navigate to={authUser.role.toLowerCase()} replace />}
+        element={
+          authUser?.role ? (
+            <Navigate to={authUser.role.toLowerCase()} replace />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
       />
+
     </Routes>
   );
 };

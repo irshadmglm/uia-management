@@ -6,6 +6,7 @@ import { useAuthStore } from "./useAuthStore.js";
 
 export const useStaffStore = create((set, get) => ({
   teachers: [],
+  teacher: {},
   isLoading: false,
   batches: [],
   batch: {},
@@ -23,6 +24,51 @@ export const useStaffStore = create((set, get) => ({
     }finally{
     set({isLoading: false});
 
+    }
+  },
+
+  getTeacher: async (teacherId) => {
+    set({ isLoading: true }); 
+   try {
+    const res = await axiosInstance.get(`/users/teacher/${teacherId}`)
+    set({teacher: res.data})
+    
+   } catch (error) {
+    console.error("Error fetching teacher:", error);
+  } finally {
+    set({ isLoading: false });
+  }
+
+  },
+  updateTeacher: async (teacherId, details) => {
+    set({ isLoading: true });
+    try {
+      await axiosInstance.put(`/users/teacher/update/${teacherId}`, details); 
+  
+      set((state) => ({
+        teachers: state.teachers.map((teacher) =>
+          teacher._id === teacherId ? { ...teacher, ...details } : teacher
+        ),
+      }));
+    } catch (error) {
+      console.log("Error in updateTeacher:", error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  
+  deleteTeacher: async (teacherId) => {
+    set({ isLoading: true });
+    try {
+      await axiosInstance.delete(`/users/teacher/delete/${teacherId}`); 
+  
+      set((state) => ({
+        teachers: state.teachers.filter((teacher) => teacher._id !== teacherId),
+      }));
+    } catch (error) {
+      console.log("Error in deleteTeacher:", error);
+    } finally {
+      set({ isLoading: false });
     }
   },
 

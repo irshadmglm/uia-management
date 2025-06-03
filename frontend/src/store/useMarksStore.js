@@ -65,7 +65,7 @@ export const useMarksStore = create((set, get) => ({
         set({ isLoading: true });
     
         try {
-            const res = await axiosInstance.get('/mng/curriculum'); 
+            const res = await axiosInstance.get('/mng/semester'); 
     
             set({ semesters: res.data });
         } catch (error) {

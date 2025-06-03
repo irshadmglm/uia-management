@@ -26,7 +26,7 @@ export const useAdminStore = create((set, get) => ({
   getSemesters: async () => {
     set({isLoading: true});
     try {
-        const res = await axiosInstance.get("/mng/curriculum");
+        const res = await axiosInstance.get("/mng/semester");
         
         set({semesters: res.data});
     } catch (error) {
@@ -37,6 +37,94 @@ export const useAdminStore = create((set, get) => ({
     }
   },
 
+  deleteSemester: async (semesterId) => {
+    try {
+      const res = await axiosInstance.delete(`/mng/semester/delete/${semesterId}`);
+      if (res.status === 200) {
+        toast.success("Semester deleted successfully");
+        set((state) => ({
+          semesters: state.semesters.filter(semester => semester._id !== semesterId)
+        }));
+      } else {
+        toast.error("Failed to delete the Semester");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while deleting Semester");
+      return false;
+    }
+  },
+  
+  updateSemester: async (semesterId, name) => {
+    try {
+      const res = await axiosInstance.put(`/mng/semester/update/${semesterId}`, {name});
+      if (res.status === 200) {
+        toast.success("Semester updated successfully");
+        set((state) => ({
+          semesters: state.semesters.map((semester) =>
+            semester._id === semesterId
+              ? { ...semester, name }
+              : semester
+          )
+        }));
+        
+      } else {
+        toast.error("Failed to update Semester");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while updating the Semester");
+      return false;
+    }
+  },
+  
+  deleteBatch: async (batchId) => {
+    try {
+      const res = await axiosInstance.delete(`/mng/batch/delete/${batchId}`);
+      if (res.status === 200) {
+        toast.success("Batch deleted successfully");
+        set((state) => ({
+          batches: state.batches.filter(batch => batch._id !== batchId)
+        }));
+      } else {
+        toast.error("Failed to delete the Batch");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while deleting the Batch");
+      return false;
+    }
+  },
+  
+  updateBatch: async (batchId, name) => {
+    try {
+      console.log(batchId, name);
+      
+      const res = await axiosInstance.put(`/mng/batch/update/${batchId}`, {name});
+      if (res.status === 200) {
+        toast.success("Batch updated successfully");
+        set((state) => ({
+          batches: state.batches.map((batch) =>
+            batch._id === batchId
+              ? { ...batch, name }
+              : batch
+          )
+        }));
+        
+      } else {
+        toast.error("Failed to update the Batch");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while updating the Batch");
+      return false;
+    }
+  },
+  
 
   getSubjects: async (semesterId) => {
     console.log(semesterId);
@@ -53,6 +141,76 @@ export const useAdminStore = create((set, get) => ({
 
     }
   },
+
+  addSubject: async (semesterId, details) => {
+    try {
+      const response = await axiosInstance.post(`mng/subjects/${semesterId}`, details);
+  
+      if (response.status === 201 || response.status === 200) {
+        toast.success("Subject added successfully");
+  
+        const newSubject = response.data.newSubject 
+  
+        set((state) => ({
+          subjects: [...state.subjects, newSubject]
+        }));
+  
+        return true;
+      } else {
+        toast.error("Failed to add subject");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error adding subject:", error);
+      toast.error("An error occurred while adding the subject");
+      return false;
+    }
+  },
+  
+  deleteSubject: async (subjectId) => {
+    try {
+      const res = await axiosInstance.delete(`/mng/subject/delete/${subjectId}`);
+      if (res.status === 200) {
+        toast.success("Subject deleted successfully");
+        set((state) => ({
+          subjects: state.subjects.filter(subject => subject._id !== subjectId )
+        }));
+      } else {
+        toast.error("Failed to delete the Subject");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while deleting the Subject");
+      return false;
+    }
+  },
+  
+  updateSubject: async (subjectId, details) => {
+    try {
+      const res = await axiosInstance.put(`/mng/subject/update/${subjectId}`, details);
+      if (res.status === 200) {
+        toast.success("Subject updated successfully");
+  
+        set((state) => ({
+          subjects: state.subjects.map((subject) =>
+            subject._id === subjectId
+              ? { ...subject, ...details }
+              : subject
+          )
+        }));
+  
+      } else {
+        toast.error("Failed to update the subject");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while updating the Subject");
+      return false;
+    }
+  },
+  
   getBatches: async () => {
     set({isLoading: true});
     try {
@@ -94,8 +252,14 @@ export const useAdminStore = create((set, get) => ({
   updateSelectedTab: async (selectedTab, newItemName) => {
     set({ isLoading: true });
     try {
+      let endpoint;
       
-      const res = await axiosInstance.post(`/mng/${selectedTab}`, {
+       if (selectedTab === "semester Subjects"){
+        endpoint = "semester"
+      }else if (selectedTab === "batches"){
+        endpoint = "batches"
+      }
+      const res = await axiosInstance.post(`/mng/${endpoint}`, {
         name: newItemName.trim(),
       });
 
@@ -104,9 +268,9 @@ export const useAdminStore = create((set, get) => ({
 
       if (selectedTab === "batches") {
         set({ batches: [...batches, res.data.newBatch] });
-      } else if (selectedTab === "semesters") {
+      } else if (selectedTab === "current Semester") {
         set({ semesters: [...semesters, res.data.newSemesters] });
-      } else if (selectedTab === "subjects") {
+      } else if (selectedTab === "semester Subjects") {
         set({ subjects: [...subjects, res.data.newSubject] });
       } else if (selectedTab === "teachers") {
         set({ teachers: [...teachers, res.data.newTeacher] }); 

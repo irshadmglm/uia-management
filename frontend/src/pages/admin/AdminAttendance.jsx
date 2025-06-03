@@ -43,7 +43,7 @@ const AdminAttendance = () => {
       {/* TOP SECTION */}
       {selectedBatch && (
         <div className="w-full max-w-4xl p-6 shadow-xl rounded-3xl bg-gray-50 dark:bg-gray-800 text-center">
-          <h2 className="text-2xl font-bold">{selectedBatch.name}nth Batch</h2>
+          <h2 className="text-2xl font-bold">{selectedBatch.name}th Batch</h2>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             {teachers
                 .filter((t) => t._id === selectedBatch.classTeacher)

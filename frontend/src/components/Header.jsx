@@ -58,8 +58,8 @@ const Header = ({ page, user }) => {
             <div className="w-10 h-10 bg-gradient-to-br from-sky-500 via-sky-800 to-sky-400 rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-lg">UIA</span>
             </div>
-            <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
-            UIA ACADEMIC
+            <span className="hidden xs:block text-base sm:text-xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
+            UIA ACADEMICS
             </span>
           </div>
         </div>
@@ -68,9 +68,10 @@ const Header = ({ page, user }) => {
       {/* Enhanced Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-all duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
+        
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
@@ -79,7 +80,7 @@ const Header = ({ page, user }) => {
               <span className="text-white font-bold text-lg">UIA</span>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">ACADEMIC</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">ACADEMICS</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">Wafy cic</p>
             </div>
           </div>
@@ -156,7 +157,7 @@ const Header = ({ page, user }) => {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 px-6 py-6 overflow-y-auto">
+        <nav className="flex-1 px-6 py-6 overflow-y-auto max-h-[calc(100vh-320px)] sm:max-h-[calc(100vh-280px)]">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 uppercase tracking-wider">
             Navigation
           </h3>
@@ -211,12 +212,12 @@ const Header = ({ page, user }) => {
 
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
-          onClick={() => setIsSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+  <div
+    className="fixed inset-0 bg-black bg-opacity-40 z-40"
+    onClick={() => setIsSidebarOpen(false)}
+  ></div>
+)}
+
     </>
   )
 }

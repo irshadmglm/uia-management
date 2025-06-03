@@ -658,9 +658,8 @@ function TeacherAssignmentPage() {
   }, [getBatches, getSemesters, getTeachers, getStudents])
 
   const tabs = [
-    { id: "subjects", label: "Subject Assignment", icon: FiBook },
-    { id: "classTeacher", label: "Batch Teachers", icon: FiUsers },
-    { id: "currentSemester", label: "Current Semester", icon: FiCalendar },
+    { id: "subjects", label: "Assign Subject", icon: FiBook },
+    { id: "classTeacher", label: "Class Mentors", icon: FiUsers },
     { id: "classLeader", label: "Class Leaders", icon: FiUserCheck },
     { id: "timeTable", label: "Time Table", icon: FiList }
   ]

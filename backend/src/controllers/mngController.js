@@ -86,6 +86,44 @@ export const postSemester = async (req, res) => {
   }
 }
 
+export const deleteSemester = async (req, res) => {
+  try {
+    const { semesterId } = req.params;
+
+    const deletedSemester = await Semester.findByIdAndDelete(semesterId);
+    if (!deletedSemester) {
+      return res.status(404).json({ message: "Semester not found" });
+    }
+
+    res.status(200).json({ message: "Semester deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting Semester:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateSemester = async (req, res) => {
+  try {
+    const { semesterId } = req.params;
+    const { name } = req.body;
+
+    const updatedSemester = await Semester.findByIdAndUpdate(
+      semesterId,
+      { name },
+      { new: true }
+    );
+
+    if (!updatedSemester) {
+      return res.status(404).json({ message: "Semester not found" });
+    }
+
+    res.status(200).json({ message: "Semester updated successfully", updatedSemester });
+  } catch (error) {
+    console.error("Error updating Semester:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
 export const getBatches = async (req, res) => {
   try {
     const batches = await Batch.find().sort({createdAt: 1}); 
@@ -94,6 +132,47 @@ export const getBatches = async (req, res) => {
 
   } catch (error) {
     console.error("Error fetching batches:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteBatch = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+
+    const deletedBatch = await Batch.findByIdAndDelete(batchId);
+    if (!deletedBatch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    res.status(200).json({ message: "Batch deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting Batch:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateBatch = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+    const { name } = req.body;
+    console.log("name:",name);
+    
+    const updatedBatch = await Batch.findByIdAndUpdate(
+      batchId,
+      { name },
+      { new: true, runValidators: true }
+    );
+    
+console.log("update",updatedBatch);
+
+    if (!updatedBatch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    res.status(200).json({ message: "Batch updated successfully", updatedBatch });
+  } catch (error) {
+    console.error("Error updating Batch:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -247,6 +326,58 @@ export const postSubject = async (req, res) => {
     res.status(201).json({ message: "Subject created successfully", newSubject });
   } catch (error) {
     console.error("Error creating subject:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const deleteSubject = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+
+    const deletedSubject = await Subject.findByIdAndDelete(subjectId);
+    if (!deletedSubject) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    await Semester.findOneAndUpdate(
+      { subjects: subjectId },
+      { $pull: { subjects: subjectId } },
+      { new: true }
+    );
+    
+
+    res.status(200).json({ message: "Subject deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting Subject:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export const updateSubject = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+    const { name, mark, CEmark } = req.body;
+    const updates = {};
+    if (name !== undefined) updates.name = name;
+    if (mark !== undefined) updates.mark = mark;
+    if (CEmark !== undefined) updates.CEmark = CEmark;
+
+    const updatedSubject = await Subject.findByIdAndUpdate(subjectId, updates, {
+      new: true,
+      runValidators: true
+    });
+
+    
+console.log("update",updatedSubject);
+
+    if (!updatedSubject) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    res.status(200).json({ message: "Subject updated successfully", updatedSubject });
+  } catch (error) {
+    console.error("Error updating Subject:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

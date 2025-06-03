@@ -19,6 +19,8 @@ const SHEET_ID = '1rNnVoeYyt9OyeJe39o0Tyiucn-NUkEf1RkqZ6ZyHwxU';
 
 export const signup = async (req, res) => {
   const { name, userName, phoneNumber, password, role } = req.body;
+  console.log(req.body);
+  
   try {
     if (!name || !userName || !phoneNumber || !password || !role ) {
       return res.status(400).json({ message: "All fields are required" });

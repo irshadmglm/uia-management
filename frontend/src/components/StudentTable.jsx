@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Pencil, Trash, Eye, Search, PlusCircleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
+import { useStudentStore } from "../store/studentStore";
 
-const StudentTable = ({ students, onDelete }) => {
+const StudentTable = ({ students }) => {
     const { authUser } = useAuthStore();
+    const {deleteStudent} = useStudentStore();
 
   const [expandedRow, setExpandedRow] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,6 +14,13 @@ const StudentTable = ({ students, onDelete }) => {
   const toggleDetails = (studentId) => {
     setExpandedRow((prev) => (prev === studentId ? null : studentId));
   };
+
+  const onDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this student?")) {
+      const success = await deleteStudent(id);
+    }
+  };
+  
 
   const filteredStudents = students.filter((student) =>
     [student.name, student.batchName, student.cicNumber]
@@ -98,21 +107,25 @@ const StudentTable = ({ students, onDelete }) => {
                       >
                         <Eye size={16} />
                       </button> */}
-                      {authUser.role === "admin" && 
-                      <Link
-                      to={`/dashboard/admin/std-edit/${student._id}`}
-                      className="text-sky-500 hover:text-green-700"
-                    >
-                      <Pencil size={16} />
-                    </Link>
-                      }
-                      
-                      {/* <button
+                    {authUser.role === "admin" && (
+                        <>
+                          <Link
+                            to={`/dashboard/admin/std-edit/${student._id}`}
+                            className="text-sky-500 hover:text-green-700"
+                          >
+                            <Pencil size={16} />
+                          </Link>
+                          <button
                         onClick={() => onDelete(student._id)}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash size={16} />
-                      </button> */}
+                      </button>
+                        </>
+                      )}
+
+                      
+                     
                     </td>
                   </tr>
                   {expandedRow === student._id && (

@@ -106,6 +106,37 @@ export const editStudent = async (req, res) => {
   }
 };
 
+export const editTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const updateData = req.body;
+    let hashedPassword;
+
+  if(updateData.password){
+    const salt = await bcrypt.genSalt(10);
+     hashedPassword = await bcrypt.hash(updateData.password, salt);
+     updateData.password = hashedPassword;
+  }else{
+    delete updateData.password;
+  }
+
+
+    const teacher = await Staff.findByIdAndUpdate(teacherId, updateData, {
+      new: true,
+      runValidators: true, 
+    });
+
+    if (!teacher) {
+      return res.status(404).json({ success: false, message: "Staff not found" });
+    }
+
+    res.status(200).json({ success: true, teacher });
+  } catch (error) {
+    console.error("Error updating Staff:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 
 export const getUser = async (req,res) => {
   try {
@@ -146,7 +177,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteStudent = async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -161,6 +192,7 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 export const getTeachers = async (req, res) => {
   
@@ -178,3 +210,31 @@ export const getTeachers = async (req, res) => {
     
   }
 }
+
+export const getTeacher = async (req, res) => {
+  try {
+    const {teacherId} = req.params;
+
+    const teacher = await Staff.findById(teacherId);
+
+    res.status(200).json(teacher);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+export const deleteTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    const deletedUser = await Staff.findByIdAndDelete(teacherId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ success: false, message: "Teacher not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Staff deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};

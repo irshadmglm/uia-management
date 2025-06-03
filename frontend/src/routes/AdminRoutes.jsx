@@ -41,10 +41,7 @@ const AdminRoutes = () => {
       <Route path="ir-mark" element={<IRMarkAdmin />} />
       <Route path="profile" element={<StaffProfile />} />
       <Route path="std-edit/:studentId" element={<AdmissionForm />} />
-
-
-      
-
+      <Route path="staff-edit/:teacherId" element={<SignupPage />} />
       <Route path="signup" element={<SignupPage />} />
 
       <Route path="*" element={<AdminHome />} />

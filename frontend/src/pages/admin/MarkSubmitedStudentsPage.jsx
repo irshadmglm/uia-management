@@ -43,7 +43,7 @@ const MarkSubmitedStudentsPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24">
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white font-oswald ml-2">
-            Submitted Students
+          Students' Mark List
           </h2>
           <div className="relative w-full sm:w-1/3">
             <input

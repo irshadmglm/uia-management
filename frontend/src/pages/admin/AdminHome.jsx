@@ -2,17 +2,19 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Header from "../../components/Header";
 import Card from "../../components/Card";
-import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash } from "lucide-react";
+import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal,  } from "lucide-react";
 
 const AdminHome = () => {
   const cards = [
-    { title: "Students", icon: Users, route: "/dashboard/admin/users" },
-    { title: "Assignment", icon: GraduationCap, route: "/dashboard/admin/teachers-Assign" },
-    { title: "Management", icon: Settings2Icon, route: "/dashboard/admin/management" },
-    { title: "MarkList Update", icon: LineChart, route: "/dashboard/admin/batches" },
-    { title: "CE Mark", icon: MousePointer2, route: "/dashboard/admin/ce-mark" },
+    { title: "Academic Register", icon: ClipboardList , route: "/dashboard/admin/academic-register" },
+    { title: "Students' Details", icon: Users, route: "/dashboard/admin/users" },
+    { title: "Assign Duties", icon: GraduationCap, route: "/dashboard/admin/teachers-Assign" },
+    { title: "Manage Academic Info", icon: Settings2Icon, route: "/dashboard/admin/management" },
+    { title: "Semester Exam Results", icon: Award, route: "/dashboard/admin/batches" },
+    { title: "CE Mark", icon: ClipboardCheck, route: "/dashboard/admin/ce-mark" },
     { title: "Internal Mark", icon: ListTodo, route: "/dashboard/admin/ir-mark" },
-    { title: "Ishthiraq", icon: LucideCopySlash, route: "/dashboard/admin/ishthiraq" },
+    { title: "Ishthiraq", icon:  HandCoins, route: "/dashboard/admin/ishthiraq" },
+    { title: "Achivements", icon: Medal, route: "/dashboard/admin/achivements" },
   ];
 
   return (
