@@ -21,6 +21,7 @@ import {
 } from "react-icons/fi"
 import { useStaffStore } from "../../store/useStaffStore";
 import ConfirmPopup from "../../components/ConfirmPopup";
+import { axiosInstance } from "../../lib/axios";
 
 const ManagementPage = () => {
   const {updateSelectedTab, getBatches, getSemesters, getTeachers, batches, semesters, teachers, deleteSemester, updateSemester, deleteBatch, updateBatch } = useAdminStore();
@@ -453,6 +454,8 @@ function SemesterAssignment({batches, semesters}) {
   }, [batches])
 
   const handleSemesterSelect = async (classId, semesterId) => {
+    console.log(classId, semesterId);
+    
     try {
       setBatchAssignments((prev) => ({
         ...prev,
@@ -469,6 +472,7 @@ function SemesterAssignment({batches, semesters}) {
 
       setTimeout(() => setMessage(null), 3000)
     } catch (error) {
+      
       setMessage({ type: "error", text: "Failed to update semester. Please try again." })
     }
   }

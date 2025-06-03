@@ -421,6 +421,7 @@ export const asignClassLeader = async (req, res) => {
 export const asignsemester = async (req, res) => {
    try {
     const {classId, semesterId} = req.body;
+    
     const selectedBatch = await Batch.findById(classId);
     if(!selectedBatch){
      return res.status(404).json({status: false, message:"Batch not found"});
