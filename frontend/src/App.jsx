@@ -1,4 +1,3 @@
-import { BrowserRouter as Router } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import AppRoutes from "./routes/AppRoutes";
 import { useAuthStore } from "./store/useAuthStore";
@@ -19,7 +18,7 @@ function App() {
     initializeTheme();
   }, [checkAuth, initializeTheme]);
 
-  // 🔔 Show prompt once when app loads and user is logged in
+  // 🔔 Show prompt once when app loads
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
@@ -27,7 +26,6 @@ function App() {
       setShowInstallPrompt(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
@@ -40,15 +38,13 @@ function App() {
   }
 
   return (
-    <Router>
-      <div data-theme={theme}>
-        <AppRoutes />
-        <Toaster />
-        {showInstallPrompt && (
-          <InstallPrompt onClose={() => setShowInstallPrompt(false)} />
-        )}
-      </div>
-    </Router>
+    <div data-theme={theme}>
+      <AppRoutes />
+      <Toaster />
+      {showInstallPrompt && (
+        <InstallPrompt onClose={() => setShowInstallPrompt(false)} />
+      )}
+    </div>
   );
 }
 
