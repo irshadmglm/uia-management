@@ -104,7 +104,7 @@ export const useStudentStore = create((set) => ({
       try {
         const response = await axiosInstance.put(`/users/student/edit/${studentId}`, data);
         
-        toast.success("Account updated successfully");
+        toast.success("Student Details updated successfully");
       } catch (error) {
         console.error(error.response?.data?.message || "An error occurred");
         toast.error(error.response?.data?.message || "An error occurred");

@@ -43,6 +43,12 @@ const CurruntSemSubjects = () => {
                       <p className="text-sm text-gray-500 dark:text-gray-300">
                       Usthad: {subject?.subTeacherInfo?.[0]?.name || "Teacher not assigned"}
                       </p>
+                      {
+                        subject?.subTeacher2Info &&
+                        <p className="text-sm text-gray-500 dark:text-gray-300">
+                        Usthad: {subject?.subTeacher2Info?.[0]?.name || "Teacher not assigned"}
+                        </p>
+                      }
                       <p className="text-sm text-gray-500 dark:text-gray-300">
                         mark: {subject?.mark}
                       </p>

@@ -30,6 +30,10 @@ const subjectSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staff",
     },
+    subTeacher2: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Staff",
+    },
     description: {
       type: String,
       trim: true,

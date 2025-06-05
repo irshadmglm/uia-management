@@ -39,7 +39,8 @@ const AssignmentCard = ({
   id, 
   name, 
   isAssigned, 
-  assignedName, 
+  assignedName,
+  assignedName2, 
   isEditing, 
   toggleEdit, 
   children,
@@ -78,6 +79,12 @@ const AssignmentCard = ({
               <p className="font-medium text-gray-800 dark:text-white text-lg">
                 {assignedName || "Not assigned yet"}
               </p>
+              {
+                assignedName2 && 
+                <p className="font-medium text-gray-800 dark:text-white text-lg">
+                {assignedName2 || "Not assigned yet"}
+              </p>
+              }
             </div>
           </div>
 
@@ -178,33 +185,43 @@ function SubjectAssignment({ batches, teachers }) {
   
   useEffect(() => {
     if (subjects.length > 0) {
-      const modified = {}
+      const modified = {};
       for (const cl of subjects) {
-        modified[cl._id] = cl.subTeacher || ""
+        modified[cl._id] = {
+          subTeacher: cl.subTeacher || "",
+          subTeacher2: cl.subTeacher2 || ""
+        };
       }
-      setsubjectAssignments(modified)
+      setsubjectAssignments(modified);
     }
-  }, [subjects])
+  }, [subjects]);
+  
 
-  const handleTeacherSelect = async (subjectId, teacherId) => {
+  const handleTeacherSelect = async (subjectId, teacherId, second = false) => {
     try {
       setsubjectAssignments((prev) => ({
         ...prev,
-        [subjectId]: teacherId,
-      }))
-
+        [subjectId]: {
+          ...prev[subjectId],
+          [second ? "subTeacher2" : "subTeacher"]: teacherId,
+        },
+      }));
+      
       await axiosInstance.post("/mng/asign-subteacher", {
-        subjectId, teacherId
-      })
-
-      setMessage({ type: "success", text: "Subject teacher updated successfully!" })
-      setEditMode((prev) => ({ ...prev, [subjectId]: false }))
-
-      setTimeout(() => setMessage(null), 3000)
+        subjectId,
+        teacherId ,
+        second,
+      });
+  
+      setMessage({ type: "success", text: "Subject teacher updated successfully!" });
+      setEditMode((prev) => ({ ...prev, [subjectId]: false }));
+  
+      setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      setMessage({ type: "error", text: "Failed to update subject teacher. Please try again." })
+      setMessage({ type: "error", text: "Failed to update subject teacher. Please try again." });
     }
-  }
+  };
+  
 
   const toggleEditMode = (subjectId) => {
     setEditMode((prev) => ({
@@ -258,8 +275,10 @@ function SubjectAssignment({ batches, teachers }) {
       ) : filteredSubjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredSubjects.map((subject) => {
-            const teacherId = subjectAssignments[subject._id]
+            const teacherId = subjectAssignments[subject._id]?.subTeacher
+            const teacher2Id = subjectAssignments[subject._id]?.subTeacher2
             const teacher = teachers.find((t) => t._id === teacherId)
+            const teacher2 = teachers.find((t) => t._id === teacher2Id)
             const isEditing = editMode[subject._id]
 
             return (
@@ -269,22 +288,44 @@ function SubjectAssignment({ batches, teachers }) {
                 name={subject.name}
                 isAssigned={!!teacher}
                 assignedName={teacher?.name}
+                assignedName2={teacher2?.name} 
                 isEditing={isEditing}
                 toggleEdit={toggleEditMode}
                 icon={FiBookOpen}
               >
                 <div className="space-y-4">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Select Teacher
+                    Select Teacher 1
                   </label>
                   <select
-                    value={subjectAssignments[subject._id] || ""}
+                    value={subjectAssignments[subject._id]?.subTeacher || ""}
                     onChange={(e) => handleTeacherSelect(subject._id, e.target.value)}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
                     bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 
                     focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
                   >
                     <option value="">Select teacher...</option>
+                    <option value="No">Not Assigned</option>
+                    {teachers.map((t) => (
+                      <option key={t._id} value={t._id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Select Teacher 2
+                  </label>
+                  <select
+                    value={subjectAssignments[subject._id]?.subTeacher2 || ""}
+                    onChange={(e) => handleTeacherSelect(subject._id, e.target.value, true)}
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
+                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 
+                    focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
+                  >
+                    <option value="">Select teacher...</option>
+                    <option value="No">Not Assigned</option>
                     {teachers.map((t) => (
                       <option key={t._id} value={t._id}>
                         {t.name}
@@ -635,7 +676,7 @@ function ClassLeaderAssignment({batches, students}) {
   )
 }
 
-function TeacherAssignmentPage() {
+function AssignDutiesPage() {
   const [activeTab, setActiveTab] = useState("subjects")
   const { getBatches, getTeachers, getSemesters, batches, teachers, semesters } = useAdminStore()
   const { students, getStudents } = useStudentStore()
@@ -712,4 +753,4 @@ function TeacherAssignmentPage() {
   )
 }
 
-export default TeacherAssignmentPage
+export default AssignDutiesPage

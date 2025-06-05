@@ -8,7 +8,7 @@ const AdminHome = () => {
   const cards = [
     { title: "Academic Register", icon: ClipboardList , route: "/dashboard/admin/academic-register" },
     { title: "Students' Details", icon: Users, route: "/dashboard/admin/users" },
-    { title: "Assign Duties", icon: GraduationCap, route: "/dashboard/admin/teachers-Assign" },
+    { title: "Assign Duties", icon: GraduationCap, route: "/dashboard/admin/assign-duties" },
     { title: "Manage Academic Info", icon: Settings2Icon, route: "/dashboard/admin/management" },
     { title: "Semester Exam Results", icon: Award, route: "/dashboard/admin/batches" },
     { title: "CE Mark", icon: ClipboardCheck, route: "/dashboard/admin/ce-mark" },

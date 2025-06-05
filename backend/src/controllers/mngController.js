@@ -439,25 +439,58 @@ export const asignsemester = async (req, res) => {
 
 export const asignSubteacher = async (req, res) => {
   try {
-    const { subjectId, teacherId } = req.body;
-    
-    const teacher = await Staff.findById(teacherId);
-    if (!teacher) {
-       return res.status(404).json({ status: false, message: "Teacher not found" });
-    }
-    
+    const { subjectId, teacherId, second = false } = req.body;
+
     const subject = await Subject.findById(subjectId);
     if (!subject) {
       return res.status(404).json({ status: false, message: "Subject not found" });
-   }
-   subject.subTeacher = teacherId;
+    }
+
+    if (teacherId === "No") {
+      if (second) {
+        subject.subTeacher2 = null;
+      } else {
+        subject.subTeacher = null;
+      }
+      
+      await subject.save();
+      
+      return res.status(200).json({
+        status: true,
+        message: "Subject teacher removed successfully",
+        subject,
+      });
+      
+    }
+
+    // Validate the teacher
+    const teacher = await Staff.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ status: false, message: "Teacher not found" });
+    }
+
+    // Assign the teacher
+    if (second) {
+      subject.subTeacher2 = teacherId;
+    } else {
+      subject.subTeacher = teacherId;
+    }
+
     await subject.save();
 
-    res.status(200).json({ status: true, message: "Subject assigned successfully", subject });
- } catch (error) {
-    res.status(500).json({ status: false, message: "Internal server error", error: error.message });
- }
-}
+    res.status(200).json({
+      status: true,
+      message: "Subject teacher assigned successfully",
+      subject,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 
 
 export const assignedSubjects = async (req, res) => {
@@ -466,7 +499,12 @@ export const assignedSubjects = async (req, res) => {
 
     const subjects = await Subject.aggregate([
       {
-        $match: { subTeacher: new mongoose.Types.ObjectId(teacherId) }
+        $match: {
+          $or: [
+            { subTeacher: new mongoose.Types.ObjectId(teacherId) },
+            { subTeacher2: new mongoose.Types.ObjectId(teacherId) }
+          ]
+        }
       },
       {
         $lookup: {
@@ -535,20 +573,30 @@ export const curruntSemSubjects = async (req, res) => {
       },
       {
         $lookup: {
-          from: "staffs", 
-          localField: "subTeacher",   
-          foreignField: "_id",    
-          as: "subTeacherInfo"    
+          from: "staffs",
+          localField: "subTeacher",
+          foreignField: "_id",
+          as: "subTeacherInfo"
         }
       },
       {
-        $project:{
+        $lookup: {
+          from: "staffs",
+          localField: "subTeacher2",
+          foreignField: "_id",
+          as: "subTeacher2Info"
+        }
+      },
+      {
+        $project: {
           name: 1,
           mark: 1,
-          "subTeacherInfo.name": 1
+          "subTeacherInfo.name": 1,
+          "subTeacher2Info.name": 1
         }
       }
-    ])
+    ]);
+    
 
     return res.status(200).json(subjects);
 

@@ -5,7 +5,7 @@ import StudentForm from "../pages/admin/StudentForm";
 import AdmissionForm from "../pages/admin/AdmissionForm";
 import RegisterdStudents from "../pages/admin/RegisterdStudents";
 import TimetableAsigment from "../pages/admin/TimetableAsigment";
-import TeacherAssignmentPage from "../pages/admin/TeacherAssignmentPage";
+import AssignDutiesPage from "../pages/admin/AssignDutiesPage";
 import ManagementPage from "../pages/admin/ManagementPage";
 import AdminAttendance from "../pages/admin/AdminAttendance";
 import SemesterPage from "../pages/admin/SemesterPage";
@@ -29,7 +29,7 @@ const AdminRoutes = () => {
       <Route path="admission-form" element={<AdmissionForm />} />
       <Route path="registered-students" element={<RegisterdStudents />} />
       <Route path="timetable-Assign" element={<TimetableAsigment />} />
-      <Route path="teachers-Assign" element={<TeacherAssignmentPage />} />
+      <Route path="assign-duties" element={<AssignDutiesPage />} />
       <Route path="management" element={<ManagementPage />} />
       <Route path="attendance/:batchname" element={<AdminAttendance />} />
       <Route path="semester/:semesterId" element={<SemesterPage />} />

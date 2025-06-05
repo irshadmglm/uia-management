@@ -44,7 +44,7 @@ export const useStaffStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       await axiosInstance.put(`/users/teacher/update/${teacherId}`, details); 
-  
+      toast.success("Teacher Details updated successfully");
       set((state) => ({
         teachers: state.teachers.map((teacher) =>
           teacher._id === teacherId ? { ...teacher, ...details } : teacher
@@ -61,7 +61,7 @@ export const useStaffStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       await axiosInstance.delete(`/users/teacher/delete/${teacherId}`); 
-  
+      toast.success("Teacher Details updated successfully");
       set((state) => ({
         teachers: state.teachers.filter((teacher) => teacher._id !== teacherId),
       }));
