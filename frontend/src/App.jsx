@@ -11,6 +11,7 @@ function App() {
   const theme = useThemeStore((state) => state.theme);
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
 
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   useEffect(() => {
@@ -18,13 +19,13 @@ function App() {
     initializeTheme();
   }, [checkAuth, initializeTheme]);
 
-  // 🔔 Show prompt once when app loads
   useEffect(() => {
     const handler = (e) => {
-      e.preventDefault();
-      window.deferredPrompt = e;
-      setShowInstallPrompt(true);
+      e.preventDefault();            
+      setDeferredPrompt(e);         
+      setShowInstallPrompt(true);  
     };
+
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
@@ -41,8 +42,12 @@ function App() {
     <div data-theme={theme}>
       <AppRoutes />
       <Toaster />
-      {showInstallPrompt && (
-        <InstallPrompt onClose={() => setShowInstallPrompt(false)} />
+
+      {showInstallPrompt && deferredPrompt && (
+        <InstallPrompt
+          deferredPrompt={deferredPrompt}
+          onClose={() => setShowInstallPrompt(false)}
+        />
       )}
     </div>
   );
