@@ -3,18 +3,33 @@ import { Toaster } from "react-hot-toast";
 import AppRoutes from "./routes/AppRoutes";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
+import InstallPrompt from "./components/InstallPrompt";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const theme = useThemeStore((state) => state.theme);
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
 
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+
   useEffect(() => {
     checkAuth();
     initializeTheme();
   }, [checkAuth, initializeTheme]);
+
+  // 🔔 Show prompt once when app loads and user is logged in
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      window.deferredPrompt = e;
+      setShowInstallPrompt(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
 
   if (isCheckingAuth) {
     return (
@@ -23,13 +38,17 @@ function App() {
       </div>
     );
   }
+
   return (
-    <div data-theme={theme}>
+    <Router>
       <div data-theme={theme}>
-      <AppRoutes />
-      <Toaster />
-    </div>
-    </div>
+        <AppRoutes />
+        <Toaster />
+        {showInstallPrompt && (
+          <InstallPrompt onClose={() => setShowInstallPrompt(false)} />
+        )}
+      </div>
+    </Router>
   );
 }
 
