@@ -55,9 +55,14 @@ const Header = ({ page, user }) => {
 
           {/* Right Side - App Logo */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-sky-500 via-sky-800 to-sky-400 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">UIA</span>
-            </div>
+          <div className="rounded-xl flex items-center justify-center shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 transition">
+            <img
+              src="/web-app-manifest-512x512.png"
+              alt="UIA Logo"
+              className="w-10 h-10 object-contain"
+            />
+          </div>
+
             <span className="hidden xs:block text-base sm:text-xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
             UIA ACADEMICS
             </span>
@@ -76,11 +81,15 @@ const Header = ({ page, user }) => {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br  from-sky-500 via-sky-800 to-sky-400 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">UIA</span>
-            </div>
+          <div className="rounded-xl flex items-center justify-center shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 transition">
+            <img
+              src="/web-app-manifest-512x512.png"
+              alt="UIA Logo"
+              className="w-10 h-10 object-contain"
+            />
+          </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">ACADEMICS</h2>
+              <h2 className="text-l font-bold text-gray-900 dark:text-white">UIA ACADEMICS</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">Wafy cic</p>
             </div>
           </div>
@@ -132,9 +141,9 @@ const Header = ({ page, user }) => {
             <button className="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 group">
               <div className="relative">
                 <Bell className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                {/* <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
                   3
-                </span>
+                </span> */}
               </div>
               <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Notifications</span>
             </button>
