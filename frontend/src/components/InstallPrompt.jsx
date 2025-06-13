@@ -29,12 +29,12 @@ const InstallPrompt = ({ deferredPrompt, onClose }) => {
             Install UIA Academics App
           </h2>
           <p className="mb-6 text-gray-600">
-            Install this app on your device for a faster, offline‐capable experience.
+            Install this app on your device for a faster.
           </p>
           <div className="flex justify-center gap-4">
             <button
               onClick={handleInstallClick}
-              className="px-5 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
+              className="px-5 py-2 bg-sky-600 text-white rounded-md shadow hover:bg-sky-700 transition"
             >
               Install
             </button>
