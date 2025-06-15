@@ -253,6 +253,29 @@ export const CELinkUpdate = async (req, res) => {
     return res.status(500).json({ message: "Server error", error });
   }
 };
+export const CELinkDelete = async (req, res) => {
+  
+  try {
+    const { batchId } = req.body;
+
+    if (!batchId) {
+      return res.status(400).json({ message: "Missing batchId" });
+    }
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    batch.CEmarkList = null;
+    await batch.save();
+
+    return res.status(200).json({ message: "CE Marklist link Deleted successfully", batch });
+  } catch (error) {
+    console.error("Error in deleting CE Marklist link:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
 
 export const IRLinkUpdate = async (req, res) => {
   
@@ -274,6 +297,84 @@ export const IRLinkUpdate = async (req, res) => {
     return res.status(200).json({ message: "IR Marklist link updated successfully", batch });
   } catch (error) {
     console.error("Error updating CE Marklist link:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+export const IRLinkDelete = async (req, res) => {
+  
+  try {
+    const { batchId } = req.body;
+
+    if (!batchId ) {
+      return res.status(400).json({ message: "Missing batchId" });
+    }
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    batch.IRmarkList = null;
+    await batch.save();
+
+    return res.status(200).json({ message: "IR Marklist link updated successfully", batch });
+  } catch (error) {
+    console.error("Error updating CE Marklist link:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+export const academicStatusLinkUpdate = async (req, res) => {
+  
+  try {
+    const { batchId, ...rest } = req.body;
+
+    const item = Object.keys(rest)[0]
+    console.log(item);
+    
+
+    if (!batchId || !item) {
+      console.log(`Missing batchId or ${item}`);
+      
+      return res.status(400).json({ message: `Missing batchId or ${item}` });
+    }
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    batch[item] = rest[item];
+    await batch.save();
+console.log(batch);
+
+    return res.status(200).json({ message: `${item} link updated successfully `, batch });
+  } catch (error) {
+    console.error( `Error updating ${item} link:`, error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const academicStatusLinkDelete = async (req, res) => {
+  
+  try {
+    const { batchId, item } = req.body;
+    
+    if (!batchId || !item) {
+      
+      return res.status(400).json({ message: `Missing batchId or ${item}` });
+    }
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    batch[item] = null;
+    await batch.save();
+
+    return res.status(200).json({ message: ` ${item} link Deleted successfully`, batch });
+  } catch (error) {
+    console.error( `Error updating ${item} link:`, error);
     return res.status(500).json({ message: "Server error", error });
   }
 };
@@ -492,7 +593,6 @@ export const asignSubteacher = async (req, res) => {
   }
 };
 
-
 export const assignedSubjects = async (req, res) => {
   try {
     const { teacherId } = req.params;
@@ -605,10 +705,6 @@ export const curruntSemSubjects = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
-
-
-
 
 export const postAttendance = async (req, res) => {
 try {

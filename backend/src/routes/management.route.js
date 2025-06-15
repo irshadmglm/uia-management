@@ -1,5 +1,5 @@
 import express from "express";
-import { asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  assignedSubjects,  CELinkUpdate,  curruntSemSubjects,  deleteBatch,  deleteSemester,  deleteSubject,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkUpdate, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
+import { academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteBatch,  deleteSemester,  deleteSubject,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
 
 
 const router = express.Router();
@@ -52,7 +52,15 @@ router.get('/mark-attendance', getAttendance)
 
 router.patch('/update-ce-link', CELinkUpdate)
 
+router.patch('/delete-ce-link', CELinkDelete)
+
 router.patch('/update-ir-link', IRLinkUpdate)
+
+router.patch('/update-ir-link', IRLinkDelete)
+
+router.patch('/update-academic-status-link', academicStatusLinkUpdate)
+
+router.patch('/delete-academic-status-link', academicStatusLinkDelete)
 
 router.get('/currunt-sem-subjects/:batchId', curruntSemSubjects )
 

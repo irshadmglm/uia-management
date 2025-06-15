@@ -247,6 +247,41 @@ export const useAdminStore = create((set, get) => ({
       throw error;
     }
   },
+  addAcademicStatuslink: async (link, batchId, item) => {
+    try {
+      const res = await axiosInstance.patch("/mng/update-academic-status-link", {
+        batchId,
+        [item]: link,
+      });
+      return res.data; 
+    } catch (error) {
+      console.error("Error updating Academic Status:", error);
+      throw error;
+    }
+  },
+  deleteAcademicStatuslink: async (batchId, item) => {
+    try {
+      const res = await axiosInstance.patch("/mng/delete-academic-status-link", {
+        batchId,
+        item
+      });
+      set((state) => ({
+  batches: state.batches.map(batch => {
+    if (batch._id === batchId) {
+      return {
+        ...batch,
+        [item]: null, 
+      };
+    }
+    return batch;
+  })
+}));
+      return res.data; 
+    } catch (error) {
+      console.error("Error deteting Academic Status:", error);
+      throw error;
+    }
+  },
   
 
   updateSelectedTab: async (selectedTab, newItemName) => {

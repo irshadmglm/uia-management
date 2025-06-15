@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Header from "../../components/Header";
 import Card from "../../components/Card";
-import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal,  } from "lucide-react";
+import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal, File,  } from "lucide-react";
 
 const AdminHome = () => {
   const cards = [
@@ -15,12 +15,13 @@ const AdminHome = () => {
     { title: "Internal Mark", icon: ListTodo, route: "/dashboard/admin/ir-mark" },
     { title: "Ishthiraq", icon:  HandCoins, route: "/dashboard/admin/ishthiraq" },
     { title: "Achivements", icon: Medal, route: "/dashboard/admin/achivements" },
+    { title: "Academic Records", icon: File, route: "/dashboard/admin/academic-records" },
   ];
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800">
       <Header />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-20 w-full max-w-4xl p-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20 w-full max-w-6xl p-4">
         {cards.map((card, index) => (
           <motion.div
           key={index}

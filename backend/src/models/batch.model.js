@@ -36,7 +36,23 @@ const batchSchema = new mongoose.Schema(
     IRmarkList: {
       type: String,
       default: null,
-    }
+    },
+    stdAttendanceRegister: {
+      type: String,
+      default: null,
+    },
+    staffAttendanceRegister: {
+      type: String,
+      default: null,
+    },
+    subjectStatus: {
+      type: String,
+      default: null,
+    },
+    ceStatus: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

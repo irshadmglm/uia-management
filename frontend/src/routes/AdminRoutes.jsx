@@ -17,6 +17,8 @@ import IRMarkAdmin from "../pages/admin/IRMarkAdmin";
 import StaffProfile from "../pages/admin/StaffProfile";
 import SignupPage from "../pages/admin/SignupPage";
 import FeesDashboard from "../pages/admin/FeesDashbord";
+import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
+import AcademicRegister from "../pages/admin/AcademicRegister";
 
 
 const AdminRoutes = () => {
@@ -43,6 +45,14 @@ const AdminRoutes = () => {
       <Route path="std-edit/:studentId" element={<AdmissionForm />} />
       <Route path="staff-edit/:teacherId" element={<SignupPage />} />
       <Route path="signup" element={<SignupPage />} />
+
+      <Route path="academic-records" element={<AcademicRegister  />} />
+
+      <Route path="academic-register" element={<AcademicRegister  />} />
+      <Route path="std-attendance-register" element={<BatchAcademicStatus item="stdAttendanceRegister" />} />
+      <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
+      <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
+      <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
 
       <Route path="*" element={<AdminHome />} />
     </Routes>
