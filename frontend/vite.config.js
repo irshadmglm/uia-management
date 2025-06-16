@@ -13,7 +13,7 @@ export default defineConfig({
         short_name: 'UIA',
         description: "Manage administration, students, and teachers efficiently.",
         theme_color: '#2563eb',
-        background_color: '#ffffff',
+        background_color: '#000000',
         display: 'standalone',
         start_url: '/',
         icons: [
