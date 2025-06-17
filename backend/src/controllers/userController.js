@@ -43,9 +43,29 @@ export const getStudents = async (req, res) => {
     const { batchId } = req.params;
     let students;
     if(batchId){
-       students = await Student.find({batchId}).sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
+       students = await Student.find({batchId, isActive: true}).sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
     }else{
-       students = await Student.find().sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
+       students = await Student.find({isActive: true}).sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
+    }
+    
+
+    if (!students || students.length === 0) {
+      return res.status(404).json({ success: false, message: "No students found" });
+    }
+
+    res.status(200).json({ success: true, students });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+export const getStudentsInactive = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+    let students;
+    if(batchId){
+       students = await Student.find({batchId, isActive: false}).sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
+    }else{
+       students = await Student.find({isActive: false}).sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
     }
     
 
@@ -176,6 +196,26 @@ export const updateUser = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const changeStdStatus = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const student = await Student.findById(userId);
+
+    if (!student) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    student.isActive = !student.isActive;
+    await student.save(); 
+
+    res.status(200).json({ success: true, message: "Student status changed", isActive: student.isActive });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 
 export const deleteStudent = async (req, res) => {
   try {

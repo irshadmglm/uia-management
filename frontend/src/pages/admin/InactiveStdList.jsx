@@ -5,14 +5,14 @@ import StudentTable from "../../components/StudentTable";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { useStudentStore } from "../../store/studentStore";
 
-const StudentList = ({inactive}) => {
-  const { getStudents, deleteStudent, students, isLoading } = useStudentStore();
+const InactiveStdList = () => {
+  const { getInactiveStudents, studentsInactive, isLoading } = useStudentStore();
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        await getStudents();
+        await getInactiveStudents();
       } catch (err) {
         setError("Failed to fetch Books. Please try again.");
       }
@@ -44,11 +44,12 @@ const StudentList = ({inactive}) => {
           </button>
         </div>
       ) : (
-        <StudentTable students={students} />
+        <StudentTable students={studentsInactive} inactive={true} />
       )}
 
     </div>
   );
 };
 
-export default StudentList;
+
+export default InactiveStdList;

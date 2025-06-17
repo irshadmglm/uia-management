@@ -7,6 +7,7 @@ import { useAuthStore } from "./useAuthStore";
 export const useStudentStore = create((set) => ({
   students: [],
   batchStudents: [],
+  studentsInactive: [],
   student: {},
   semSubjects: [],
   feeStatus: [],
@@ -130,6 +131,45 @@ export const useStudentStore = create((set) => ({
         console.error(error);
         toast.error("An error occurred while deleting the student");
         return false;
+      }
+    },
+
+    stdStatusChange: async (studentId) => {
+      try {
+        const res = await axiosInstance.patch(`/users/student/status/${studentId}`);
+    
+        set((state) => ({
+          students: state.students.map((student) => {
+            if (student._id === studentId) {
+              return { ...student, isActive: !student.isActive };
+            }
+            return student;
+          }),
+        }));
+    
+        toast.success("Student status updated");
+    
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred");
+      }
+    },    
+
+    getInactiveStudents: async () => {
+      set({ isLoading: true }); 
+    
+      try {
+        const res = await axiosInstance.get("/users/inactive-std");
+    
+        if (res.data && res.data.students) {
+          set({ studentsInactive: res.data.students });
+        } else {
+          console.warn("Unexpected response format:", res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      } finally {
+        set({ isLoading: false });
       }
     },
 

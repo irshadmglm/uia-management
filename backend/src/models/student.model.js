@@ -56,7 +56,12 @@ const UserSchema = new mongoose.Schema(
   role: {
     type: String,
     default:"student"
-  }
+  },
+  
+isActive: {
+  type: Boolean,
+  default: true
+}
 },
 { timestamps: true }
 );

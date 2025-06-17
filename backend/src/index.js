@@ -51,6 +51,11 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+app.get("/ping", (req, res) => {
+  res.status(200).send("Server is alive!");
+});
+
+
 app.listen(PORT, () => {
   console.log("Server running on PORT:", PORT);
   connectDB();

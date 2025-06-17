@@ -146,11 +146,12 @@ export const fetchGoogleSheetData = async (req, res) => {
    
     const formattedData = rows.map(row => row._rawData);
     for(let c of formattedData){
+console.log(c);
 
-      const batch = await Batch.findOne({ name: c[1] });
+      // const batch = await Batch.findOne({ name: c[1] });
       
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(c[2], salt);
+      // const salt = await bcrypt.genSalt(10);
+      // const hashedPassword = await bcrypt.hash(c[2], salt);
        
   
     }

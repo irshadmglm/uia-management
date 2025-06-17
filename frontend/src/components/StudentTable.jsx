@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Pencil, Trash, Eye, Search, PlusCircleIcon } from "lucide-react";
+import { Pencil, Trash, Eye, Search, PlusCircleIcon, Trash2, Undo2, Undo } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useStudentStore } from "../store/studentStore";
 
-const StudentTable = ({ students }) => {
+const StudentTable = ({ students, inactive }) => {
     const { authUser } = useAuthStore();
-    const {deleteStudent} = useStudentStore();
+    const {deleteStudent, stdStatusChange} = useStudentStore();
 
   const [expandedRow, setExpandedRow] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,6 +20,11 @@ const StudentTable = ({ students }) => {
       const success = await deleteStudent(id);
     }
   };
+  const restore = async (id) => {
+    if (window.confirm("Are you sure you want to Restore this student?")) {
+      const success = await stdStatusChange(id);
+    }
+  };
   
 
   const filteredStudents = students.filter((student) =>
@@ -30,14 +35,21 @@ const StudentTable = ({ students }) => {
   return (
     <div className="mt-[88px] px-4 pt-2">
       <div className="flex justify-between items-center mb-4">
-      {authUser.role === "admin" && (
+      {authUser.role === "admin" && inactive !== true && (
+       <>
         <Link
           to="/dashboard/admin/admission-form"
           className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-sky-500 hover:bg-green-700 rounded-md transition"
         >
           <PlusCircleIcon size={16} />
-          Add Student
         </Link>
+        <Link
+          to="/dashboard/admin/inactive-std"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-red-500 hover:bg-green-700 rounded-md transition"
+        >
+          <Trash2 size={16} />
+        </Link>
+       </>
       )}
         <div className="relative ">
           <input
@@ -107,7 +119,7 @@ const StudentTable = ({ students }) => {
                       >
                         <Eye size={16} />
                       </button> */}
-                    {authUser.role === "admin" && (
+                    {authUser.role === "admin" && inactive !== true && (
                         <>
                           <Link
                             to={`/dashboard/admin/std-edit/${student._id}`}
@@ -115,6 +127,23 @@ const StudentTable = ({ students }) => {
                           >
                             <Pencil size={16} />
                           </Link>
+                          <button
+                        onClick={() => onDelete(student._id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash size={16} />
+                      </button>
+                        </>
+                      )}
+                    {authUser.role === "admin" && inactive === true && (
+                        <>
+                          
+                          <button
+                        onClick={() => restore(student._id)}
+                        className="text-sky-500 hover:text-sky-700"
+                      >
+                        <Undo2 size={16} />
+                      </button>
                           <button
                         onClick={() => onDelete(student._id)}
                         className="text-red-500 hover:text-red-700"

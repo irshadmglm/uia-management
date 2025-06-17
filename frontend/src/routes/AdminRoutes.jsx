@@ -19,6 +19,7 @@ import SignupPage from "../pages/admin/SignupPage";
 import FeesDashboard from "../pages/admin/FeesDashbord";
 import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
 import AcademicRegister from "../pages/admin/AcademicRegister";
+import InactiveStdList from "../pages/admin/InactiveStdList";
 
 
 const AdminRoutes = () => {
@@ -26,6 +27,7 @@ const AdminRoutes = () => {
     <Routes>
       <Route index element={<AdminHome />} />
       <Route path="users" element={<StudentList />} />
+      <Route path="inactive-std" element={<InactiveStdList />} />
       <Route path="users/add" element={<StudentForm />} />
       <Route path="users/edit/:id" element={<StudentForm edit />} />
       <Route path="admission-form" element={<AdmissionForm />} />
