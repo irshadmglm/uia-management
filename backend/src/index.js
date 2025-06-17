@@ -43,6 +43,10 @@ app.use('/api/mng', managementRoutes);
 app.use('/api/marklist', marksRoutes);
 app.use('/api/fees', feesRoutes);
 
+app.get("/ping", (req, res) => {
+  res.status(200).send("Server is alive!");
+});
+
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
@@ -51,9 +55,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.get("/ping", (req, res) => {
-  res.status(200).send("Server is alive!");
-});
+
 
 
 app.listen(PORT, () => {
