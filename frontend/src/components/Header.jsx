@@ -1,6 +1,6 @@
 "use client"
 
-import { Menu, Sun, Moon, X, LogOut, User, Settings, Bell, Home, ChevronRight } from "lucide-react"
+import { Menu, Sun, Moon, X, LogOut, User, Settings, Bell, Home, ChevronRight, ArrowLeft, ChevronLeft } from "lucide-react"
 import { useThemeStore } from "../store/useThemeStore"
 import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect, useRef } from "react"
@@ -33,6 +33,10 @@ const Header = ({ page, user }) => {
     setIsSidebarOpen(false)
   }
 
+  const handleBack = () => {
+    navigate(-1)
+  }
+
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
     // { name: "Profile", href: "/profile", icon: User },
@@ -45,6 +49,7 @@ const Header = ({ page, user }) => {
       <header className="fixed top-0 w-full bg-white/95 dark:bg-gray-900/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-40">
         <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
           {/* Left Side - Sidebar Toggle */}
+          <div className="flex items-center">
           <button
             onClick={() => setIsSidebarOpen(true)}
             className="p-3 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
@@ -52,6 +57,13 @@ const Header = ({ page, user }) => {
           >
             <Menu className="w-6 h-6" />
           </button>
+          <button 
+          onClick={handleBack}
+          className="shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 gap-1 px-2 py-2 rounded-full transition-all duration-200"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          </div>
 
           {/* Right Side - App Logo */}
           <div className="flex items-center space-x-3">

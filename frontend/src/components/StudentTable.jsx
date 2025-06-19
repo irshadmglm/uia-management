@@ -36,8 +36,8 @@ const StudentTable = ({ students, inactive }) => {
     <div className="mt-[88px] px-4 pt-2">
       <div className="flex justify-between items-center mb-4">
       {authUser.role === "admin" && inactive !== true && (
-       <>
-        <Link
+       <div className="flex gap-3">
+         <Link
           to="/dashboard/admin/admission-form"
           className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-sky-500 hover:bg-green-700 rounded-md transition"
         >
@@ -49,7 +49,7 @@ const StudentTable = ({ students, inactive }) => {
         >
           <Trash2 size={16} />
         </Link>
-       </>
+       </div>
       )}
         <div className="relative ">
           <input
