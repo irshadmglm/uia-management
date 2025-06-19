@@ -131,13 +131,13 @@ const Header = ({ page, user }) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                {authUser?.name || "John Doe"}
+                {authUser?.name || " "}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                {authUser?.email || "john@example.com"}
+                {authUser?.email || " "}
               </p>
               <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                {authUser?.role || "Administrator"}
+                {authUser?.role || " "}
               </p>
             </div>
           </div>
