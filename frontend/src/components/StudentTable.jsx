@@ -20,8 +20,8 @@ const StudentTable = ({ students, inactive }) => {
       const success = await deleteStudent(id);
     }
   };
-  const restore = async (id) => {
-    if (window.confirm("Are you sure you want to Restore this student?")) {
+  const statusChange = async (id) => {
+    if (window.confirm("Are you sure you want to change this student?")) {
       const success = await stdStatusChange(id);
     }
   };
@@ -128,7 +128,7 @@ const StudentTable = ({ students, inactive }) => {
                             <Pencil size={16} />
                           </Link>
                           <button
-                        onClick={() => onDelete(student._id)}
+                        onClick={() => statusChange(student._id)}
                         className="text-red-500 hover:text-red-700"
                       >
                         <Trash size={16} />
@@ -139,7 +139,7 @@ const StudentTable = ({ students, inactive }) => {
                         <>
                           
                           <button
-                        onClick={() => restore(student._id)}
+                        onClick={() => statusChange(student._id)}
                         className="text-sky-500 hover:text-sky-700"
                       >
                         <Undo2 size={16} />

@@ -66,7 +66,7 @@ const LoginPage = (props) => {
            
             <InputField label="Password" name="password" value={formData.password} icon={<Lock />} onChange={setFormData} />
 
-            <button type="submit" className="btn btn-primary w-full" disabled={isLoggingIn}>
+            <button type="submit" className="btn bg-sky-700 w-full text-gray-50" disabled={isLoggingIn}>
               {isLoggingIn ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
