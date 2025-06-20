@@ -77,6 +77,26 @@ const MarkSubmitedStudentsPage = () => {
                 key={student._id}
                 className="bg-white dark:bg-gray-700 rounded-xl shadow-lg dark:shadow-gray-900 p-6 transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
               >
+                  {/* 🔹 Badge for Pending Approvals or requsted to edit */}
+                    {(() => {
+                      const studentMarks = markList.filter(
+                        (m) =>
+                          m.studentId === student._id &&
+                          (
+                            m.isApproved === false ||
+                            m.editingStatus === "send"
+                          )
+                      );
+
+                      return (
+                        studentMarks.length > 0 && (
+                          <div className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded-full bg-red-600 text-white text-xs font-bold">
+                            {studentMarks.length}
+                          </div>
+                        )
+                      );
+                    })()}
+
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 flex-shrink-0 rounded-full bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-lg mr-4">
                     {index + 1}

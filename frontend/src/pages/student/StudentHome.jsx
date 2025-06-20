@@ -1,10 +1,11 @@
 import Header from "../../components/Header";
 import Card from "../../components/Card";
-import { BookCopyIcon, BookMarked, GraduationCap, ListChecks, LucideHandCoins, PictureInPicture, ServerCogIcon, Table2Icon } from "lucide-react";
+import { Award, BookCopyIcon, BookMarked, BookUserIcon, DownloadCloud, GraduationCap, ListChecks, LucideHandCoins, PictureInPicture, ServerCogIcon, Table2Icon } from "lucide-react";
 import { useStaffStore } from "../../store/useStaffStore";
 import { motion } from 'framer-motion';
 
 import { useEffect } from "react";
+const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link"
 
 const StudentHome = () => {
      const {batch, getStudentBatch} = useStaffStore();
@@ -13,11 +14,13 @@ const StudentHome = () => {
      }, [getStudentBatch])
      const cards = [
       { title: "Subjects", icon: BookCopyIcon, route: "/dashboard/student/subjects" },
+      { title: "Achievement", icon: Award, route: "/dashboard/student/achievement" },
+      { title: "Reading Progress", icon: BookUserIcon, route: "/dashboard/student/reading-progress" },
       { title: "Mark List", icon: ListChecks, route: "/dashboard/student/semester-list" },
       { title: "Internel Mark", icon: BookMarked, url: batch?.IRmarkList },
       { title: "CE Mark", icon: BookMarked, url: batch?.CEmarkList  },
+      { title: "Downloads", icon: DownloadCloud, url: downloadsUrl  },
       { title: "Ishthiraq", icon: LucideHandCoins, route: "/dashboard/student/ishthiraq" },
-  
     ];
      
     return (

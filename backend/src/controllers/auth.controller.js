@@ -77,7 +77,7 @@ export const login = async (req, res) => {
     let user;
 
     if (role === "student") {
-      user = await User.findOne({ cicNumber:username });
+      user = await User.findOne({ cicNumber:username, isActive: true });
     } else {
       user = await Staff.findOne({ userName:username });
     }

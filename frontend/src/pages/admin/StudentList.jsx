@@ -44,7 +44,9 @@ const StudentList = ({inactive}) => {
           </button>
         </div>
       ) : (
-        <StudentTable students={students} />
+       <div className="mt-16">
+         <StudentTable students={students} />
+       </div>
       )}
 
     </div>

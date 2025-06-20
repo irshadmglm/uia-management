@@ -50,6 +50,12 @@ const Header = ({ page, user }) => {
         <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
           {/* Left Side - Sidebar Toggle */}
           <div className="flex items-center">
+          <button 
+          onClick={handleBack}
+          className="shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 gap-1 px-2 py-2 rounded-full transition-all duration-200"
+          >
+            <ChevronLeft size={18} />
+          </button>
           <button
             onClick={() => setIsSidebarOpen(true)}
             className="p-3 rounded-xl text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
@@ -57,12 +63,7 @@ const Header = ({ page, user }) => {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <button 
-          onClick={handleBack}
-          className="shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 gap-1 px-2 py-2 rounded-full transition-all duration-200"
-          >
-            <ChevronLeft size={18} />
-          </button>
+          
           </div>
 
           {/* Right Side - App Logo */}

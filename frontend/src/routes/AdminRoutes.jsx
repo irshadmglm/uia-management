@@ -20,6 +20,7 @@ import FeesDashboard from "../pages/admin/FeesDashbord";
 import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
 import AcademicRegister from "../pages/admin/AcademicRegister";
 import InactiveStdList from "../pages/admin/InactiveStdList";
+import AdminIshthiraq from "../pages/admin/AdminIshthiraq";
 
 
 const AdminRoutes = () => {
@@ -40,7 +41,8 @@ const AdminRoutes = () => {
       <Route path="batches" element={<AdminMarkUpdate />} />
       <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} />
       <Route path="marklistes/:studentId" element={<AdminsideMarkListes />} />
-      <Route path="ishthiraq" element={<FeesDashboard />} />
+      {/* <Route path="ishthiraq" element={<FeesDashboard />} /> */}
+      <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} />
       <Route path="ce-mark" element={<CEMarkAdmin />} />
       <Route path="ir-mark" element={<IRMarkAdmin />} />
       <Route path="profile" element={<StaffProfile />} />
@@ -55,6 +57,7 @@ const AdminRoutes = () => {
       <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
       <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
       <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
+      
 
       <Route path="*" element={<AdminHome />} />
     </Routes>

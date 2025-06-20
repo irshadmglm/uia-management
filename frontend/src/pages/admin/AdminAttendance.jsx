@@ -15,26 +15,38 @@ const AdminAttendance = () => {
   const [selectedBatch, setSelectedBatch] = useState({});
   const [selectedTab, setSelectedTab] = useState("students");
   const [batchStudents, setBatchStudents] = useState([])
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getBatches();
-    getStudents();
     getTeachers();
-    
+  }, []);
+  
+  useEffect(() => {
+    getStudents(); 
   }, [batchname]);
+  
 
   useEffect(() => {
-    if (batches.length > 0) {
+    if (batches.length > 0 && students.length > 0) {
       const selected = batches.find((c) => c.name === batchname);
       setSelectedBatch(selected);
-      if (selected ) {
+      
+      if (selected) {
         const batchStudents = students.filter((s) => selected.students.includes(s._id));
-        
         setBatchStudents(batchStudents);
       }
     }
-  }, [batches, batchname]);
+  }, [batches, batchname, students]);
   
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      await Promise.all([getBatches(), getStudents(), getTeachers()]);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 pt-12">
@@ -42,9 +54,9 @@ const AdminAttendance = () => {
       
       {/* TOP SECTION */}
       {selectedBatch && (
-        <div className="w-full max-w-4xl p-6 shadow-xl rounded-3xl bg-gray-50 dark:bg-gray-800 text-center">
-          <h2 className="text-2xl font-bold">{selectedBatch.name}th Batch</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+        <div className="w-full max-w-4xl mt-6 p-6 shadow-xl rounded-3xl bg-gray-50 dark:bg-gray-800 text-center">
+          <h2 className="text-xl font-bold">{selectedBatch.name}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-100">
             {teachers
                 .filter((t) => t._id === selectedBatch.classTeacher)
                 .map((t) => (
@@ -52,12 +64,12 @@ const AdminAttendance = () => {
                 ))}
             </p>
 
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            Total Students: {selectedBatch?.students?.length}
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Total Students: {batchStudents?.length}
           </p>
         </div>
       )}
-      <div className="flex mt-8 space-x-4 border-b border-gray-300 dark:border-gray-600">
+      <div className="flex mt-3 space-x-4 border-b border-gray-300 dark:border-gray-600">
         {["students", "attendance"].map((tab) => (
           <Button
             key={tab}
@@ -75,7 +87,8 @@ const AdminAttendance = () => {
 
       {/* TAB CONTENT */}
       {selectedTab === "students" ? (
-        <StudentTable students={batchStudents} />
+        loading ? <p>Loading...</p> : <StudentTable students={batchStudents}  />
+
       ) : (
         <AttendanceTable cls={selectedBatch} students={batchStudents} />
       )}

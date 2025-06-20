@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useStudentStore } from "../store/studentStore";
 
-const StudentTable = ({ students, inactive }) => {
+const StudentTable = ({ students, inactive}) => {
     const { authUser } = useAuthStore();
     const {deleteStudent, stdStatusChange} = useStudentStore();
 
@@ -21,8 +21,8 @@ const StudentTable = ({ students, inactive }) => {
     }
   };
   const statusChange = async (id) => {
-    if (window.confirm("Are you sure you want to change this student?")) {
-      const success = await stdStatusChange(id);
+    if (window.confirm(`Are you sure you want to ${inactive ? "Restore" : "Delete"} this student?`)) {
+      const success = await stdStatusChange(id, inactive);
     }
   };
   
@@ -33,7 +33,7 @@ const StudentTable = ({ students, inactive }) => {
   );
 
   return (
-    <div className="mt-[88px] px-4 pt-2">
+    <div className=" px-4 pt-2">
       <div className="flex justify-between items-center mb-4">
       {authUser.role === "admin" && inactive !== true && (
        <div className="flex gap-3">

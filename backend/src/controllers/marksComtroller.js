@@ -65,7 +65,10 @@ export const getCountToApprove = async (req, res) => {
     try {
         const pendingMarkLists = await Marklist.find({ isApproved: false });
         const counts = await Marklist.aggregate([
-            { $match: { isApproved: false } },
+            { $match: { $or: [
+              { isApproved: false },
+              { editingStatus: "send" }
+            ] } },
             { $group: { _id: "$batchId", count: { $sum: 1 } } } 
         ]);
         

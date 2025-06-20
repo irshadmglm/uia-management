@@ -4,7 +4,7 @@ import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
 
-export const useStudentStore = create((set) => ({
+export const useStudentStore = create((set, get) => ({
   students: [],
   batchStudents: [],
   studentsInactive: [],
@@ -134,21 +134,21 @@ export const useStudentStore = create((set) => ({
       }
     },
 
-    stdStatusChange: async (studentId) => {
+    stdStatusChange: async (studentId, isDeleted) => {
       try {
         const res = await axiosInstance.patch(`/users/student/status/${studentId}`);
     
+       if(!isDeleted){
         set((state) => ({
-          students: state.students.map((student) => {
-            if (student._id === studentId) {
-              return { ...student, isActive: !student.isActive };
-            }
-            return student;
-          }),
+          students: state.students.filter((student) => student._id !== studentId),
         }));
-    
-        toast.success("Student status updated");
-    
+        toast.success("Student Deleted successfully");
+       } else {
+        set((state) => ({
+          studentsInactive: state.studentsInactive.filter((student) => student._id !== studentId),
+        }));
+        toast.success("Student Restored successfully");
+      }
       } catch (error) {
         console.error(error);
         toast.error("An error occurred");

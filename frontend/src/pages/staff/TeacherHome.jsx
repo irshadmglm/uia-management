@@ -1,9 +1,11 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Card from "../../components/Card";
-import { BookOpenText, ListTodo, Table2Icon, Users2 } from "lucide-react";
+import { BookOpenText, DownloadCloud, ListTodo, Table2Icon, Users2 } from "lucide-react";
 import { useStaffStore } from "../../store/useStaffStore";
 import { useEffect } from "react";
+
+const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link"
 
 const TeacherHome = () => {
       const {getBatch, batches} = useStaffStore();
@@ -21,6 +23,7 @@ const TeacherHome = () => {
       <Card key={c._id} title={c.name} icon={Users2} route={`/dashboard/teacher/calss-teacher-home/${c._id}`} />
     ))}
     <Card title="Assigned Subjects" icon={BookOpenText} route="/dashboard/teacher/assigned-subjects" />
+    <Card title="Downloads" icon={DownloadCloud} url={downloadsUrl} />
 
   </div>
 </div>

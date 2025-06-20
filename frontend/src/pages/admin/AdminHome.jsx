@@ -2,7 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Header from "../../components/Header";
 import Card from "../../components/Card";
-import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal, File,  } from "lucide-react";
+import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal, File, DownloadCloud,  } from "lucide-react";
+const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link"
 
 const AdminHome = () => {
   const cards = [
@@ -15,6 +16,7 @@ const AdminHome = () => {
     { title: "Internal Mark", icon: ListTodo, route: "/dashboard/admin/ir-mark" },
     { title: "Ishthiraq", icon:  HandCoins, route: "/dashboard/admin/ishthiraq" },
     { title: "Achivements", icon: Medal, route: "/dashboard/admin/achivements" },
+    { title: "Downloads", icon: DownloadCloud, url: downloadsUrl },
     { title: "Academic Records", icon: File, route: "/dashboard/admin/academic-records" },
   ];
 
@@ -29,7 +31,10 @@ const AdminHome = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 100, damping: 10, delay: index * 0.1 }}
           >
-            <Card title={card.title} icon={card.icon} route={card.route} />
+            <Card 
+             title={card.title}
+             icon={card.icon}
+             {...(card.route ? { route: card.route } : { url: card.url })} />
           </motion.div>
 
 
