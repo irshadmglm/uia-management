@@ -34,6 +34,12 @@ const subjectSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staff",
     },
+    periodTeacher1: {
+      type: Number,
+    },
+    periodTeacher2: {
+      type: Number,
+    },
     description: {
       type: String,
       trim: true,

@@ -1,5 +1,5 @@
 import express from "express";
-import { academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteBatch,  deleteSemester,  deleteSubject,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
+import { academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteBatch,  deleteSemester,  deleteSubject,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
 
 
 const router = express.Router();
@@ -41,6 +41,8 @@ router.post('/asign-teacher', asignBatchTeacher)
 router.post('/asign-semester', asignsemester)
 
 router.post('/asign-subteacher', asignSubteacher)
+
+router.post('/asign-subteacher-period', asignSubteacherPeriod)
 
 router.get('/assigned-subjects/:teacherId', assignedSubjects)
 

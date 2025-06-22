@@ -613,6 +613,55 @@ export const asignSubteacher = async (req, res) => {
     });
   }
 };
+export const asignSubteacherPeriod = async (req, res) => {
+  try {
+    const { subjectId, period, second = false } = req.body;
+
+    const subject = await Subject.findById(subjectId);
+    if (!subject) {
+      return res.status(404).json({ status: false, message: "Subject not found" });
+    }
+
+    if (period === 0) {
+      if (second) {
+        subject.periodTeacher2 = null;
+      } else {
+        subject.periodTeacher1 = null;
+      }
+      
+      await subject.save();
+      
+      return res.status(200).json({
+        status: true,
+        message: "Subject Period removed successfully",
+        subject,
+      });
+      
+    }
+
+
+    // Assign the Period
+    if (second) {
+      subject.periodTeacher2 = period;
+    } else {
+      subject.periodTeacher1 = period;
+    }
+
+    await subject.save();
+
+    res.status(200).json({
+      status: true,
+      message: "Subject Period assigned successfully",
+      subject,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 
 export const assignedSubjects = async (req, res) => {
   try {

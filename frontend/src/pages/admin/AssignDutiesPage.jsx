@@ -41,6 +41,8 @@ const AssignmentCard = ({
   isAssigned, 
   assignedName,
   assignedName2, 
+  periodTeacher1,
+  periodTeacher2,
   isEditing, 
   toggleEdit, 
   children,
@@ -78,11 +80,13 @@ const AssignmentCard = ({
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Assigned</p>
               <p className="font-medium text-gray-800 dark:text-white text-lg">
                 {assignedName || "Not assigned yet"}
-              </p>
+                {periodTeacher1 > 0 &&  <span className="ml-2 text-sm text-gray-500">Period: {periodTeacher1}</span>}
+              </p> 
               {
                 assignedName2 && 
                 <p className="font-medium text-gray-800 dark:text-white text-lg">
                 {assignedName2 || "Not assigned yet"}
+                {periodTeacher2 > 0 && <span className="ml-2 text-sm text-gray-500">Period: {periodTeacher2}</span>}
               </p>
               }
             </div>
@@ -167,76 +171,107 @@ const SearchBar = ({ value, onChange, placeholder }) => (
 )
 
 function SubjectAssignment({ batches, teachers }) {
-  const { getSubjects, subjects } = useAdminStore()
-  const [selectedBatch, setSelectedBatch] = useState(batches[0])
-  const [subjectAssignments, setsubjectAssignments] = useState({})
-  const [message, setMessage] = useState(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [editMode, setEditMode] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
+  const { getSubjects, subjects } = useAdminStore();
+  const [selectedBatch, setSelectedBatch] = useState(batches[0]);
+  const [subjectAssignments, setSubjectAssignments] = useState({});
+  const [message, setMessage] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editMode, setEditMode] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (selectedBatch) {
-      setIsLoading(true)
-      getSubjects(selectedBatch.currentSemester)
-        .finally(() => setIsLoading(false))
+      setIsLoading(true);
+      getSubjects(selectedBatch.currentSemester).finally(() =>
+        setIsLoading(false)
+      );
     }
-  }, [selectedBatch, getSubjects])
-  
+  }, [selectedBatch, getSubjects]);
+
   useEffect(() => {
-    if (subjects.length > 0) {
-      const modified = {};
-      for (const cl of subjects) {
-        modified[cl._id] = {
-          subTeacher: cl.subTeacher || "",
-          subTeacher2: cl.subTeacher2 || ""
-        };
-      }
-      setsubjectAssignments(modified);
+    const modified = {};
+    for (const sub of subjects) {
+      modified[sub._id] = {
+        subTeacher: sub.subTeacher || "",
+        subTeacher2: sub.subTeacher2 || "",
+        periodTeacher2: sub.periodTeacher2 || "",
+        periodTeacher1: sub.periodTeacher1 || "",
+      };
     }
+    setSubjectAssignments(modified);
   }, [subjects]);
-  
 
   const handleTeacherSelect = async (subjectId, teacherId, second = false) => {
     try {
-      setsubjectAssignments((prev) => ({
+      setSubjectAssignments((prev) => ({
         ...prev,
         [subjectId]: {
           ...prev[subjectId],
           [second ? "subTeacher2" : "subTeacher"]: teacherId,
         },
       }));
-      
+
       await axiosInstance.post("/mng/asign-subteacher", {
         subjectId,
-        teacherId ,
+        teacherId,
         second,
       });
-  
-      setMessage({ type: "success", text: "Subject teacher updated successfully!" });
+
+      setMessage({
+        type: "success",
+        text: "Subject teacher updated successfully!",
+      });
       setEditMode((prev) => ({ ...prev, [subjectId]: false }));
-  
+
       setTimeout(() => setMessage(null), 3000);
-    } catch (error) {
-      setMessage({ type: "error", text: "Failed to update subject teacher. Please try again." });
+    } catch {
+      setMessage({
+        type: "error",
+        text: "Failed to update subject teacher. Please try again.",
+      });
     }
   };
-  
+
+  const handlePeriodSelect = async (subjectId, period, second = false) => {
+    try {
+      setSubjectAssignments((prev) => ({
+        ...prev,
+        [subjectId]: {
+          ...prev[subjectId],
+          [second ? "periodTeacher2" : "periodTeacher1"]: period,
+        },
+      }));
+
+      await axiosInstance.post("/mng/asign-subteacher-period", {
+        subjectId,
+        period,
+        second,
+      });
+
+      setMessage({
+        type: "success",
+        text: "Period count updated successfully!",
+      });
+
+      setTimeout(() => setMessage(null), 3000);
+    } catch {
+      setMessage({
+        type: "error",
+        text: "Failed to update period count. Please try again.",
+      });
+    }
+  };
 
   const toggleEditMode = (subjectId) => {
     setEditMode((prev) => ({
       ...prev,
       [subjectId]: !prev[subjectId],
-    }))
-  }
-  let filteredSubjects = [];
-  if(subjects){
-    console.log(subjects);
-    
-     filteredSubjects =  subjects.filter((subject) => 
-      subject.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }
+    }));
+  };
+
+  const filteredSubjects = subjects.filter((subject) =>
+    subject.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -245,28 +280,21 @@ function SubjectAssignment({ batches, teachers }) {
           <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 block">Select Batch</label>
           <select
             value={selectedBatch?._id || ""}
-            onChange={(e) => setSelectedBatch(batches.find((b) => b._id === e.target.value))}             
-            className="w-full md:w-64 border-0 bg-gray-100 dark:bg-gray-700 rounded-lg py-2.5 px-3 
-            text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-sky-500 appearance-none"
+            onChange={(e) =>
+              setSelectedBatch(batches.find((b) => b._id === e.target.value))
+            }
+            className="w-full md:w-64 border-0 bg-gray-100 dark:bg-gray-700 rounded-lg py-2.5 px-3 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-sky-500 appearance-none"
           >
             <option value="" disabled>Select batch</option>
-            {batches.map(b => (
+            {batches.map((b) => (
               <option key={b._id} value={b._id}>{b.name}</option>
             ))}
           </select>
         </div>
-
-        <SearchBar 
-          value={searchTerm}
-          onChange={setSearchTerm}
-          placeholder="Search subjects..."
-        />
+        <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search subjects..." />
       </div>
 
-      <NotificationMessage 
-        message={message} 
-        onDismiss={() => setMessage(null)} 
-      />
+      <NotificationMessage message={message} onDismiss={() => setMessage(null)} />
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
@@ -275,11 +303,10 @@ function SubjectAssignment({ batches, teachers }) {
       ) : filteredSubjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredSubjects.map((subject) => {
-            const teacherId = subjectAssignments[subject._id]?.subTeacher
-            const teacher2Id = subjectAssignments[subject._id]?.subTeacher2
-            const teacher = teachers.find((t) => t._id === teacherId)
-            const teacher2 = teachers.find((t) => t._id === teacher2Id)
-            const isEditing = editMode[subject._id]
+            const sub = subjectAssignments[subject._id] || {};
+            const teacher = teachers.find((t) => t._id === sub.subTeacher);
+            const teacher2 = teachers.find((t) => t._id === sub.subTeacher2);
+            const isEditing = editMode[subject._id];
 
             return (
               <AssignmentCard
@@ -288,61 +315,81 @@ function SubjectAssignment({ batches, teachers }) {
                 name={subject.name}
                 isAssigned={!!teacher}
                 assignedName={teacher?.name}
-                assignedName2={teacher2?.name} 
+                assignedName2={teacher2?.name}
+                periodTeacher1={subject?.periodTeacher1}
+                periodTeacher2={subject?.periodTeacher2}
                 isEditing={isEditing}
                 toggleEdit={toggleEditMode}
                 icon={FiBookOpen}
               >
-                <div className="space-y-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Select Teacher 1
-                  </label>
-                  <select
-                    value={subjectAssignments[subject._id]?.subTeacher || ""}
-                    onChange={(e) => handleTeacherSelect(subject._id, e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 
-                    focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
-                  >
-                    <option value="">Select teacher...</option>
-                    <option value="No">Not Assigned</option>
-                    {teachers.map((t) => (
-                      <option key={t._id} value={t._id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Select Teacher 2
-                  </label>
-                  <select
-                    value={subjectAssignments[subject._id]?.subTeacher2 || ""}
-                    onChange={(e) => handleTeacherSelect(subject._id, e.target.value, true)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 
-                    focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
-                  >
-                    <option value="">Select teacher...</option>
-                    <option value="No">Not Assigned</option>
-                    {teachers.map((t) => (
-                      <option key={t._id} value={t._id}>
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Teacher 1 */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Teacher 1</label>
+                    <select
+                      value={sub.subTeacher}
+                      onChange={(e) => handleTeacherSelect(subject._id, e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select teacher...</option>
+                      {teachers.map((t) => (
+                        <option key={t._id} value={t._id}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Period</label>
+                    <select
+                      value={sub.periodTeacher1}
+                      onChange={(e) => handlePeriodSelect(subject._id, e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select...</option>
+                      {[0,1,2,3,4,5,6,7,8,9,10].map(p => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Teacher 2 */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Teacher 2</label>
+                    <select
+                      value={sub.subTeacher2}
+                      onChange={(e) => handleTeacherSelect(subject._id, e.target.value, true)}
+                      className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select teacher...</option>
+                      {teachers.map((t) => (
+                        <option key={t._id} value={t._id}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Period</label>
+                    <select
+                      value={sub.periodTeacher2}
+                      onChange={(e) => handlePeriodSelect(subject._id, e.target.value, true)}
+                      className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select...</option>
+                      {[0,1,2,3,4,5,6,7,8,9,10].map(p => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </AssignmentCard>
-            )
+            );
           })}
         </div>
       ) : (
         <EmptyState searchTerm={searchTerm} />
       )}
     </div>
-  )
+  );
 }
+
 
 function BatchTeacherAssignment({ batches, teachers }) {
   const [batchAssignments, setBatchAssignments] = useState({})
@@ -658,6 +705,7 @@ const ClassLeaderAssignment = ({ batches, students }) => {
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
                   >
                     <option value="">Select student...</option>
+                    <option value="No">Not Assigned</option>
                     {batchStudents.map((student) => (
                       <option key={student._id} value={student._id}>
                         {student.name}
@@ -674,6 +722,7 @@ const ClassLeaderAssignment = ({ batches, students }) => {
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
                   >
                     <option value="">Select student...</option>
+                    <option value="No">Not Assigned</option>
                     {batchStudents.map((student) => (
                       <option key={student._id} value={student._id}>
                         {student.name}
