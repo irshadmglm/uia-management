@@ -1,5 +1,5 @@
 import express from "express";
-import { editStdAchivement, getStdAchivement, postStdAchivement } from "../controllers/achivementcontroller.js";
+import { editStdAchivement, getStdAchivement, postStdAchivement } from "../controllers/achivementsController.js";
 
 const router = express.Router();
 
