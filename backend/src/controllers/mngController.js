@@ -503,13 +503,34 @@ export const asignBatchTeacher = async (req, res) => {
 
 export const asignClassLeader = async (req, res) => {
    try {
-    const {classId, studentId} = req.body;
+    const {classId, studentId, second = false} = req.body;
     const selectedBatch = await Batch.findById(classId);
     if(!selectedBatch){
      return res.status(404).json({status: false, message:"Batch not found"});
     }
+    if (studentId === "No") {
+      if (second) {
+        selectedBatch.classLeader = null;
+      } else {
+        selectedBatch.classLeader2 = null;
+      }
+      
+      await selectedBatch.save();
+      
+      return res.status(200).json({
+        status: true,
+        message: "Class Leader removed successfully",
+        selectedBatch,
+      });
+      
+    }
     
-    selectedBatch.classLeader = mongoose.Types.ObjectId.isValid(studentId) ? studentId : null;
+    if(second){
+      selectedBatch.classLeader2 = mongoose.Types.ObjectId.isValid(studentId) ? studentId : null;
+    }else{
+      selectedBatch.classLeader = mongoose.Types.ObjectId.isValid(studentId) ? studentId : null;
+    }
+    
      
     await selectedBatch.save();
 
@@ -691,11 +712,13 @@ export const curruntSemSubjects = async (req, res) => {
         $project: {
           name: 1,
           mark: 1,
+          CEmark: 1,
           "subTeacherInfo.name": 1,
           "subTeacher2Info.name": 1
         }
       }
     ]);
+    console.log(subjects);
     
 
     return res.status(200).json(subjects);

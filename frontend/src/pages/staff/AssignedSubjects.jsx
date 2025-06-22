@@ -16,7 +16,7 @@ const AssignedSubjects = () => {
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-4 pt-24">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-          Assigned Subjects
+          My Subjects
         </h2>
 
         {isLoading ? (
@@ -40,7 +40,7 @@ const AssignedSubjects = () => {
                         {subject.name}
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-300">
-                        Batch: {subject.batchDetails?.name || "N/A"}
+                         {subject.batchDetails?.name || "N/A"}
                       </p>
                     </div>
                   </div>

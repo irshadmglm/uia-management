@@ -562,7 +562,7 @@ function SemesterAssignment({batches, semesters}) {
   )
 }
 
-function ClassLeaderAssignment({batches, students}) {
+const ClassLeaderAssignment = ({ batches, students }) => {
   const [batchAssignments, setBatchAssignments] = useState({})
   const [message, setMessage] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -570,26 +570,33 @@ function ClassLeaderAssignment({batches, students}) {
 
   useEffect(() => {
     const modified = {}
-    for (const cl of batches) {
-      modified[cl._id] = cl.classLeader || ""
+    for (const batch of batches) {
+      modified[batch._id] = {
+        classLeader: batch.classLeader || "",
+        classLeader2: batch.classLeader2 || ""
+      }
     }
     setBatchAssignments(modified)
   }, [batches])
 
-  const handleLeaderSelect = async (classId, studentId) => {
+  const handleLeaderSelect = async (batchId, studentId, second = false) => {
     try {
-      setBatchAssignments((prev) => ({
+      setBatchAssignments(prev => ({
         ...prev,
-        [classId]: studentId,
+        [batchId]: {
+          ...prev[batchId],
+          [second ? "classLeader2" : "classLeader"]: studentId
+        }
       }))
 
       await axiosInstance.post("/mng/asign-class-leader", {
-        classId,
+        classId: batchId,
         studentId,
+        second
       })
 
       setMessage({ type: "success", text: "Class leader assigned successfully!" })
-      setEditMode((prev) => ({ ...prev, [classId]: false }))
+      setEditMode(prev => ({ ...prev, [batchId]: false }))
 
       setTimeout(() => setMessage(null), 3000)
     } catch (error) {
@@ -598,71 +605,80 @@ function ClassLeaderAssignment({batches, students}) {
   }
 
   const toggleEditMode = (batchId) => {
-    setEditMode((prev) => ({
+    setEditMode(prev => ({
       ...prev,
-      [batchId]: !prev[batchId],
+      [batchId]: !prev[batchId]
     }))
   }
 
-  const filteredBatches = batches.filter((batch) => 
+  const filteredBatches = batches.filter(batch =>
     batch.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
     <div className="space-y-6">
       <div className="flex justify-end mb-6">
-        <SearchBar 
+        <SearchBar
           value={searchTerm}
           onChange={setSearchTerm}
           placeholder="Search batches..."
         />
       </div>
 
-      <NotificationMessage 
-        message={message} 
-        onDismiss={() => setMessage(null)} 
-      />
+      <NotificationMessage message={message} onDismiss={() => setMessage(null)} />
 
       {filteredBatches.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredBatches.map((batch) => {
-            const studentId = batchAssignments[batch._id]
-            const student = students.find((s) => s._id === studentId)
+            const assignment = batchAssignments[batch._id] || {}
+            const leader1 = students.find((s) => s._id === assignment.classLeader)
+            const leader2 = students.find((s) => s._id === assignment.classLeader2)
+            const batchStudents = students.filter((s) => s.batchId === batch._id)
             const isEditing = editMode[batch._id]
-            const batchStudents = students.filter((std) => std.batchId === batch._id)
 
             return (
               <AssignmentCard
                 key={batch._id}
                 id={batch._id}
                 name={batch.name}
-                isAssigned={!!student}
-                assignedName={student?.name}
+                isAssigned={!!(leader1 || leader2)}
+                assignedName={leader1?.name}
+                assignedName2={leader2?.name}
                 isEditing={isEditing}
                 toggleEdit={toggleEditMode}
                 icon={FiUserCheck}
               >
                 <div className="space-y-4">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Select Class Leader
+                    Select Class Leader 1
                   </label>
                   <select
-                    value={batchAssignments[batch._id] || ""}
+                    value={assignment.classLeader}
                     onChange={(e) => handleLeaderSelect(batch._id, e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 
-                    focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
                   >
                     <option value="">Select student...</option>
-                    {batchStudents.length > 0 ? (
-                      batchStudents.map((s) => (
-                        <option key={s._id} value={s._id}>
-                          {s.name}
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>No students in this batch</option>
-                    )}
+                    {batchStudents.map((student) => (
+                      <option key={student._id} value={student._id}>
+                        {student.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Select Class Leader 2
+                  </label>
+                  <select
+                    value={assignment.classLeader2}
+                    onChange={(e) => handleLeaderSelect(batch._id, e.target.value, true)}
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
+                  >
+                    <option value="">Select student...</option>
+                    {batchStudents.map((student) => (
+                      <option key={student._id} value={student._id}>
+                        {student.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </AssignmentCard>

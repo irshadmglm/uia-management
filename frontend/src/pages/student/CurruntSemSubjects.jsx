@@ -41,33 +41,24 @@ const CurruntSemSubjects = () => {
                         {subject.name}
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-300">
-                      Usthad: {subject?.subTeacherInfo?.[0]?.name || "Teacher not assigned"}
+                      Teacher: {subject?.subTeacherInfo?.[0]?.name || "Teacher not assigned"}
                       </p>
                       {
-                        subject?.subTeacher2Info &&
+                        subject?.subTeacher2Info.length > 0  &&
                         <p className="text-sm text-gray-500 dark:text-gray-300">
-                        Usthad: {subject?.subTeacher2Info?.[0]?.name || "Teacher not assigned"}
+                        Teacher 2: {subject?.subTeacher2Info?.[0]?.name || "Teacher not assigned"}
                         </p>
                       }
                       <p className="text-sm text-gray-500 dark:text-gray-300">
                         mark: {subject?.mark}
                       </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-300">
+                       CE mark: {subject?.CEmark === true ? "Yes" : "No"}
+                      </p>
                     </div>
                   </div>
                
-                  {subject.CEmark && (
-                       <a
-                       href={subject.batchDetails.CEmarkList}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       aria-label="Open internal mark sheet in a new tab"
-                       > 
-                    <div className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-amber-500 rounded-full px-3 py-2 shadow-md w-fit ">
-                       <MdAdd className="w-4 h-4 text-white animate-pulse" />
-                        <span className="text-xs font-medium text-white animate-pulse">CE Mark</span>
-                    </div>
-                    </a>
-                    )}
+                
 
                 </div>
               </div>

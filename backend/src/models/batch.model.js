@@ -15,6 +15,10 @@ const batchSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
+    classLeader2: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+    },
     currentSemester: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Semester",
