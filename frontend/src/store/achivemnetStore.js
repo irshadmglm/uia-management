@@ -8,12 +8,27 @@ export const useAchievement = create((set, get) => ({
   isLoading: false,
   error: null,
 
-  // Fetch all achievements for a student
-  getStdAchievements: async () => {
+  // Fetch all achievements 
+  getAllAchievements: async () => {
     set({ isLoading: true, error: null });
     try {
         const authUser = useAuthStore.getState().authUser;
       const res = await axiosInstance.get(`/achievements/${authUser._id}`);
+      set({ achievements: res.data, isLoading: false });
+    } catch (error) {
+      console.error("Failed to fetch achievements:", error.message);
+      set({ error: error.message, isLoading: false });
+      toast.error("Failed to load achievements");
+    }
+  },
+
+  
+  // Fetch all achievements for a student
+  getStdAchievements: async (studentId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const id = studentId || useAuthStore.getState().authUser._id;
+      const res = await axiosInstance.get(`/achievements/${id}`);
       set({ achievements: res.data, isLoading: false });
     } catch (error) {
       console.error("Failed to fetch achievements:", error.message);

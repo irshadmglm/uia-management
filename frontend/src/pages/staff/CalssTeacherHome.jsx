@@ -9,8 +9,10 @@ const CalssTeacherHome = () => {
     const { batchId } = useParams();
     const {batch, getBatchById } = useStaffStore()
     useEffect(() => {
-     getBatchById(batchId)
-    }, [getBatchById])
+     if(batchId){
+      getBatchById(batchId)
+     }
+    }, [getBatchById, batchId])
     
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800">

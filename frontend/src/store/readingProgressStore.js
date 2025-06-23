@@ -9,11 +9,13 @@ export const useReadingProgress = create((set, get) => ({
   error: null,
 
   // GET reading progress for a student
-  getStdReadingProgress: async () => {
+  getStdReadingProgress: async (studentId ) => {
     set({ isLoading: true, error: null });
     try {
-      const authUser = useAuthStore.getState().authUser;
-      const res = await axiosInstance.get(`/reading-progress/${authUser._id}`);
+      
+      let id = studentId || useAuthStore.getState().authUser._id;
+      
+      const res = await axiosInstance.get(`/reading-progress/${id}`);
       set({ readingProgress: res.data, isLoading: false });
     } catch (error) {
       console.error("Failed to fetch reading progress:", error.message);

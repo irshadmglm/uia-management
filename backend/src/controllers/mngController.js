@@ -123,7 +123,7 @@ export const updateSemester = async (req, res) => {
  
 export const getBatches = async (req, res) => {
   try {
-    const batches = await Batch.find().sort({createdAt: 1}); 
+    const batches = await Batch.find().sort({ createdAt: -1 });
     
     res.status(200).json(batches); 
 
@@ -174,7 +174,9 @@ export const updateBatch = async (req, res) => {
 
 export const getBatch = async (req, res) => {
   try {
-    const { batchId } = req.params;
+    let { batchId } = req.params;
+
+    batchId = new mongoose.Types.ObjectId(batchId)
 
     const batch = await Batch.findById(batchId);
     

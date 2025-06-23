@@ -67,6 +67,7 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { username, password, role} = req.body;
+  console.log(username);
   
   try {
     if (!role) {
@@ -76,7 +77,7 @@ export const login = async (req, res) => {
     let user;
 
     if (role === "student") {
-      user = await User.findOne({ cicNumber:username, isActive: true });
+      user = await User.findOne({ cicNumber:Number(username), isActive: true });
     } else {
       user = await Staff.findOne({ userName:username });
     }

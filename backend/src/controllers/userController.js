@@ -43,9 +43,9 @@ export const getStudents = async (req, res) => {
     const { batchId } = req.params;
     let students;
     if(batchId){
-       students = await Student.find({batchId, isActive: true}).sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
+       students = await Student.find({batchId, isActive: true}).sort({ cicNumber: 1 });
     }else{
-       students = await Student.find({isActive: true}).sort({ selectedBatch: 1, rollNumber: 1, division: 1 });
+       students = await Student.find({isActive: true}).sort({ cicNumber: 1 });
     }
     
 

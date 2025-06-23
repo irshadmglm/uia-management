@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema(
     ref: "Batch"
   },
   cicNumber: {
-    type: String,
+    type: Number,
     required: true,
     trim: true,
   },

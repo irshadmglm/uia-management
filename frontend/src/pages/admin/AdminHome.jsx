@@ -2,20 +2,24 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Header from "../../components/Header";
 import Card from "../../components/Card";
-import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal, File, DownloadCloud,  } from "lucide-react";
+import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal, File, DownloadCloud, Book,  } from "lucide-react";
 const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link"
 
 const AdminHome = () => {
   const cards = [
     { title: "Academic Register", icon: ClipboardList , route: "/dashboard/admin/academic-register" },
-    { title: "Students' Details", icon: Users, route: "/dashboard/admin/users" },
     { title: "Assign Duties", icon: GraduationCap, route: "/dashboard/admin/assign-duties" },
     { title: "Manage Academic Info", icon: Settings2Icon, route: "/dashboard/admin/management" },
-    { title: "Semester Exam Results", icon: Award, route: "/dashboard/admin/batches" },
+
+    { title: "Students' Details", icon: Users, route: "/dashboard/admin/users" },
     { title: "CE Mark", icon: ClipboardCheck, route: "/dashboard/admin/ce-mark" },
     { title: "Internal Mark", icon: ListTodo, route: "/dashboard/admin/ir-mark" },
+
+    { title: "Semester Exam Results", icon: Award, route: "/dashboard/admin/batches/marklist" },
+    { title: "Achivements", icon: Medal, route: "/dashboard/admin/batches/achivements" },
+    { title: "Reading Progress", icon: Book, route: "/dashboard/admin/batches/reading-progress" },
+
     { title: "Ishthiraq", icon:  HandCoins, route: "/dashboard/admin/ishthiraq" },
-    { title: "Achivements", icon: Medal, route: "/dashboard/admin/achivements" },
     { title: "Downloads", icon: DownloadCloud, url: downloadsUrl },
     { title: "Academic Records", icon: File, route: "/dashboard/admin/academic-records" },
   ];

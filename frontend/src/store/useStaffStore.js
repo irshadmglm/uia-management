@@ -92,6 +92,8 @@ export const useStaffStore = create((set, get) => ({
   getBatchById: async (batchId)=> {
     set({isLoading: true});
     try {
+      console.log("batchId", batchId);
+      
       const res = await axiosInstance.get(`/mng/batch/${batchId}`)
       set({batch: res.data.batch});
     } catch (error) {
@@ -102,6 +104,8 @@ export const useStaffStore = create((set, get) => ({
   },
   getStudentBatch: async () => {
   const authUser = useAuthStore.getState().authUser;
+  console.log("authuser.batchId",authUser.batchId);
+  
   try {
     await get().getBatchById(authUser.batchId);
   } catch (error) {

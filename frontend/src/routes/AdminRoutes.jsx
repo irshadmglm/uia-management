@@ -21,6 +21,10 @@ import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
 import AcademicRegister from "../pages/admin/AcademicRegister";
 import InactiveStdList from "../pages/admin/InactiveStdList";
 import AdminIshthiraq from "../pages/admin/AdminIshthiraq";
+import AdminAchievementsPage from "../pages/admin/AdminAchievementsPage";
+import AdminReadingProgressPage from "../pages/admin/AdminReadingProgressPage";
+import AdminBatches from "../pages/admin/AdminBatches";
+import BatchStudents from "../pages/admin/BatchStudents";
 
 
 const AdminRoutes = () => {
@@ -38,9 +42,15 @@ const AdminRoutes = () => {
       <Route path="management" element={<ManagementPage />} />
       <Route path="attendance/:batchname" element={<AdminAttendance />} />
       <Route path="semester/:semesterId" element={<SemesterPage />} />
-      <Route path="batches" element={<AdminMarkUpdate />} />
-      <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} />
-      <Route path="marklistes/:studentId" element={<AdminsideMarkListes />} />
+      {/* <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} /> */}
+
+      <Route path="batches/:item" element={<AdminBatches />} />
+      <Route path="batches/:item/:batchId" element={<BatchStudents />} />
+
+      <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />
+      <Route path="achivements/:studentId" element={<AdminAchievementsPage />} />
+      <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
+
       {/* <Route path="ishthiraq" element={<FeesDashboard />} /> */}
       <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} />
       <Route path="ce-mark" element={<CEMarkAdmin />} />
