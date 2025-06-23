@@ -9,7 +9,6 @@ export const getTimetable = async (req, res) => {
   try {
     let timetable = await Timetable.findOne();
     let batch = await Batch.find()
-    console.log(batch);
     
     if (!timetable) {
       const weekdays = [ "Saturday","Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
@@ -23,10 +22,8 @@ export const getTimetable = async (req, res) => {
       weekdays.forEach((day) => {
         grid[day] = Array.from({ length: periodCount }, createEmptySlot);
       });
-      console.log(grid);
       
      timetable = new Timetable({ grid });
-      console.log(timetable);
       
     }
 
@@ -156,7 +153,6 @@ export const updateBatch = async (req, res) => {
   try {
     const { batchId } = req.params;
     const { name } = req.body;
-    console.log("name:",name);
     
     const updatedBatch = await Batch.findByIdAndUpdate(
       batchId,
@@ -164,7 +160,6 @@ export const updateBatch = async (req, res) => {
       { new: true, runValidators: true }
     );
     
-console.log("update",updatedBatch);
 
     if (!updatedBatch) {
       return res.status(404).json({ message: "Batch not found" });
@@ -329,7 +324,6 @@ export const academicStatusLinkUpdate = async (req, res) => {
     const { batchId, ...rest } = req.body;
 
     const item = Object.keys(rest)[0]
-    console.log(item);
     
 
     if (!batchId || !item) {
@@ -345,7 +339,6 @@ export const academicStatusLinkUpdate = async (req, res) => {
 
     batch[item] = rest[item];
     await batch.save();
-console.log(batch);
 
     return res.status(200).json({ message: `${item} link updated successfully `, batch });
   } catch (error) {
@@ -470,7 +463,6 @@ export const updateSubject = async (req, res) => {
     });
 
     
-console.log("update",updatedSubject);
 
     if (!updatedSubject) {
       return res.status(404).json({ message: "Subject not found" });
@@ -767,7 +759,6 @@ export const curruntSemSubjects = async (req, res) => {
         }
       }
     ]);
-    console.log(subjects);
     
 
     return res.status(200).json(subjects);
@@ -794,7 +785,6 @@ try {
 
   const monthName = date.toLocaleString("default", { month: "long" }); 
   const day = date.getDate();
-console.log(day, monthName);
 
 let response = await Batch.updateOne(
   { _id: classId },

@@ -3,9 +3,11 @@ import { CheckCircle, Loader2 } from "lucide-react";
 import Header from "../../components/Header";
 import { useStaffStore } from "../../store/useStaffStore";
 import { MdAdd, MdAddAlert, MdAddCircle, MdAddHomeWork, MdMarkunread } from "react-icons/md";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const AssignedSubjects = () => {
   const { assignedSubjects, getAssignedSubjects, isLoading, } = useStaffStore();
+  const {authUser} = useAuthStore()
 
   useEffect(() => {
     getAssignedSubjects();
@@ -42,6 +44,20 @@ const AssignedSubjects = () => {
                       <p className="text-sm text-gray-500 dark:text-gray-300">
                          {subject.batchDetails?.name || "N/A"}
                       </p>
+                      {authUser?._id?.toString() === subject?.subTeacher?.toString() ? (
+                          subject?.periodTeacher1 > 0 ? (
+                            <p className="text-sm text-gray-500 dark:text-gray-300">
+                              Period: {subject.periodTeacher1}
+                            </p>
+                          ) : null
+                        ) : (
+                          subject?.periodTeacher2 > 0 ? (
+                            <p className="text-sm text-gray-500 dark:text-gray-300">
+                              Period: {subject.periodTeacher2}
+                            </p>
+                          ) : null
+                        )}
+
                     </div>
                   </div>
                

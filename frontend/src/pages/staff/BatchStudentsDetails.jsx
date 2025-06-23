@@ -14,8 +14,10 @@ const { getBatchStudents, batchStudents } = useStudentStore()
     
   return (
    <>
+   <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
     <Header />
     <StudentTable students={batchStudents} />
+    </div>
    </>
   )
 }

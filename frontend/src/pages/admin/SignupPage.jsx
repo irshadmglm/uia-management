@@ -78,7 +78,6 @@ const SignupPage = () => {
     if (teacherId) {
       await updateTeacher(teacherId, formData);
     } else {
-      console.log(formData);
       
       await signup(formData);
     }

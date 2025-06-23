@@ -1,6 +1,6 @@
 import Header from "../../components/Header";
 import Card from "../../components/Card";
-import { BookMarked, ClipboardPenLineIcon, GraduationCap, LineChart, ListTodo, LucideCopySlash, Magnet, MousePointer2, Settings2Icon, Table, User, Users } from "lucide-react";
+import { BookMarked, ClipboardPenLineIcon, GraduationCap, LineChart, ListCheck, ListTodo, LucideCopySlash, Magnet, MousePointer2, Settings2Icon, Table, User, Users } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useStaffStore } from "../../store/useStaffStore";
@@ -26,12 +26,12 @@ const CalssTeacherHome = () => {
             >
             <div
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-md hover:shadow-2xl dark:hover:shadow-lg 
-                            transform transition duration-300 hover:scale-105 cursor-pointer p-5 flex flex-col items-center"
+                 transform transition duration-300 hover:scale-105 cursor-pointer p-5 flex flex-col items-center"
                 >
-                <div className="bg-gradient-to-r from-sky-600 to-sky-700 rounded-full p-3 shadow-lg">
+                <div className="bg-gradient-to-r from-sky-600 to-sky-700 rounded-full p-2 shadow-lg">
                     <ListTodo className="text-white text-4xl transition-transform duration-300 hover:scale-110" />
                 </div>
-                <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-gray-200">Internel Mark</h2>
+                <h2 className="mt-2 text-lg font-bold text-gray-800 dark:text-gray-200">Internel Mark</h2>
             </div>
             </a>
         <a
@@ -44,10 +44,10 @@ const CalssTeacherHome = () => {
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-md hover:shadow-2xl dark:hover:shadow-lg 
                             transform transition duration-300 hover:scale-105 cursor-pointer p-5 flex flex-col items-center"
                 >
-                <div className="bg-gradient-to-r from-sky-600 to-sky-700 rounded-full p-3 shadow-lg">
-                    <ListTodo className="text-white text-4xl transition-transform duration-300 hover:scale-110" />
+                <div className="bg-gradient-to-r from-sky-600 to-sky-700 rounded-full p-2 shadow-lg">
+                    <ListCheck className="text-white text-4xl transition-transform duration-300 hover:scale-110" />
                 </div>
-                <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-gray-200">CE Mark</h2>
+                <h2 className="mt-2 text-lg font-bold text-gray-800 dark:text-gray-200">CE Mark</h2>
             </div>
             </a>
             <Card title="Ishthiraq" icon={ClipboardPenLineIcon} route={`/dashboard/teacher/ishthiraq/${batchId}`} />

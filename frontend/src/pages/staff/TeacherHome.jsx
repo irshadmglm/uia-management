@@ -22,7 +22,7 @@ const TeacherHome = () => {
     {batches.map((c) => (
       <Card key={c._id} title={c.name} icon={Users2} route={`/dashboard/teacher/calss-teacher-home/${c._id}`} />
     ))}
-    <Card title="Assigned Subjects" icon={BookOpenText} route="/dashboard/teacher/assigned-subjects" />
+    <Card title="My Subjects" icon={BookOpenText} route="/dashboard/teacher/assigned-subjects" />
     <Card title="Downloads" icon={DownloadCloud} url={downloadsUrl} />
 
   </div>

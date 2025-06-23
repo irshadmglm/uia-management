@@ -101,7 +101,6 @@ export const useAdminStore = create((set, get) => ({
   
   updateBatch: async (batchId, name) => {
     try {
-      console.log(batchId, name);
       
       const res = await axiosInstance.put(`/mng/batch/update/${batchId}`, {name});
       if (res.status === 200) {
@@ -127,7 +126,6 @@ export const useAdminStore = create((set, get) => ({
   
 
   getSubjects: async (semesterId) => {
-    console.log(semesterId);
     
     set({isLoading: true});
     try {

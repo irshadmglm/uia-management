@@ -146,7 +146,6 @@ module.exports = {
                     }
                   ]).sort({ borrowDate: -1 }).toArray();
                   
-                  console.log(borrowedBooks);
                   
                 if(borrowedBooks){
                     resolve(borrowedBooks);
