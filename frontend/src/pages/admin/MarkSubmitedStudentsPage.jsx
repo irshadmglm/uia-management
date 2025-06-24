@@ -33,7 +33,7 @@ const MarkSubmitedStudentsPage = () => {
   }, [batchStudents, markList]);
 
   const filteredStudents = students.filter((student) =>
-    [student.name, student.cicNumber, student.batch]
+    [student.name, String(student.cicNumber), student.batch]
       .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 

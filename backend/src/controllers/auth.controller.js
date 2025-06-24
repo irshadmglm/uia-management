@@ -97,6 +97,7 @@ export const login = async (req, res) => {
       _id: user._id,
       name: user.name,
       batch: user.batch || null,
+      batchId: user.batchId || null,
       email: user.email || null,
       address: user.address || null,
       cicNumber: user.cicNumber || null,

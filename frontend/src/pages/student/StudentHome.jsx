@@ -20,7 +20,7 @@ const StudentHome = () => {
       { title: "Internel Mark", icon: BookMarked, url: batch?.IRmarkList },
       { title: "CE Mark", icon: BookMarked, url: batch?.CEmarkList  },
       { title: "Downloads", icon: DownloadCloud, url: downloadsUrl  },
-      { title: "Ishthiraq", icon: LucideHandCoins, route: "/dashboard/student/ishthiraq" },
+      { title: "Ishthiraq", icon: LucideHandCoins, url: batch?.ishthiraq },
     ];
      
     return (

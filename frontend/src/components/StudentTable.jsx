@@ -28,7 +28,7 @@ const StudentTable = ({ students, inactive}) => {
   
 
   const filteredStudents = students.filter((student) =>
-    [student.name, student.batchName, student.cicNumber]
+    [student.name, student.batchName, String(student.cicNumber)]
       .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 

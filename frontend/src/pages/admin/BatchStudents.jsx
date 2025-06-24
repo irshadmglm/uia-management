@@ -33,9 +33,10 @@ const BatchStudents = () => {
   }, [batchStudents, markList]);
 
   const filteredStudents = students.filter((student) =>
-    [student.name, student.cicNumber, student.batch]
+    [student.name, String(student.cicNumber)]
       .some(field => field?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+  
 
   return (
     <>
@@ -49,7 +50,7 @@ const BatchStudents = () => {
             <input
               type="text"
               placeholder="Search students..."
-              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white shadow-sm"
+              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 bg-white dark:bg-slate-800 shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -75,7 +76,7 @@ const BatchStudents = () => {
             >
                  <div
                 key={student._id}
-                className="bg-white dark:bg-gray-700 rounded-xl shadow-lg dark:shadow-gray-900 p-6 transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
+                className="bg-white dark:bg-gray-700 rounded-xl shadow-lg dark:shadow-gray-900 p-3 transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl cursor-pointer"
               >
                   {/* 🔹 Badge for Pending Approvals or requsted to edit */}
                     {(() => {
@@ -97,13 +98,13 @@ const BatchStudents = () => {
                       );
                     })()}
 
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-2">
                   <div className="w-10 h-10 flex-shrink-0 rounded-full bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-lg mr-4">
                     {index + 1}
                   </div>
-                  <div className="text-gray-900 dark:text-gray-200 text-lg font-medium font-sans">
+                  <div className="text-gray-900 dark:text-gray-200 text-sm font-bold ">
                     {student.name}
-                    <p><span className="font-normal">CIC:</span> {student.cicNumber}</p>
+                    <p className="font-normal text-gray-600 dark:text-gray-400 text-sm"><span >CIC:</span> {student.cicNumber}</p>
                   </div>
                 </div>
                 {/* <div className="text-gray-700 dark:text-gray-300 text-sm space-y-1">
