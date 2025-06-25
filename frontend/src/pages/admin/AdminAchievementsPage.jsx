@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom"
 
 const AdminAchievementsPage = () => {
     const {studentId} = useParams()
-  const { achievements, isLoading, getAllAchievements, updateAchievement, deleteAchievement } = useAchievement()
+  const { achievements, isLoading, getStdAchievements, updateAchievement, deleteAchievement } = useAchievement()
   const [selectedAchievement, setSelectedAchievement] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
@@ -22,12 +22,12 @@ const AdminAchievementsPage = () => {
   const [selectedItems, setSelectedItems] = useState([])
 
   useEffect(() => {
-    getAllAchievements()
-  }, [getAllAchievements])
+    getStdAchievements(studentId);
+  }, [getStdAchievements])
 
   const handleApprove = async (achievementId) => {
     try {
-    //   await updateAchievement(achievementId, { approval: true })
+      await updateAchievement(achievementId, { approval: true })
     } catch (error) {
       console.error("Error approving achievement:", error)
     }

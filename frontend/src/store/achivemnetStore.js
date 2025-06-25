@@ -9,7 +9,7 @@ export const useAchievement = create((set, get) => ({
   error: null,
 
   // Fetch all achievements 
-  getAllAchievements: async () => {
+  getAchievementsByBatch: async () => {
     set({ isLoading: true, error: null });
     try {
         const authUser = useAuthStore.getState().authUser;
@@ -66,5 +66,19 @@ export const useAchievement = create((set, get) => ({
       console.error("Failed to update achievement:", error.message);
       toast.error("Update failed");
     }
+  },
+deleteAchievement: async (achievementId) => {
+  try {
+    const res = await axiosInstance.delete(`/achievements/${achievementId}`);
+    set((state) => ({
+      achievements: state.achievements.filter(a => a._id !== achievementId)
+    }));
+    toast.success("Achievement deleted successfully");
+    return res.data;
+  } catch (error) {
+    console.error("Delete error:", error);
+    toast.error("Failed to delete achievement");
   }
+}
+
 }));

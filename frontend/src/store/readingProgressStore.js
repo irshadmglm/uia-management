@@ -53,5 +53,19 @@ export const useReadingProgress = create((set, get) => ({
       console.error("Update failed:", error.message);
       toast.error("Failed to update reading progress");
     }
+  },
+
+  deleteReadingProgress: async (recordId) => {
+    try {
+      const res = await axiosInstance.delete(`/reading-progress/${recordId}`);
+      set((state) => ({
+        readingProgress: state.readingProgress.filter(a => a._id !== recordId)
+      }));
+      toast.success("readingProgress deleted successfully");
+      return res.data;
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete readingProgress");
+    }
   }
 }));

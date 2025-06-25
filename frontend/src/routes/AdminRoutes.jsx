@@ -25,6 +25,7 @@ import AdminAchievementsPage from "../pages/admin/AdminAchievementsPage";
 import AdminReadingProgressPage from "../pages/admin/AdminReadingProgressPage";
 import AdminBatches from "../pages/admin/AdminBatches";
 import BatchStudents from "../pages/admin/BatchStudents";
+import RecordPage from "../pages/admin/RecordPage";
 
 
 const AdminRoutes = () => {
@@ -60,7 +61,7 @@ const AdminRoutes = () => {
       <Route path="staff-edit/:teacherId" element={<SignupPage />} />
       <Route path="signup" element={<SignupPage />} />
 
-      <Route path="academic-records" element={<AcademicRegister  />} />
+      <Route path="academic-records" element={<RecordPage  />} />
 
       <Route path="academic-register" element={<AcademicRegister  />} />
       <Route path="std-attendance-register" element={<BatchAcademicStatus item="stdAttendanceRegister" />} />

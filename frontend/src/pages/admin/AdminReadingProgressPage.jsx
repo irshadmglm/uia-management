@@ -27,7 +27,7 @@ const AdminReadingProgressPage = () => {
 
   const handleApprove = async (progressId) => {
     try {
-    //   await updateReadingProgress(progressId, { approval: true })
+      await updateReadingProgress(progressId, { approval: true })
     } catch (error) {
       console.error("Error approving reading progress:", error)
     }

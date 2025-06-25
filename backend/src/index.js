@@ -15,6 +15,7 @@ import marksRoutes from "./routes/marks.route.js";
 import feesRoutes from "./routes/fees.route.js";
 import achivemnetRoutes from "./routes/achivement.route.js"
 import readingProgressRoutes from "./routes/readingProgress.route.js"
+import recordRoutes from "./routes/records.route.js"
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api/marklist', marksRoutes);
 app.use('/api/fees', feesRoutes);
 app.use('/api/achievements', achivemnetRoutes);
 app.use('/api/reading-progress', readingProgressRoutes);
+app.use('/api/records', recordRoutes);
 
 app.get("/api/ping", (req, res) => {
   res.status(200).send("Server is alive!");

@@ -43,7 +43,7 @@ const BatchStudents = () => {
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24">
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
-          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white font-oswald ml-2">
+          <h2 className="text-xl font-extrabold text-gray-900 dark:text-white font-oswald ml-2">
           Students' {item}
           </h2>
           <div className="relative w-full sm:w-1/3">
@@ -99,7 +99,7 @@ const BatchStudents = () => {
                     })()}
 
                 <div className="flex items-center mb-2">
-                  <div className="w-10 h-10 flex-shrink-0 rounded-full bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-lg mr-4">
+                  <div className="w-8 h-8 flex-shrink-0 rounded-full bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-sm mr-4">
                     {index + 1}
                   </div>
                   <div className="text-gray-900 dark:text-gray-200 text-sm font-bold ">
