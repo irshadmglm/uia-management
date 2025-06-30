@@ -19,7 +19,7 @@ const CalssTeacherHome = () => {
   
       { title: "Students' Details", icon: Users, route: `/dashboard/teacher/batch-students/${batchId}` },  
       { title: "Semester Exam Results", icon: Award, route: `/dashboard/teacher/batches/marklist/${batchId}` },
-      { title: "Achivements", icon: Medal, route: `/dashboard/teacher/batches/achivements/${batchId}` },
+      { title: "Achivements", icon: Medal, route: `/dashboard/teacher/batches/achievements/${batchId}` },
       { title: "Reading Progress", icon: Book, route: `/dashboard/teacher/batches/reading-progress/${batchId}` },
       { title: "CE Mark", icon: ClipboardCheck, url: batch?.CEmarkList },
       { title: "Internal Mark", icon: ListTodo, url: batch?.IRmarkList  },

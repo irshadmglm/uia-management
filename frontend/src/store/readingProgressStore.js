@@ -5,6 +5,7 @@ import { useAuthStore } from "./useAuthStore";
 
 export const useReadingProgress = create((set, get) => ({
   readingProgress: [],
+  progressCountToApprove:[],
   isLoading: false,
   error: null,
 
@@ -67,5 +68,23 @@ export const useReadingProgress = create((set, get) => ({
       console.error("Delete error:", error);
       toast.error("Failed to delete readingProgress");
     }
-  }
+  },
+  progressCountToApproveByBatch: async () => {
+    try {
+      const res =await axiosInstance.get('/reading-progress/count');
+      
+      set({progressCountToApprove: res.data})
+    } catch (error) {
+        console.log("Error in getcountToApprove", error);
+    }
+  },
+  progressCountToApproveByStd: async (batchId) => {
+    try {
+      const res =await axiosInstance.get(`/reading-progress/count/${batchId}`);
+      
+      set({progressCountToApprove: res.data})
+    } catch (error) {
+        console.log("Error in getcountToApprove", error);
+    }
+  },
 }));

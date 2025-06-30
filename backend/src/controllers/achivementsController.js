@@ -61,21 +61,42 @@ export const getStdAchivement = async (req, res) => {
     }
   };
 
-  export const getToApprove = async (req, res) => {
-    try {
-      const { batchId } = req.params;
-  
-      if (!batchId ) {
-        return res.status(400).json({ message: "batchId is required" });
-      }
-  
-      const achievement = await Achievement.find({batchId: batchId, approval: false});
-  
-      res.status(200).json(achievement);
-    } catch (error) {
-      console.error("Error fetching approval count:", error.message);
-      res.status(500).json({ message: "Failed to get approval count" });
+  import mongoose from "mongoose";
+
+export const getCountToApproveByStd = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+    if (!batchId) {
+      return res.status(400).json({ message: "batchId is required" });
     }
+
+    const batchObjId = new mongoose.Types.ObjectId(batchId);
+
+    const counts = await Achievement.aggregate([
+      { $match: { approval: false, batchId: batchObjId } },
+      { $group:  { _id: "$studentId", count: { $sum: 1 } } }
+    ]);
+
+    return res.status(200).json(counts);
+  } catch (error) {
+    console.error("Error fetching count to approve:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+  export const getCountToApproveByBatch = async (req, res) => {
+      try {
+          const counts = await Achievement.aggregate([
+              { $match: { approval: false } },
+              { $group: { _id: "$batchId", count: { $sum: 1 } } } 
+          ]);
+          
+          res.status(200).json(counts);
+      } catch (error) {
+          console.error("Error fetching count to approve:", error);
+          res.status(500).json({ message: "Internal Server Error" });
+      }
   };
   
   

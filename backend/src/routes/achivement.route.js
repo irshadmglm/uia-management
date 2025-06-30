@@ -1,9 +1,12 @@
 import express from "express";
-import { deleteStdAchivement, editStdAchivement, getStdAchivement, getToApprove, postStdAchivement } from "../controllers/achivementsController.js";
+import { deleteStdAchivement, editStdAchivement, getCountToApproveByBatch, getCountToApproveByStd, getStdAchivement, postStdAchivement } from "../controllers/achivementsController.js";
 
 const router = express.Router();
 
-router.get("toApprove/:batchId", getToApprove)
+
+router.get("/count", getCountToApproveByBatch)
+
+router.get("/count/:batchId", getCountToApproveByStd)
 
 router.get("/:studentId", getStdAchivement);
 

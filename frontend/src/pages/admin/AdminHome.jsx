@@ -12,11 +12,11 @@ const AdminHome = () => {
     { title: "Manage Academic Info", icon: Settings2Icon, route: "/dashboard/admin/management" },
 
     { title: "Students' Details", icon: Users, route: "/dashboard/admin/users" },
-    { title: "CE Mark", icon: ClipboardCheck, route: "/dashboard/admin/ce-mark" },
+    { title: "CE Mark", icon: ClipboardCheck, route: "/dashboard/admin/ce-mark" }, 
     { title: "Internal Mark", icon: ListTodo, route: "/dashboard/admin/ir-mark" },
 
     { title: "Semester Exam Results", icon: Award, route: "/dashboard/admin/batches/marklist" },
-    { title: "Achivements", icon: Medal, route: "/dashboard/admin/batches/achivements" },
+    { title: "Achivements", icon: Medal, route: "/dashboard/admin/batches/achievements" },
     { title: "Reading Progress", icon: Book, route: "/dashboard/admin/batches/reading-progress" },
 
     { title: "Ishthiraq", icon:  HandCoins, route: "/dashboard/admin/ishthiraq" },

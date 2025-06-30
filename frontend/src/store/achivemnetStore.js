@@ -5,6 +5,7 @@ import { useAuthStore } from "./useAuthStore";
 
 export const useAchievement = create((set, get) => ({
   achievements: [],
+  achievementsCountToApprove: [],
   isLoading: false,
   error: null,
 
@@ -79,6 +80,29 @@ deleteAchievement: async (achievementId) => {
     console.error("Delete error:", error);
     toast.error("Failed to delete achievement");
   }
-}
+},
+achieveCountToApproveByBatch: async () => {
+  try {
+    const res =await axiosInstance.get('/achievements/count');
+    
+    set({ achievementsCountToApprove: [...res.data] });
+
+    const {achievementsCountToApprove} = get()
+    console.log("count",achievementsCountToApprove);
+    
+  } catch (error) {
+      console.log("Error in getcountToApprove", error);
+  }
+},
+achieveCountToApproveByStd: async (batchId) => {
+  try {
+    const res =await axiosInstance.get(`/achievements/count/${batchId}`);
+    
+    set({ achievementsCountToApprove: [...res.data] });
+
+  } catch (error) {
+      console.log("Error in getcountToApprove", error);
+  }
+},
 
 }));

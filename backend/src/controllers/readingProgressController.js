@@ -55,24 +55,42 @@ export const getStdReadingProgress = async (req, res) => {
     
         res.json({ message: "ReadingProgress deleted successfully", deleted });
       } catch (error) {
-        console.error("Error deleting achievement:", error.message);
+        console.error("Error deleting ReadingProgress:", error.message);
         res.status(500).json({ message: "Failed to delete ReadingProgress" });
       }
     };
   
-    export const getToApprove = async (req, res) => {
-        try {
+   
+     export const getCountToApproveByStd = async (req, res) => {
+       try {
          const { batchId } = req.params;
-         
-             if (!batchId ) {
-               return res.status(400).json({ message: "batchId is required" });
-             }
-         
-             const readingProgress = await ReadingProgress.find({batchId: batchId, approval: false});
-         
-          res.status(200).json(readingProgress);
-        } catch (error) {
-          console.error("Error fetching approval count:", error.message);
-          res.status(500).json({ message: "Failed to get approval count" });
-        }
-      };
+     
+         if (!batchId ) {
+           return res.status(400).json({ message: "batchId is required" });
+         }
+         const counts = await ReadingProgress.aggregate([
+           { $match: { approval: false, batchId: batchId } },
+           { $group: { _id: "$studentId", count: { $sum: 1 } } } 
+       ]);
+       
+       res.status(200).json(counts);
+       } catch (error) {
+         console.error("Error fetching count to approve:", error);
+         res.status(500).json({ message: "Internal Server Error" });
+       }
+     };
+   
+     export const getCountToApproveByBatch = async (req, res) => {
+         try {
+             const counts = await ReadingProgress.aggregate([
+                 { $match: { approval: false } },
+                 { $group: { _id: "$batchId", count: { $sum: 1 } } } 
+             ]);
+             
+             res.status(200).json(counts);
+         } catch (error) {
+             console.error("Error fetching count to approve:", error);
+             res.status(500).json({ message: "Internal Server Error" });
+         }
+     };
+     

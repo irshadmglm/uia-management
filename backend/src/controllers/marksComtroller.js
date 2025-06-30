@@ -63,7 +63,7 @@ export const getMarkList = async (req, res) => {
 
 export const getCountToApprove = async (req, res) => {
     try {
-        const pendingMarkLists = await Marklist.find({ isApproved: false });
+        // const pendingMarkLists = await Marklist.find({ isApproved: false });
         const counts = await Marklist.aggregate([
             { $match: { $or: [
               { isApproved: false },

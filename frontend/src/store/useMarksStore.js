@@ -6,7 +6,7 @@ export const useMarksStore = create((set, get) => ({
     semesters: [],
     isLoading: false,
     markList: [],
-    countToApprove: [],
+    markListCountToApprove: [],
 
     addMarkList: async (studentId, semesterId, markList) => {
         set({isLoading: true})
@@ -51,15 +51,25 @@ export const useMarksStore = create((set, get) => ({
             set({isLoading: false})
         }
     },
-    getcountToApprove: async () => {
+ 
+    marksCountToApproveByBatch: async () => {
         try {
-            const res =await axiosInstance.get('/marklist/countToApprove');
-            
-            set({countToApprove: res.data})
+          const res =await axiosInstance.get('/marklist/count');
+          
+          set({markListCountToApprove: res.data})
         } catch (error) {
             console.log("Error in getcountToApprove", error);
         }
-    },
+      },
+      marksCountToApproveByStd: async (batchId) => {
+        try {
+          const res =await axiosInstance.get(`/marklist/count/${batchId}`);
+          
+          set({markListCountToApprove: res.data})
+        } catch (error) {
+            console.log("Error in getcountToApprove", error);
+        }
+      },
 
     getSemesters: async () => {
         set({ isLoading: true });

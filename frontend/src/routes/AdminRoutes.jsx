@@ -49,7 +49,7 @@ const AdminRoutes = () => {
       <Route path="batches/:item/:batchId" element={<BatchStudents />} />
 
       <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />
-      <Route path="achivements/:studentId" element={<AdminAchievementsPage />} />
+      <Route path="achievements/:studentId" element={<AdminAchievementsPage />} />
       <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
 
       {/* <Route path="ishthiraq" element={<FeesDashboard />} /> */}
