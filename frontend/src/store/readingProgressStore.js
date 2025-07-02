@@ -72,7 +72,6 @@ export const useReadingProgress = create((set, get) => ({
     try {
       const res =await axiosInstance.get('/reading-progress/count');
 
-      console.log(res.data);
       
       set({progressCountToApprove: res.data})
     } catch (error) {

@@ -67,7 +67,6 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { username, password, role} = req.body;
-  console.log(username);
   
   try {
     if (!role) {

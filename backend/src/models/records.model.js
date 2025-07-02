@@ -10,6 +10,9 @@ const recordSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    folder: {
+      type: String,
+    },
     link: {
       type: String,
       default: null,

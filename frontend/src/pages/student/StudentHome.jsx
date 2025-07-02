@@ -1,6 +1,6 @@
 import Header from "../../components/Header";
 import Card from "../../components/Card";
-import { Award, BookCopyIcon, BookMarked, BookUserIcon, DownloadCloud, GraduationCap, ListChecks, LucideHandCoins, PictureInPicture, ServerCogIcon, Table2Icon } from "lucide-react";
+import { Award, BookCopyIcon, BookMarked, BookUserIcon, ClipboardList, DownloadCloud, GraduationCap, ListChecks, LucideHandCoins, PictureInPicture, ServerCogIcon, Table2Icon } from "lucide-react";
 import { useStaffStore } from "../../store/useStaffStore";
 import { motion } from 'framer-motion';
 
@@ -13,6 +13,7 @@ const StudentHome = () => {
        getStudentBatch()
      }, [getStudentBatch])
      const cards = [
+      { title: "Academic Register", icon: ClipboardList , route: "/dashboard/student/academic-register" },
       { title: "Subjects", icon: BookCopyIcon, route: "/dashboard/student/subjects" },
       { title: "Achievement", icon: Award, route: "/dashboard/student/achievement" },
       { title: "Reading Progress", icon: BookUserIcon, route: "/dashboard/student/reading-progress" },
@@ -26,7 +27,7 @@ const StudentHome = () => {
     return (
       <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800">
         <Header />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-20 w-full max-w-4xl p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20 w-full max-w-6xl p-4">
           {cards.map((card, index) => (
             <motion.div
             key={index}

@@ -287,7 +287,7 @@ const AdminReadingProgressPage = () => {
                       <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {progress.monthAndYear || new Date(progress.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs font-medium">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setSelectedProgress(progress)}

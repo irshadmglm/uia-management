@@ -458,7 +458,6 @@ function SemesterAssignment({batches, semesters}) {
   }, [batches])
 
   const handleSemesterSelect = async (classId, semesterId) => {
-    console.log(classId, semesterId);
     
     try {
       setBatchAssignments((prev) => ({

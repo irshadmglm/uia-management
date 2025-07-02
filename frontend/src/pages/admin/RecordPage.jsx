@@ -14,8 +14,10 @@ const RecordPage = () => {
   } = useRecordStore();
 
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: "", description: "", link: "" });
+  const [formData, setFormData] = useState({ name: "", description: "", folder: "", link: "" });
   const [editingId, setEditingId] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
+
 
   useEffect(() => {
     fetchRecords();
@@ -29,6 +31,7 @@ const RecordPage = () => {
     setFormData({
       name: record.name || "",
       description: record.description || "",
+      folder: record.folder || "",
       link: record.link || "",
     });
     setEditingId(record._id);
@@ -51,14 +54,14 @@ const RecordPage = () => {
     } else {
       await addRecord(formData);
     }
-    setFormData({ name: "", description: "", link: "" });
+    setFormData({ name: "", description: "", folder: "", link: "" });
     setEditingId(null);
     setShowForm(false);
     // fetchRecords();
   };
 
   const handleCancel = () => {
-    setFormData({ name: "", description: "", link: "" });
+    setFormData({ name: "", description: "", folder: "", link: "" });
     setEditingId(null);
     setShowForm(false);
   };
@@ -99,12 +102,27 @@ const RecordPage = () => {
                   className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
                 <input
-                  placeholder="Google Sheet Link (optional)"
+                  placeholder="Link"
                   name="link"
                   value={formData.link}
                   onChange={handleChange}
                   className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
+              <input
+                  list="folder"
+                  name="folder"
+                  placeholder="Folder"
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <datalist id="folder">
+                  {[...new Set(records.map((record) => record.folder))].map((folder, index) => (
+                    <option key={index} value={folder} />
+                  ))}
+                </datalist>
+
+
+
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
@@ -138,6 +156,8 @@ const RecordPage = () => {
             )}
           </div>
 
+          {records.length > 0 && <FilterTab records={records} activeTab={activeTab} setActiveTab={setActiveTab} /> }
+          
           {/* Records Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {records.length === 0 && (
@@ -145,7 +165,7 @@ const RecordPage = () => {
                 No records found.
               </p>
             )}
-            {records.map((record, index) => (
+            {records.filter((record)=> activeTab === "all" || record?.folder === activeTab ).map((record, index) => (
               <div
                 key={record._id || index}
                 className="group bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col justify-between"
@@ -159,6 +179,9 @@ const RecordPage = () => {
                       <h2 className="text-gray-900 dark:text-white text-lg font-medium">
                         {record.name}
                       </h2>
+                      <p className="text-gray-900 dark:text-white text-xs font-medium">
+                        {record?.folder}
+                      </p>
                       {record.description && (
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           {record.description}
@@ -203,3 +226,62 @@ const RecordPage = () => {
 };
 
 export default RecordPage;
+
+
+const FilterTab = ({ records, activeTab, setActiveTab }) => {
+
+  const folderCounts = records.reduce((acc, record) => {
+    const folder = record.folder || "Unknown";
+    acc[folder] = (acc[folder] || 0) + 1;
+    return acc;
+  }, {});
+
+  const uniqueFolders = Object.entries(folderCounts); 
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <div className="flex w-max gap-2 px-4 py-2">
+        {/* All Folder */}
+        <button
+          onClick={() => setActiveTab("all")}
+          className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+            activeTab === "all"
+              ? "bg-yellow-500 text-gray-900 shadow-md"
+              : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-sky-100 dark:hover:bg-gray-700"
+          }`}
+        >
+          All Folder
+          <span className="px-2 py-1 rounded-full text-xs bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
+            {records.length}
+          </span>
+        </button>
+
+        {/* Unique Folders */}
+        {uniqueFolders.map(([folder, count]) => (
+          <button
+            key={folder}
+            onClick={() => setActiveTab(folder)}
+            className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+              activeTab === folder
+                ? "bg-yellow-500 text-gray-900 shadow-md"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700"
+            }`}
+          >
+            {folder}
+            <span
+              className={`px-2 py-1 rounded-full text-xs ${
+                activeTab === folder
+                  ? "bg-white/20 text-white"
+                  : "bg-blue-100 text-blue-800 dark:bg-sky-900 dark:text-blue-200"
+              }`}
+            >
+              {count}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+

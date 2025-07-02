@@ -1,7 +1,7 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Card from "../../components/Card";
-import { BookOpenText, DownloadCloud, ListTodo, Table2Icon, Users2 } from "lucide-react";
+import { BookOpenText, ClipboardList, DownloadCloud, ListTodo, Table2Icon, Users2 } from "lucide-react";
 import { useStaffStore } from "../../store/useStaffStore";
 import { useEffect } from "react";
 
@@ -24,6 +24,8 @@ const TeacherHome = () => {
     ))}
     <Card title="My Subjects" icon={BookOpenText} route="/dashboard/teacher/assigned-subjects" />
     <Card title="Downloads" icon={DownloadCloud} url={downloadsUrl} />
+    <Card title="Academic Register" icon={ClipboardList} route={`/dashboard/teacher/academic-register`} />
+
 
   </div>
 </div>

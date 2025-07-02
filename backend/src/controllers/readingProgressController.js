@@ -70,7 +70,6 @@ export const getStdReadingProgress = async (req, res) => {
                  { $match: { approval: false } },
                  { $group: { _id: "$batchId", count: { $sum: 1 } } } 
              ]);
-             console.log("counts",counts);
              
              res.status(200).json(counts);
          } catch (error) {

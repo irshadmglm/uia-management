@@ -9,12 +9,14 @@ import StudentProfile from "../pages/student/StudentProfile";
 import NotFound from "../pages/NotFound"; 
 import AchievementPage from "../pages/student/AchivementPage";
 import ReadingProgressPage from "../pages/student/readingProgressPage";
+import AcademicRegister from "../pages/student/StdAcademicRegister";
 
 
 const StudentRoutes = () => {
   return (
     <Routes>
       <Route index element={<StudentHome />} />
+      <Route path="academic-register" element={<AcademicRegister  />} />
       <Route path="semester-list" element={<StudentSemesterListing />} />
       <Route path="achievement" element={<AchievementPage/>} />
       <Route path="reading-progress" element={<ReadingProgressPage/>} />
@@ -22,6 +24,7 @@ const StudentRoutes = () => {
       <Route path="subjects" element={<CurruntSemSubjects />} />
       <Route path="ishthiraq" element={<StudentFees />} />
       <Route path="profile" element={<StudentProfile />} />
+
 
 
       <Route path="*" element={<NotFound />} />

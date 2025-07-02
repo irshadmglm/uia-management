@@ -2,8 +2,9 @@ import Record from "../models/records.model.js";
 
 export const addRecord = async (req, res) => {
   try {
-    const { name, description, link } = req.body;
-    const newRecord = new Record({ name, description, link });
+    const { name, description, folder, link } = req.body;
+    
+    const newRecord = new Record({ name, description, folder, link });
     const savedRecord = await newRecord.save();
     res.status(201).json(savedRecord);
   } catch (error) {
@@ -23,11 +24,11 @@ export const getRecords = async (req, res) => {
 export const editRecord = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, link } = req.body;
+    const { name, description, folder, link } = req.body;
 
     const updatedRecord = await Record.findByIdAndUpdate(
       id,
-      { name, description, link },
+      { name, description, folder, link },
       { new: true, runValidators: true }
     );
 

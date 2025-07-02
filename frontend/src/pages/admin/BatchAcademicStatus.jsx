@@ -3,9 +3,11 @@ import { Eye, Pencil, Plus, Trash2 } from "lucide-react"; // or use Heroicons if
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import { useAdminStore } from "../../store/useAdminMngStore";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const BatchAcademicStatus = ({item}) => {
   const { batches, getBatches, addAcademicStatuslink, deleteAcademicStatuslink } = useAdminStore();
+  const {authUser} = useAuthStore()
   const [academicStatusLink, setAcademicStatusLink] = useState("");
   const [editingBatchId, setEditingBatchId] = useState(null);
 
@@ -57,50 +59,55 @@ const BatchAcademicStatus = ({item}) => {
             </div>
 
             <div className="flex items-center gap-3">
-                {!batch[item] ? (
-                <button
+                {authUser?.role === "admin" && !batch[item] && (
+                  <button
                     onClick={() => {
-                    setEditingBatchId(batch._id);
-                    setAcademicStatusLink("");
+                      setEditingBatchId(batch._id);
+                      setAcademicStatusLink("");
                     }}
                     className="text-blue-600 hover:text-blue-800"
                     title="Add Link"
-                >
+                  >
                     <Plus size={20} />
-                </button>
-                ) : (
-                <>
-                    <button
-                    onClick={() => {
-                        onDelete(batch._id);
-                    }}
-                    className="text-red-500 hover:text-red-600"
-                    title="Edit Link"
-                    >
-                    <Trash2 size={18} />
-                    </button>
-                    <button
-                    onClick={() => {
-                        setEditingBatchId(batch._id);
-                        setAcademicStatusLink(batch[item] || "");
-                    }}
-                    className="text-yellow-500 hover:text-yellow-600"
-                    title="Edit Link"
-                    >
-                    <Pencil size={18} />
-                    </button>
-                    <a
-                    href={batch[item]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-600 hover:text-green-700"
-                    title="View Link"
-                    >
-                    <Eye size={18} />
-                    </a>
-                </>
+                  </button>
                 )}
-            </div>
+
+                {batch[item] && (
+                  <>
+                    {authUser?.role === "admin" && (
+                      <>
+                        <button
+                          onClick={() => onDelete(batch._id)}
+                          className="text-red-500 hover:text-red-600"
+                          title="Delete Link"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingBatchId(batch._id);
+                            setAcademicStatusLink(batch[item] || "");
+                          }}
+                          className="text-yellow-500 hover:text-yellow-600"
+                          title="Edit Link"
+                        >
+                          <Pencil size={18} />
+                        </button>
+                      </>
+                    )}
+                    <a
+                      href={batch[item]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:text-green-700"
+                      title="View Link"
+                    >
+                      <Eye size={18} />
+                    </a>
+                  </>
+                )}
+              </div>
+
             </div>
 
 

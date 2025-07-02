@@ -21,6 +21,7 @@ export const useRecordStore = create((set, get) => ({
   addRecord: async (recordData) => {
     set({ isLoading: true });
     try {
+      
       const res = await axiosInstance.post("/records", recordData);
       set((state) => ({
         records: [res.data, ...state.records],

@@ -22,7 +22,6 @@ const AdminBatches = () => {
   }, [getBatches]);
 
   useEffect(() => {
-    console.log("▶️ fetching counts for", item);
     if (item === "marklist") {
       marksCountToApproveByBatch();
     } else if (item === "achievements") {
@@ -44,7 +43,6 @@ const AdminBatches = () => {
     } else if (item === "reading-progress") {
       arr = progressCountToApprove;
     }
-    console.log("🛠 setting local countToApprove for", item, "→", arr);
     setCountToApprove([...arr]); // spread to ensure new reference
   }, [item, markListCountToApprove, achievementsCountToApprove, progressCountToApprove]);
 
