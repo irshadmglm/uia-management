@@ -61,10 +61,9 @@ export const useMarksStore = create((set, get) => ({
             console.log("Error in getcountToApprove", error);
         }
       },
-      marksCountToApproveByStd: async (batchId) => {
+    marksCountToApproveByStd: async (batchId) => {
         try {
           const res =await axiosInstance.get(`/marklist/count/${batchId}`);
-          
           set({markListCountToApprove: res.data})
         } catch (error) {
             console.log("Error in getcountToApprove", error);

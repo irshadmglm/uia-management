@@ -6,9 +6,9 @@ import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo
 
 const AcademicRegister = () => {
   const cards = [
-    { title: "Students' Attendance Register", icon: ClipboardList , route: "/dashboard/admin/std-attendance-register" },
+    { title: "Students' Leave Status", icon: ClipboardList , route: "/dashboard/admin/std-attendance-register" },
     { title: "Teachers' Attendance Register", icon: ListTodo, route: "/dashboard/admin/staff-attendance-register" },
-    { title: "Subject Status", icon: GraduationCap, route: "/dashboard/admin/subject-status" },
+    { title: "Quarterly Subject Status", icon: GraduationCap, route: "/dashboard/admin/subject-status" },
     { title: "CE Status", icon: Award, route: "/dashboard/admin/ce-status" }
   ];
 

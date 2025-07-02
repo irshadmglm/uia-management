@@ -40,7 +40,6 @@ export const useReadingProgress = create((set, get) => ({
     }
   },
 
-  // PUT update existing record
   updateReadingProgress: async (recordId, data) => {
     try {
       const res = await axiosInstance.put(`/reading-progress/${recordId}`, data);
@@ -72,6 +71,8 @@ export const useReadingProgress = create((set, get) => ({
   progressCountToApproveByBatch: async () => {
     try {
       const res =await axiosInstance.get('/reading-progress/count');
+
+      console.log(res.data);
       
       set({progressCountToApprove: res.data})
     } catch (error) {

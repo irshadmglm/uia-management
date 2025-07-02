@@ -1,6 +1,6 @@
 import Achievement from "../models/achivement.model.js";
 import Student from "../models/student.model.js";
-import { getCountToApprove } from "./marksComtroller.js";
+import mongoose from "mongoose";
 
 
 
@@ -61,7 +61,6 @@ export const getStdAchivement = async (req, res) => {
     }
   };
 
-  import mongoose from "mongoose";
 
 export const getCountToApproveByStd = async (req, res) => {
   try {
@@ -84,8 +83,7 @@ export const getCountToApproveByStd = async (req, res) => {
   }
 };
 
-
-  export const getCountToApproveByBatch = async (req, res) => {
+export const getCountToApproveByBatch = async (req, res) => {
       try {
           const counts = await Achievement.aggregate([
               { $match: { approval: false } },

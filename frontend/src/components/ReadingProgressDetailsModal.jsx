@@ -27,23 +27,7 @@ const ReadingProgressDetailsModal = ({ progress, onClose, onApprove, onReject, o
             </button>
           </div>
 
-          {/* Student Info */}
-          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Student Information</h3>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {progress.studentId?.name?.charAt(0) || "S"}
-              </div>
-              <div>
-                <div className="font-medium text-gray-900 dark:text-white">
-                  {progress.studentId?.name || "Unknown Student"}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {progress.studentId?.email || "No email provided"}
-                </div>
-              </div>
-            </div>
-          </div>
+         
 
           {/* Book Details */}
           <div className="space-y-4 mb-6">
@@ -113,17 +97,7 @@ const ReadingProgressDetailsModal = ({ progress, onClose, onApprove, onReject, o
               )}
             </div>
 
-            {/* Timestamps */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500 dark:text-gray-400">
-              <div>
-                <span className="font-medium">Created:</span> {new Date(progress.createdAt).toLocaleString()}
-              </div>
-              {progress.updatedAt !== progress.createdAt && (
-                <div>
-                  <span className="font-medium">Updated:</span> {new Date(progress.updatedAt).toLocaleString()}
-                </div>
-              )}
-            </div>
+        
           </div>
 
           {/* Actions */}

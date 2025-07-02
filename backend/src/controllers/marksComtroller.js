@@ -1,6 +1,8 @@
 import Marklist from "../models/marklist.model.js";
 import Semester from "../models/semester.model.js"
 import Student from "../models/student.model.js";
+import mongoose from "mongoose";
+
 
 export const addMarkList = async (req, res) => {
     try {
@@ -61,23 +63,82 @@ export const getMarkList = async (req, res) => {
     }
 };
 
-export const getCountToApprove = async (req, res) => {
-    try {
-        // const pendingMarkLists = await Marklist.find({ isApproved: false });
-        const counts = await Marklist.aggregate([
+// export const getCountToApprove = async (req, res) => {
+//     try {
+//         // const pendingMarkLists = await Marklist.find({ isApproved: false });
+//         const counts = await Marklist.aggregate([
+//             { $match: { $or: [
+//               { isApproved: false },
+//               { editingStatus: "send" }
+//             ] } },
+//             { $group: { _id: "$batchId", count: { $sum: 1 } } } 
+//         ]);
+        
+//         res.status(200).json(counts);
+//     } catch (error) {
+//         console.error("Error fetching count to approve:", error);
+//         res.status(500).json({ message: "Internal Server Error" });
+//     }
+// };
+
+export const getCountToApproveByStd = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+
+    if (!batchId) {
+      return res.status(400).json({ message: "batchId is required" });
+    }
+
+    const batchObjId = new mongoose.Types.ObjectId(batchId);
+
+    const counts = await Marklist.aggregate([
+      {
+        $match: {
+          $and: [
+            {
+              $or: [
+                { isApproved: false },
+                { editingStatus: "send" }
+              ]
+            },
+            { batchId: batchObjId } 
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: "$studentId",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    return res.status(200).json(counts);
+  } catch (error) {
+    console.error("Error fetching count to approve:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+
+  export const getCountToApproveByBatch = async (req, res) => {
+      try {
+          const counts = await Marklist.aggregate([
             { $match: { $or: [
               { isApproved: false },
               { editingStatus: "send" }
             ] } },
             { $group: { _id: "$batchId", count: { $sum: 1 } } } 
         ]);
-        
-        res.status(200).json(counts);
-    } catch (error) {
-        console.error("Error fetching count to approve:", error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-};
+          
+          res.status(200).json(counts);
+      } catch (error) {
+          console.error("Error fetching count to approve:", error);
+          res.status(500).json({ message: "Internal Server Error" });
+      }
+  };
+  
 
 export const updateStatus = async (req, res) => {
     try {

@@ -130,10 +130,10 @@ const AdminReadingProgressPage = () => {
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                 Manage Reading Progress
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300">Review and approve student reading progress</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Review and approve student reading progress</p>
             </div>
             <div className="flex items-center gap-4">
               {selectedItems.length > 0 && (
@@ -160,9 +160,8 @@ const AdminReadingProgressPage = () => {
         </div>
 
         {/* Controls Section */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 mb-8 shadow-lg border border-white/20 dark:border-gray-700/50">
+        {/* <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 mb-8 shadow-lg border border-white/20 dark:border-gray-700/50">
           <div className="flex flex-col lg:flex-row gap-4 mb-4">
-            {/* Search */}
             <div className="flex-1">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -185,7 +184,6 @@ const AdminReadingProgressPage = () => {
               </div>
             </div>
 
-            {/* Filters */}
             <div className="flex gap-4">
               <select
                 value={filterStatus}
@@ -211,7 +209,6 @@ const AdminReadingProgressPage = () => {
             </div>
           </div>
 
-          {/* Select All Checkbox */}
           {filteredAndSortedProgress.length > 0 && (
             <div className="flex items-center gap-2">
               <input
@@ -226,7 +223,7 @@ const AdminReadingProgressPage = () => {
               </label>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Reading Progress Table */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
@@ -237,25 +234,20 @@ const AdminReadingProgressPage = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-700/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Select
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Student
-                    </th>
+                    
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Book Details
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Author
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Pages
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Date
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -269,46 +261,19 @@ const AdminReadingProgressPage = () => {
                       key={progress._id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-200"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(progress._id)}
-                          onChange={() => toggleSelectItem(progress._id)}
-                          className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                            {progress.studentId?.name?.charAt(0) || "S"}
-                          </div>
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {progress.studentId?.name || "Unknown Student"}
-                            </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {progress.studentId?.email || "No email"}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
+                    
                       <td className="px-6 py-4">
                         <div className="text-sm font-medium text-gray-900 dark:text-white max-w-xs">
                           {progress.bookName}
                         </div>
-                        {progress.publisher && (
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            Publisher: {progress.publisher}
-                          </div>
-                        )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {progress.authorName || "-"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {progress.numberOfPages ? progress.numberOfPages.toLocaleString() : "-"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                         {progress.approval ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
                             ✓ Approved
@@ -319,7 +284,7 @@ const AdminReadingProgressPage = () => {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {progress.monthAndYear || new Date(progress.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

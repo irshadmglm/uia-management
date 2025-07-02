@@ -31,23 +31,7 @@ const AchievementDetailsModal = ({ achievement, onClose, onApprove, onReject, on
             </button>
           </div>
 
-          {/* Student Info */}
-          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Student Information</h3>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {achievement.studentId?.name?.charAt(0) || "S"}
-              </div>
-              <div>
-                <div className="font-medium text-gray-900 dark:text-white">
-                  {achievement.studentId?.name || "Unknown Student"}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {achievement.studentId?.email || "No email provided"}
-                </div>
-              </div>
-            </div>
-          </div>
+     
 
           {/* Achievement Details */}
           <div className="space-y-4 mb-6">
@@ -119,17 +103,7 @@ const AchievementDetailsModal = ({ achievement, onClose, onApprove, onReject, on
               )}
             </div>
 
-            {/* Timestamps */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500 dark:text-gray-400">
-              <div>
-                <span className="font-medium">Created:</span> {new Date(achievement.createdAt).toLocaleString()}
-              </div>
-              {achievement.updatedAt !== achievement.createdAt && (
-                <div>
-                  <span className="font-medium">Updated:</span> {new Date(achievement.updatedAt).toLocaleString()}
-                </div>
-              )}
-            </div>
+          
           </div>
 
           {/* Actions */}

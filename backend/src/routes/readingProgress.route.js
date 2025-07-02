@@ -3,9 +3,9 @@ import { deleteStdReadingProgress, editStdReadingProgress, getCountToApproveByBa
 
 const router = express.Router();
 
-router.get("count", getCountToApproveByBatch)
+router.get("/count", getCountToApproveByBatch)
 
-router.get("count/:batchId", getCountToApproveByStd)
+router.get("/count/:batchId", getCountToApproveByStd)
 
 router.get("/:studentId", getStdReadingProgress);
 
