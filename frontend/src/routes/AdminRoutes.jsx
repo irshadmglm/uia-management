@@ -41,7 +41,7 @@ const AdminRoutes = () => {
       <Route path="timetable-Assign" element={<TimetableAsigment />} />
       <Route path="assign-duties" element={<AssignDutiesPage />} />
       <Route path="management" element={<ManagementPage />} />
-      <Route path="attendance/:batchname" element={<AdminAttendance />} />
+      <Route path="attendance/:batchId" element={<AdminAttendance />} />
       <Route path="semester/:semesterId" element={<SemesterPage />} />
       {/* <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} /> */}
 
@@ -52,8 +52,8 @@ const AdminRoutes = () => {
       <Route path="achievements/:studentId" element={<AdminAchievementsPage />} />
       <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
 
-      {/* <Route path="ishthiraq" element={<FeesDashboard />} /> */}
-      <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} />
+      <Route path="ishthiraq" element={<FeesDashboard />} />
+      {/* <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} /> */}
       <Route path="ce-mark" element={<CEMarkAdmin />} />
       <Route path="ir-mark" element={<IRMarkAdmin />} />
       <Route path="profile" element={<StaffProfile />} />

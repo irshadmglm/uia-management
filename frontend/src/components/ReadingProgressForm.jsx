@@ -113,7 +113,7 @@ const ReadingProgressForm = ({ onSubmit, onCancel, initialData, isEditing }) => 
                 ? "border-red-500 focus:border-red-500 focus:ring-red-100 dark:focus:ring-red-500/20"
                 : "border-gray-200 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-indigo-100 dark:focus:ring-blue-500/20"
             } bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
-            placeholder="e.g., To Kill a Mockingbird, The Great Gatsby"
+            placeholder="e.g., ആടു ജീവിതം"
           />
           {errors.bookName && <span className="text-red-500 text-sm font-medium">{errors.bookName}</span>}
         </div>
@@ -179,13 +179,12 @@ const ReadingProgressForm = ({ onSubmit, onCancel, initialData, isEditing }) => 
               Month & Year
             </label>
             <input
-              type="text"
+              type="date"
               id="monthAndYear"
               name="monthAndYear"
               value={formData.monthAndYear}
               onChange={handleChange}
               className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200"
-              placeholder="e.g., March 2024, Dec 2023"
             />
           </div>
         </div>

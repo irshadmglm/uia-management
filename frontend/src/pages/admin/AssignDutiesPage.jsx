@@ -767,7 +767,7 @@ function AssignDutiesPage() {
     { id: "subjects", label: "Assign Subject", icon: FiBook },
     { id: "classTeacher", label: "Class Mentors", icon: FiUsers },
     { id: "classLeader", label: "Class Leaders", icon: FiUserCheck },
-    { id: "timeTable", label: "Time Table", icon: FiList }
+    // { id: "timeTable", label: "Time Table", icon: FiList }
   ]
 
   return (

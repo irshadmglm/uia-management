@@ -75,7 +75,7 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-white dark:bg-gray-800">
       {/* Header */}
       <div className="flex justify-between items-center mb-8 pb-6 border-b border-gray-200">
         <div>
@@ -104,12 +104,8 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
             name="achievedItem"
             value={formData.achievedItem}
             onChange={handleChange}
-            className={`w-full px-4 py-4 border-2 rounded-xl text-base transition-all duration-200 ${
-              errors.achievedItem
-                ? "border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-100"
-                : "border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
-            } focus:outline-none`}
-            placeholder="e.g., First Prize in Speach"
+            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200"
+            placeholder="Arabic Speech/Paper presentation"
           />
           {errors.achievedItem && <span className="text-red-500 text-sm font-medium">{errors.achievedItem}</span>}
         </div>
@@ -125,7 +121,7 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
               name="agencyLevel"
               value={formData.agencyLevel}
               onChange={handleChange}
-              className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl text-base bg-white focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200"
+              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200"
             >
               <option value="">Select Level</option>
               <option value="School">School Level</option>
@@ -148,7 +144,7 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
               name="placeOrRank"
               value={formData.placeOrRank}
               onChange={handleChange}
-              className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl text-base focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200"
+              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200"
               placeholder="e.g., 1st Place, 2nd Position, Winner"
             />
           </div>
@@ -166,28 +162,24 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
               name="gradeOrPercentage"
               value={formData.gradeOrPercentage}
               onChange={handleChange}
-              className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl text-base focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200"
+               className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200"
               placeholder="e.g., A+, 95%, 9.5 CGPA"
             />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="monthAndYear" className="block text-sm font-semibold text-gray-700">
-              Month & Year *
+              Date
             </label>
-            <input
-              type="text"
+          <input
+              type="date"
               id="monthAndYear"
               name="monthAndYear"
               value={formData.monthAndYear}
               onChange={handleChange}
-              className={`w-full px-4 py-4 border-2 rounded-xl text-base transition-all duration-200 ${
-                errors.monthAndYear
-                  ? "border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-100"
-                  : "border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
-              } focus:outline-none`}
-              placeholder="e.g., March 2024, Dec 2023"
+              className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200"
             />
+
             {errors.monthAndYear && <span className="text-red-500 text-sm font-medium">{errors.monthAndYear}</span>}
           </div>
         </div>
@@ -203,7 +195,7 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
             value={formData.remarks}
             onChange={handleChange}
             rows="4"
-            className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl text-base resize-y min-h-24 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200"
+            className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200"
             placeholder="Any additional information about your achievement..."
           />
         </div>

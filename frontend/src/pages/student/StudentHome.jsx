@@ -18,10 +18,10 @@ const StudentHome = () => {
       { title: "Achievement", icon: Award, route: "/dashboard/student/achievement" },
       { title: "Reading Progress", icon: BookUserIcon, route: "/dashboard/student/reading-progress" },
       { title: "Mark List", icon: ListChecks, route: "/dashboard/student/semester-list" },
+      { title: "Ishthiraq", icon: LucideHandCoins, route: "/dashboard/student/ishthiraq"},
       { title: "Internel Mark", icon: BookMarked, url: batch?.IRmarkList },
       { title: "CE Mark", icon: BookMarked, url: batch?.CEmarkList  },
-      { title: "Downloads", icon: DownloadCloud, url: downloadsUrl  },
-      { title: "Ishthiraq", icon: LucideHandCoins, url: batch?.ishthiraq },
+      { title: "Downloads", icon: DownloadCloud, url: downloadsUrl  }
     ];
      
     return (

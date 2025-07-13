@@ -3,10 +3,8 @@ import { useFeeStore } from '../../store/feesSrore';
 import Header from '../../components/Header';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-const months = [
-  'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',
-  'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'
-];
+const months = [ "شوّال", "ذو القعدة", "ذو الحجة", "محرّم", "صفر", "ربيع الأوّل",
+   "ربيع الآخر", "جمادى الأولى", "جمادى الأخرى", "رجب", "شعبان", "رمضان"];
 
 const Spinner = () => (
   <div className="flex justify-center items-center py-10">

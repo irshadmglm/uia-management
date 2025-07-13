@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import User from "../models/student.model.js"
 import Staff from "../models/staff.model.js";
 import Batch from "../models/batch.model.js";
+import Student from "../models/student.model.js";
 import Semester from "../models/semester.model.js";
 
 export const protectRoute = async (req, res, next) => {
@@ -30,15 +31,19 @@ export const protectRoute = async (req, res, next) => {
     if (user.role === "student") {
       const batch = await Batch.findById(user.batchId);
       if (batch) {
-        const [semester, staff] = await Promise.all([
+        const [semester, staff, leader1, leader2] = await Promise.all([
           batch.currentSemester ? Semester.findById(batch.currentSemester) : null,
           batch.classTeacher ? Staff.findById(batch.classTeacher) : null,
+          batch.classLeader ? Student.findById(batch.classLeader) : null,
+          batch.classLeader2 ? Student.findById(batch.classLeader2) : null,
         ]);
 
         user = user.toObject(); 
         user.batchName = batch.name || "Unknown Batch";
-        user.semester = semester?.name || "Unknown Semester";
-        user.classTeacher = staff?.name || "Unknown Teacher";
+        user.semester = semester?.name || " ";
+        user.classTeacher = staff?.name || " ";
+        user.classLeader = leader1?.name || " ",
+        user.classLeader2 = leader2?.name || " "
       }
     } else {
       user = user.toObject(); 

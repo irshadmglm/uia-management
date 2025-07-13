@@ -7,14 +7,12 @@ import { useAdminStore } from "../../store/useAdminMngStore";
 import StudentTable from "../../components/StudentTable";
 
 const AdminAttendance = () => {
-  let { batchname } = useParams();
-  batchname = decodeURIComponent(batchname);
+  let { batchId } = useParams();
 
   const { getBatches, batches, getTeachers, teachers } = useAdminStore();
-  const { getStudents, students } = useStudentStore();
+  const { getStudents, students, batchStudents, getBatchStudents } = useStudentStore();
   const [selectedBatch, setSelectedBatch] = useState({});
   const [selectedTab, setSelectedTab] = useState("students");
-  const [batchStudents, setBatchStudents] = useState([])
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,21 +21,16 @@ const AdminAttendance = () => {
   }, []);
   
   useEffect(() => {
-    getStudents(); 
-  }, [batchname]);
+    getBatchStudents(batchId); 
+  }, [batchId]);
   
 
   useEffect(() => {
-    if (batches.length > 0 && students.length > 0) {
-      const selected = batches.find((c) => c.name === batchname);
+    if (batches.length > 0 && batchStudents.length > 0) {
+      const selected = batches.find((c) => c._id === batchId);
       setSelectedBatch(selected);
-      
-      if (selected) {
-        const batchStudents = students.filter((s) => selected.students.includes(s._id));
-        setBatchStudents(batchStudents);
-      }
     }
-  }, [batches, batchname, students]);
+  }, [batches, batchId, batchStudents]);
   
   useEffect(() => {
     const load = async () => {
@@ -60,7 +53,7 @@ const AdminAttendance = () => {
             {teachers
                 .filter((t) => t._id === selectedBatch.classTeacher)
                 .map((t) => (
-                <span key={t._id}>Batch Teacher: {t.name || "not assigned"}</span>
+                <span key={t._id}>Class Mentor: {t.name || "not assigned"}</span>
                 ))}
             </p>
 
@@ -69,7 +62,7 @@ const AdminAttendance = () => {
           </p>
         </div>
       )}
-      <div className="flex mt-3 space-x-4 border-b border-gray-300 dark:border-gray-600">
+      {/* <div className="flex mt-3 space-x-4 border-b border-gray-300 dark:border-gray-600">
         {["students", "attendance"].map((tab) => (
           <Button
             key={tab}
@@ -83,7 +76,7 @@ const AdminAttendance = () => {
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </Button>
         ))}
-      </div>
+      </div> */}
 
       {/* TAB CONTENT */}
       {selectedTab === "students" ? (

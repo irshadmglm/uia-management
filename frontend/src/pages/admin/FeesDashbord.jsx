@@ -20,11 +20,13 @@ import toast from "react-hot-toast"
 
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import Header from "../../components/Header"
 
-const months = [ "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+const months = [ "شوّال", "ذو القعدة", "ذو الحجة", "محرّم", "صفر", "ربيع الأوّل",
+   "ربيع الآخر", "جمادى الأولى", "جمادى الأخرى", "رجب", "شعبان", "رمضان"]
 
 export default function FeesDashboard() {
-  const { getStudents, students } = useStudentStore()
+  const {  batchStudents, getBatchStudents } = useStudentStore()
   const { batches, getBatches } = useAdminStore()
   const {
     fees,
@@ -59,7 +61,6 @@ export default function FeesDashboard() {
       setLoading(true)
       try {
         await getBatches()
-        getStudents()
         if (batches.length > 0 && !selectedBatch) {
           setSelectedBatch(batches[0]?._id || "")
         }
@@ -74,11 +75,11 @@ export default function FeesDashboard() {
 
   useEffect(() => {
     if (selectedBatch) {
-      fetchFees(selectedBatch)
+      getBatchStudents(selectedBatch);
+      fetchFees(selectedBatch);
     }
-  }, [selectedBatch, fetchFees])
+  }, [selectedBatch, fetchFees,])
 
-  const current = batches.find((b) => b._id === selectedBatch) || { name: "", students: [] }
 
   const toggle = async (studentId, month) => {
     const currentStatus = getStudentStatus(studentId)[month];
@@ -94,16 +95,15 @@ export default function FeesDashboard() {
     }
   };
   const filteredStudents = useMemo(() => {
-    if (!current.students) return [];
+    if (batchStudents.length === 0) return [];
   
-    return current.students
-      .map((stdId) => {
-        const student = students.find((s) => s._id === stdId);
+    return batchStudents
+      .map((student) => {
         return {
-          id: stdId,
+          id: student._id,
           name: student?.name || "Unknown",
-          progress: getStudentProgress(stdId),
-          status: getStudentStatus(stdId)
+          progress: getStudentProgress(student._id),
+          status: getStudentStatus(student._id)
         };
       })
       .filter(student => {
@@ -128,7 +128,7 @@ export default function FeesDashboard() {
         return 0;
       });
   }, [
-    current.students, students, searchTerm, selectedStatus, 
+    batchStudents, searchTerm, selectedStatus, 
     selectedMonths, sortBy, sortDirection, fees 
   ]);
 
@@ -143,9 +143,9 @@ export default function FeesDashboard() {
     
     return getBatchStats(
       selectedBatch, 
-      current.students?.length || 0
+      batchStudents?.length || 0
     )
-  }, [selectedBatch, getBatchStats, fees, current.students?.length]);
+  }, [selectedBatch, getBatchStats, fees, batchStudents?.length]);
 
  
 
@@ -169,7 +169,7 @@ export default function FeesDashboard() {
     doc.setFontSize(20);
     doc.setTextColor(33, 37, 41); // Dark gray
     doc.setFont("helvetica", "bold");
-    doc.text(`${current.name} Fee Report`, 14, 20);
+    doc.text(`${selectedBatch.name} Fee Report`, 14, 20);
   
     doc.setDrawColor(79, 70, 229); // Indigo color
     doc.setLineWidth(0.5);
@@ -230,7 +230,7 @@ export default function FeesDashboard() {
       );
     }
   
-    doc.save(`${current.name}_fee_report.pdf`);
+    doc.save(`${selectedBatch.name}_fee_report.pdf`);
   };
   
   if (loading) {
@@ -242,9 +242,10 @@ export default function FeesDashboard() {
   }
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen space-y-6 transition-colors">
+    <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen  transition-colors">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <Header />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pt-12">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
             Fees Dashboard
@@ -421,7 +422,7 @@ export default function FeesDashboard() {
           <div>
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-indigo-500" />
-              {current.name || "Select a Batch"} — Monthly Fees
+              {selectedBatch?.name || "Select a Batch"} — Monthly Fees
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {filteredStudents.length} student{filteredStudents.length !== 1 ? "s" : ""} •{" "}
@@ -441,7 +442,7 @@ export default function FeesDashboard() {
           </div>
         </div>
 
-        {current.students?.length > 0 ? (
+        {batchStudents?.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-500 dark:bg-gray-900">
@@ -524,7 +525,7 @@ export default function FeesDashboard() {
 
       {/* CARDS (visible below md) */}
       <div className="md:hidden space-y-4">
-        {current.students?.length > 0 ? (
+        {batchStudents?.length > 0 ? (
           filteredStudents.map((student) => (
             <div
               key={student.id}

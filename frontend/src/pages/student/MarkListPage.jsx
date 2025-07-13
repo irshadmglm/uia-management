@@ -107,7 +107,13 @@ const MarkListPage = () => {
   const totalMarks = marks.reduce((sum, s) => sum + s.mark, 0);
   const totalMax = marks.reduce((sum, s) => sum + s.total, 0);
   const percent = totalMax ? ((totalMarks / totalMax) * 100).toFixed(2) : "0.00";
-  const overallStatus = marks.every((s) => s.mark >= 0.3 * s.total) ? "P" : "F";
+  let overallStatus;
+  if(selectedSemester?.name?.includes("AL")){
+      overallStatus = marks.every((s) => s.mark >= 0.45 * s.total) ? "P" : "F";
+  }else{
+     overallStatus = marks.every((s) => s.mark >= 0.40 * s.total) ? "P" : "F";
+  }
+ 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24 flex justify-center">
@@ -135,9 +141,9 @@ const MarkListPage = () => {
 
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gradient-to-r from-sky-600 via-sky-700 to-sky-800 text-white">
+          <table className="w-full text-left border-collapse ">
+            <thead className="rounded-lg">
+              <tr className="bg-gradient-to-r from-sky-600 via-sky-700 to-sky-800 text-white ">
                 <th className="px-6 py-3">Subject</th>
                 <th className="px-3 py-3">Mark</th>
                 <th className="px-3 py-3">Total</th>
@@ -165,7 +171,7 @@ const MarkListPage = () => {
                       value={row.mark}
                       onChange={(e) => handleInputChange(i, "mark", e.target.value)}
                       disabled={readOnly}
-                      className={`w-full bg-transparent focus:outline-none ${
+                      className={`w-full bg-transparent focus:outline-none text-gray-900 dark:text-gray-200 ${
                         row.mark > row.total ? "text-red-600 font-bold" : "text-gray-900"
                       }`}
                     />
@@ -176,16 +182,30 @@ const MarkListPage = () => {
                       value={row.total}
                       onChange={(e) => handleInputChange(i, "total", e.target.value)}
                       disabled={readOnly}
-                      className="w-full bg-transparent text-gray-900 focus:outline-none"
+                      className="w-full bg-transparent focus:outline-none text-gray-900 dark:text-gray-200"
                     />
                   </td>
-                  <td
-                    className={`px-3 py-2 text-center ${
-                      row.mark >= 0.3 * row.total ? "text-green-600" : "text-red-600"
-                    } font-bold`}
-                  >
-                    {row.mark >= 0.3 * row.total ? "P" : "F"}
-                  </td>
+                <td
+                className={`px-3 py-2 text-center ${
+                  selectedSemester?.name?.includes("AL")
+                    ? row.mark >= 0.45 * row.total
+                      ? "text-green-600"
+                      : "text-red-600"
+                    : row.mark >= 0.40 * row.total
+                      ? "text-green-600"
+                      : "text-red-600"
+                } font-bold`}
+              >
+                {selectedSemester?.name?.includes("AL")
+                  ? row.mark >= 0.45 * row.total
+                    ? "P"
+                    : "F"
+                  : row.mark >= 0.40 * row.total
+                    ? "P"
+                    : "F"}
+              </td>
+
+
                 </tr>
               ))}
             </tbody>

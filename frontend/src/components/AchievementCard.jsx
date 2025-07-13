@@ -51,13 +51,15 @@ const AchievementCard = ({ achievement, onEdit }) => {
           <div className="text-3xl">{getRankIcon(achievement.placeOrRank)}</div>
           {getStatusBadge()}
         </div>
-        <button
+        {achievement.approval === false &&
+         <button
           onClick={onEdit}
           className="p-2 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-xl text-indigo-600 dark:text-indigo-300"
           title="Edit"
         >
           ✏️
-        </button>
+        </button> }
+       
       </div>
 
       <h3 className="text-xl font-bold text-gray-800 dark:text-white leading-tight mb-1">{achievement.achievedItem}</h3>

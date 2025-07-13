@@ -27,7 +27,9 @@ import { Trash } from "lucide-react";
 const ManagementPage = () => {
   const {updateSelectedTab, getBatches, getSemesters, getTeachers, batches, semesters, teachers, deleteSemester, updateSemester, deleteBatch, updateBatch } = useAdminStore();
   const {deleteTeacher} = useStaffStore();
-  const [selectedTab, setSelectedTab] = useState("current Semester");
+    const [selectedTab, setSelectedTab] = useState(() => {
+    return localStorage.getItem("selectedTab") || "current Semester";
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
@@ -37,6 +39,10 @@ const ManagementPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 const [deleteAction, setDeleteAction] = useState(() => () => {});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem("selectedTab", selectedTab);
+  }, [selectedTab]);
 
   useEffect(() => {
     if (selectedTab === "current Semester") {
@@ -248,7 +254,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
                 className="text-gray-900 dark:text-gray-200 text-lg font-medium font-sans cursor-pointer"
                 onClick={() => {
                   if (selectedTab === "batches") {
-                    navigate(`/dashboard/admin/attendance/${itemName}`);
+                    navigate(`/dashboard/admin/attendance/${item._id}`);
                   } else if (selectedTab === "semester Subjects") {
                     navigate(`/dashboard/admin/semester/${item._id}`);
                   }

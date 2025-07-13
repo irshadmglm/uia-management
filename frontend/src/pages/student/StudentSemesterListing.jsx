@@ -49,7 +49,7 @@ const StudentSemesterListing = () => {
                  initial={{ opacity: 0, y: 100 }}
                  animate={{ opacity: 1, y: 0, transition: { duration: 1.1 } }}
                  >
-                   Thamheadia
+                   Thamheediyya
                </motion.h1>
 
           {semesters.map((semester, index) => (
