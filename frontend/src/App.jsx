@@ -32,10 +32,16 @@ function App() {
 
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
-      </div>
-    );
+        <div className="flex items-center justify-center h-screen relative">
+          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-gray-900 dark:border-gray-100" />
+          <img
+            src="/web-app-manifest-192x192.png"
+            alt="Logo"
+            className="absolute h-12 w-12"
+          />
+        </div>
+      );
+
   }
 
   return (

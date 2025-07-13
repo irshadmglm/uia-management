@@ -7,10 +7,16 @@ const months = [ "شوّال", "ذو القعدة", "ذو الحجة", "محرّ
    "ربيع الآخر", "جمادى الأولى", "جمادى الأخرى", "رجب", "شعبان", "رمضان"];
 
 const Spinner = () => (
-  <div className="flex justify-center items-center py-10 h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 dark:border-gray-100" />
-  </div>
+   <div className="flex items-center justify-center h-screen relative">
+          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-gray-900 dark:border-gray-100" />
+          <img
+            src="/web-app-manifest-192x192.png"
+            alt="Logo"
+            className="absolute h-12 w-12"
+          />
+        </div>
 );
+
 
 const FeesSummary = ({ fees }) => {
   if (!fees.length) return null; // 🛡️ Protect from empty array
