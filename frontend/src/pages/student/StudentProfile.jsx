@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   UserCircle,
   Phone,
@@ -11,16 +11,18 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import Header from '../../components/Header';
+import ChangePasswordModal from '../../components/ChangePasswordModal';
 
 const StudentProfile = () => {
   const {authUser} = useAuthStore()
+    const [showChangePassword, setShowChangePassword] = useState(false);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center ">
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 to-sky-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center ">
         <Header />
 
-      <div className="bg-white dark:bg-gray-900 sm:rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden h-screen sm:h-auto">
+      <div className="bg-white dark:bg-gray-900 sm:rounded-2xl shadow-2xl w-full max-w-3xl sm:h-auto">
         {/* Header */}
-        <div className="bg-gradient-to-tr from-sky-400 to-indigo-500 h-36 relative">
+        <div className="bg-gradient-to-tr from-sky-400 to-sky-500 h-36 relative">
           <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
             <div className="w-32 h-32 bg-white rounded-full p-1 shadow-lg">
               <img
@@ -35,7 +37,7 @@ const StudentProfile = () => {
         {/* Profile Info */}
         <div className="mt-20 px-6 pb-10 text-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{authUser.name}</h2>
-          <p className="text-sky-500 dark:text-sky-400 mb-6">{authUser.batchName}</p>
+          <p className="text-sky-600 dark:text-sky-400 mb-6">{authUser.batchName}</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-left text-gray-700 dark:text-gray-300">
             {authUser?.semester && <InfoRow icon={<GraduationCap size={20} />} label="Current Semester" value={authUser?.semester} />}
@@ -48,16 +50,19 @@ const StudentProfile = () => {
             <InfoRow icon={<Building2 size={20} />} label="Address" value={authUser.address} />
             <InfoRow icon={<MessageCircle size={20} />} label="Whatsapp Number" value={authUser?.whatsupNumber} />
             <button
-              // onClick={handleChangePassword}
-              className="text-blue-600 underline hover:text-blue-800"
+              onClick={() => setShowChangePassword(true)}
+              className="text-sky-600 underline hover:text-sky-800"
             >
               Change Password
             </button>
+            {showChangePassword && (
+              <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
+            )}
 
           </div>
 
           {/* <div className="mt-8">
-            <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-full transition-all">
+            <button className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-full transition-all">
               Edit Profile
             </button>
           </div> */}
@@ -70,7 +75,7 @@ const StudentProfile = () => {
 // Reusable InfoRow Component
 const InfoRow = ({ icon, label, value }) => (
   <div className="flex items-start space-x-3">
-    <div className="mt-1 text-indigo-500">{icon}</div>
+    <div className="mt-1 text-sky-500">{icon}</div>
     <div>
       <p className="text-sm font-semibold">{label}</p>
       <p className="text-base">{value}</p>
@@ -79,3 +84,9 @@ const InfoRow = ({ icon, label, value }) => (
 );
 
 export default StudentProfile;
+
+
+
+
+
+

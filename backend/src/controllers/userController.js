@@ -91,6 +91,47 @@ export const getStudent = async (req, res) => {
   }
 }
 
+export const updatePassword = async (req, res) => {
+  try {
+    const { studentId, teacherId, currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Please provide current and new password." });
+    }
+
+    let user;
+
+    if (studentId) {
+      user = await Student.findById(studentId);
+    } else if (teacherId) {
+      user = await Staff.findById(teacherId);
+    } else {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Current password is incorrect." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully." });
+
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return res.status(500).json({ message: "Server error while updating password." });
+  }
+};
+
 export const editStudent = async (req, res) => {
   try {
     const { studentId } = req.params;

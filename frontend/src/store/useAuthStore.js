@@ -62,6 +62,26 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+ changePassword: async (currentPassword, newPassword ) => {
+  try {
+    const user = get().authUser;
+
+    const data = {
+      ...(user.role === "student" && { studentId: user._id }),
+      ...(user.role === "teacher" && { teacherId: user._id }),
+      currentPassword,
+      newPassword,
+    };
+
+    const res = await axiosInstance.patch("/users/change-password", data);
+    toast.success( res.message || "Password updated successfully");
+  } catch (error) {
+    console.error(error);
+    toast.error(error.response.data.message || "Failed to update password");
+  }
+}
+
+
   // updateProfile: async (data) => {
   //   set({ isUpdatingProfile: true });
   //   try {
