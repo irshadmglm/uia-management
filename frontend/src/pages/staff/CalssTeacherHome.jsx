@@ -23,7 +23,7 @@ const CalssTeacherHome = () => {
       { title: "Reading Progress", icon: Book, route: `/dashboard/teacher/batches/reading-progress/${batchId}` },
       { title: "CE Mark", icon: ClipboardCheck, url: batch?.CEmarkList },
       { title: "Internal Mark", icon: ListTodo, url: batch?.IRmarkList  },
-      { title: "Ishthiraq", icon:  HandCoins, url: batch?.ishthiraq  },
+      { title: "Ishthiraq", icon:  HandCoins, route: `/dashboard/teacher/ishthiraq/${batchId}`  },
     ];
     return (
       <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800">

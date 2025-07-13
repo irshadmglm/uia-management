@@ -23,7 +23,7 @@ import autoTable from "jspdf-autotable";
 import Header from "../../components/Header"
 
 const months = [ "شوّال", "ذو القعدة", "ذو الحجة", "محرّم", "صفر", "ربيع الأوّل",
-   "ربيع الآخر", "جمادى الأولى", "جمادى الأخرى", "رجب", "شعبان", "رمضان"]
+   "ربيع الآخر", "جمادى الأولى", "جمادى الأخرى", "رجب", "شعبان", "رمضان"];
 
 export default function FeesDashboard() {
   const {  batchStudents, getBatchStudents } = useStudentStore()

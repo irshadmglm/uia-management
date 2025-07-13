@@ -22,8 +22,10 @@ import autoTable from "jspdf-autotable";
 import { useParams } from "react-router-dom"
 import { useStaffStore } from "../../store/useStaffStore"
 import { useStudentStore } from "../../store/studentStore"
+import Header from "../../components/Header"
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const months = [ "شوّال", "ذو القعدة", "ذو الحجة", "محرّم", "صفر", "ربيع الأوّل",
+   "ربيع الآخر", "جمادى الأولى", "جمادى الأخرى", "رجب", "شعبان", "رمضان"];
 
 export default function FeesTeacher() {
   const { batchId } = useParams();
@@ -152,7 +154,8 @@ export default function FeesTeacher() {
   return (
     <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen space-y-6 transition-colors">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <Header />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pt-6">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
             Monthly Fees
@@ -233,7 +236,7 @@ export default function FeesTeacher() {
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredStudents.map((student) => (
-                  <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                  <tr key={student.id} className="hover:bg-gray-500 dark:hover:bg-gray-750 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
@@ -296,9 +299,7 @@ export default function FeesTeacher() {
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
                     {student.progress}%
                   </span>
-                  <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                    <ArrowUpRight className="h-4 w-4" />
-                  </button>
+                
                 </div>
               </div>
 
@@ -311,7 +312,7 @@ export default function FeesTeacher() {
                   {months.map((m) => (
                     <div key={m} className="flex flex-col items-center">
                       <span className="text-xs text-gray-600 dark:text-gray-400 mb-1">{m}</span>
-                      <StyledCheckbox checked={student.status[m]} onChange={() => toggle(student.id, m)} />
+                      <StyledCheckbox checked={student.status[m]}  />
                     </div>
                   ))}
                 </div>
@@ -359,7 +360,6 @@ function Card({ title, value, icon, color }) {
       <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
       <div className="mt-2 flex items-center text-xs text-green-600 dark:text-green-400">
         <BarChart3 className="h-3 w-3 mr-1" />
-        <span>+12% from last month</span>
       </div>
     </div>
   )
@@ -380,7 +380,6 @@ function StyledCheckbox({ checked, onChange }) {
       <input
         type="checkbox"
         checked={checked}
-        onChange={handleChange}
         className="sr-only"
         disabled={isLoading}
       />
@@ -395,14 +394,8 @@ function StyledCheckbox({ checked, onChange }) {
           }
         `}
       >
-        {checked && !isLoading && (
-          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        )}
-        {isLoading && (
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        )}
+       
+        
       </span>
     </label>
   );
