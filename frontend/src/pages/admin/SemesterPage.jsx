@@ -78,7 +78,7 @@ const SemesterPage = () => {
       <Header page="Subjects" />
       <div className="container mx-auto py-8 px-4">
         <h1 className="text-xl font-bold mb-6 mt-12">
-          Semester: {semesters?.find((s) => s._id === semesterId)?.name || "Unknown"}
+          Semester: {semesters?.find((s) => s._id === semesterId)?.name || " "}
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
