@@ -14,12 +14,13 @@ const SemesterPage = () => {
   const [editedSubject, setEditedSubject] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const { subjects, getSubjects, addSubject, deleteSubject, updateSubject } = useAdminStore();
+  const { subjects, getSubjects, addSubject, deleteSubject, updateSubject, getSemesters, semesters } = useAdminStore();
 
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
         await getSubjects(semesterId);
+        await getSemesters();
       } catch (error) {
         console.error("Error fetching subjects:", error);
       } finally {
@@ -27,7 +28,9 @@ const SemesterPage = () => {
       }
     };
     fetchSubjects();
-  }, [semesterId, getSubjects]);
+  }, [semesterId, getSubjects, getSemesters]);
+
+
 
   const handleAddSubject = async () => {
     if (!newSubject.name || !newSubject.mark) return;
@@ -74,7 +77,10 @@ const SemesterPage = () => {
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
       <Header page="Subjects" />
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Subjects</h1>
+        <h1 className="text-xl font-bold mb-6 mt-12">
+          Semester: {semesters?.find((s) => s._id === semesterId)?.name || "Unknown"}
+        </h1>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Add New Subject Card */}
           <div
