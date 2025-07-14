@@ -110,12 +110,16 @@ export const useStaffStore = create((set, get) => ({
   }
 },
 
-  getAssignedSubjects: async () => {
+  getAssignedSubjects: async (teacherId) => {
     set({isLoading: true});
-    const authUser = useAuthStore.getState().authUser;
+    let userId;
+    if(!teacherId){
+      userId = useAuthStore.getState().authUser._id;
+    }else{
+      userId = teacherId;
+    }
     try {
-      const res = await axiosInstance.get(`/mng/assigned-subjects/${authUser._id}`);
-      
+      const res = await axiosInstance.get(`/mng/assigned-subjects/${userId}`);
       set({assignedSubjects: res.data})
     } catch (error) {
       console.log("Error in getAssignedSubjects:", error);

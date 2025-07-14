@@ -257,6 +257,8 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
                     navigate(`/dashboard/admin/attendance/${item._id}`);
                   } else if (selectedTab === "semester Subjects") {
                     navigate(`/dashboard/admin/semester/${item._id}`);
+                  }else if (selectedTab === "teachers") {
+                    navigate(`/dashboard/admin/teacher-subjects/${item._id}`);
                   }
                 }}
               >

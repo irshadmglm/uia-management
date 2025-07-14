@@ -26,6 +26,7 @@ import AdminReadingProgressPage from "../pages/admin/AdminReadingProgressPage";
 import AdminBatches from "../pages/admin/AdminBatches";
 import BatchStudents from "../pages/admin/BatchStudents";
 import RecordPage from "../pages/admin/RecordPage";
+import AssignedSubjects from "../pages/staff/AssignedSubjects";
 
 
 const AdminRoutes = () => {
@@ -44,6 +45,8 @@ const AdminRoutes = () => {
       <Route path="attendance/:batchId" element={<AdminAttendance />} />
       <Route path="semester/:semesterId" element={<SemesterPage />} />
       {/* <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} /> */}
+
+      <Route path="teacher-subjects/:teacherId" element={<AssignedSubjects />} />
 
       <Route path="batches/:item" element={<AdminBatches />} />
       <Route path="batches/:item/:batchId" element={<BatchStudents />} />

@@ -1,16 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CheckCircle, Loader2 } from "lucide-react";
 import Header from "../../components/Header";
 import { useStaffStore } from "../../store/useStaffStore";
 import { MdAdd, MdAddAlert, MdAddCircle, MdAddHomeWork, MdMarkunread } from "react-icons/md";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useParams } from "react-router-dom";
 
 const AssignedSubjects = () => {
   const { assignedSubjects, getAssignedSubjects, isLoading, } = useStaffStore();
-  const {authUser} = useAuthStore()
+  const {authUser} = useAuthStore();
+  let { teacherId } = useParams();
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
-    getAssignedSubjects();
+    if (teacherId) {
+      setUserId(teacherId);
+    } else if (authUser?._id) {
+      setUserId(authUser._id);
+    }
+  }, [teacherId, authUser]);
+
+
+  useEffect(() => {
+    getAssignedSubjects(teacherId);
   }, [getAssignedSubjects]);
 
   return (
@@ -18,7 +30,7 @@ const AssignedSubjects = () => {
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-4 pt-24">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-          My Subjects
+         Subjects
         </h2>
 
         {isLoading ? (
@@ -44,7 +56,7 @@ const AssignedSubjects = () => {
                       <p className="text-sm text-gray-500 dark:text-gray-300">
                          {subject.batchDetails?.name || "N/A"}
                       </p>
-                      {authUser?._id?.toString() === subject?.subTeacher?.toString() ? (
+                      {userId?.toString() === subject?.subTeacher?.toString() ? (
                           subject?.periodTeacher1 > 0 ? (
                             <p className="text-sm text-gray-500 dark:text-gray-300">
                               Period: {subject.periodTeacher1}
