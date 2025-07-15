@@ -78,13 +78,13 @@ const AssignmentCard = ({
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Assigned</p>
-              <p className="font-medium text-gray-800 dark:text-white text-lg">
+              <p className="font-medium text-gray-800 dark:text-white text-sm">
                 {assignedName || "Not assigned yet"}
                 {periodTeacher1 > 0 &&  <span className="ml-2 text-sm text-gray-500">Period: {periodTeacher1}</span>}
               </p> 
               {
                 assignedName2 && 
-                <p className="font-medium text-gray-800 dark:text-white text-lg">
+                <p className="font-medium text-gray-800 dark:text-white text-sm">
                 {assignedName2 || "Not assigned yet"}
                 {periodTeacher2 > 0 && <span className="ml-2 text-sm text-gray-500">Period: {periodTeacher2}</span>}
               </p>
@@ -170,27 +170,41 @@ const SearchBar = ({ value, onChange, placeholder }) => (
   </div>
 )
 
-function SubjectAssignment({ batches, teachers }) {
-  const { getSubjects, subjects } = useAdminStore();
+function SubjectAssignment({ batches, teachers, art = false }) {
+  const { getSubjects, subjects, getArtSubjects, artSubjects } = useAdminStore();
   const [selectedBatch, setSelectedBatch] = useState(batches[0]);
   const [subjectAssignments, setSubjectAssignments] = useState({});
+  const [allSubjects, setAllSubjects] = useState([])
   const [message, setMessage] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [editMode, setEditMode] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (selectedBatch) {
-      setIsLoading(true);
-      getSubjects(selectedBatch.currentSemester).finally(() =>
-        setIsLoading(false)
-      );
+ useEffect(() => {
+  if (selectedBatch) {
+    setIsLoading(true);
+    setAllSubjects([])
+    if(art) {
+    getArtSubjects(selectedBatch.currentArtSemester);
+    } else {
+    getSubjects(selectedBatch.currentSemester);
     }
-  }, [selectedBatch, getSubjects]);
+  setIsLoading(false);
+  }
+}, [selectedBatch, getSubjects, getArtSubjects]);
+
+useEffect(() => {
+  if (art) {
+    setAllSubjects(artSubjects);
+  } else {
+    setAllSubjects(subjects);
+  }
+}, [subjects, artSubjects, art]);
+
 
   useEffect(() => {
     const modified = {};
-    for (const sub of subjects) {
+    for (const sub of allSubjects) {
       modified[sub._id] = {
         subTeacher: sub.subTeacher || "",
         subTeacher2: sub.subTeacher2 || "",
@@ -199,7 +213,7 @@ function SubjectAssignment({ batches, teachers }) {
       };
     }
     setSubjectAssignments(modified);
-  }, [subjects]);
+  }, [subjects, artSubjects, allSubjects]);
 
   const handleTeacherSelect = async (subjectId, teacherId, second = false) => {
     try {
@@ -215,6 +229,7 @@ function SubjectAssignment({ batches, teachers }) {
         subjectId,
         teacherId,
         second,
+        art
       });
 
       setMessage({
@@ -246,6 +261,7 @@ function SubjectAssignment({ batches, teachers }) {
         subjectId,
         period,
         second,
+        art
       });
 
       setMessage({
@@ -269,7 +285,7 @@ function SubjectAssignment({ batches, teachers }) {
     }));
   };
 
-  const filteredSubjects = subjects.filter((subject) =>
+  const filteredSubjects = allSubjects.filter((subject) =>
     subject.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -743,9 +759,9 @@ const ClassLeaderAssignment = ({ batches, students }) => {
 
 function AssignDutiesPage() {
   const [activeTab, setActiveTab] = useState("subjects")
-  const { getBatches, getTeachers, getSemesters, batches, teachers, semesters } = useAdminStore()
+  const { getBatches, getTeachers, getSemesters, getArtSems, batches, teachers, semesters, artSems } = useAdminStore()
   const { students, getStudents } = useStudentStore()
-  const props = { batches, teachers, semesters, students }
+  const props = { batches, teachers, semesters, students, artSems }
   const [loading, setLoading] = useState(true)
 
   // Fetch data from API
@@ -753,7 +769,7 @@ function AssignDutiesPage() {
     const fetchData = async () => {
       setLoading(true)
       try {
-        await Promise.all([getBatches(), getSemesters(), getTeachers(), getStudents()])
+        await Promise.all([getBatches(), getSemesters(), getTeachers(), getStudents(), getArtSems()])
       } catch (error) {
         console.error("Error fetching data:", error)
       } finally {
@@ -765,6 +781,7 @@ function AssignDutiesPage() {
 
   const tabs = [
     { id: "subjects", label: "Assign Subject", icon: FiBook },
+    { id: "artSubjects", label: "Assign Art Subject", icon: FiBookOpen },
     { id: "classTeacher", label: "Class Mentors", icon: FiUsers },
     { id: "classLeader", label: "Class Leaders", icon: FiUserCheck },
     // { id: "timeTable", label: "Time Table", icon: FiList }
@@ -806,6 +823,8 @@ function AssignDutiesPage() {
           </div>
         ) : activeTab === "subjects" ? (
           <SubjectAssignment {...props} />
+        ) : activeTab === "artSubjects" ? (
+          <SubjectAssignment batches={batches} teachers={teachers} art={true} />
         ) : activeTab === "classTeacher" ? (
           <BatchTeacherAssignment {...props} />
         ) : activeTab === "currentSemester" ? (

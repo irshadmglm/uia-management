@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import Semester from "./semester.model.js";
+import ArtSemester from "./artsemester.model.js";
 
-const subjectSchema = new mongoose.Schema(
+const artSubjectSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -20,16 +20,10 @@ const subjectSchema = new mongoose.Schema(
       type: String,
       uppercase: true,
     },
-    isArtSub: {
-      type: Boolean,
-    },
-    semester: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Semester",
-    },
     artSemester: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ArtSemester",
+      required: true, 
     },
     subTeacher: {
       type: mongoose.Schema.Types.ObjectId,
@@ -53,11 +47,11 @@ const subjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-subjectSchema.pre("save", async function (next) {
+artSubjectSchema.pre("save", async function (next) {
   if (!this.code) {
     try {
-      const semesterId = this.semester;  
-      const semester = await Semester.findById(semesterId); 
+      const semesterId = this.artSemester;  
+      const semester = await ArtSemester.findById(semesterId); 
       if (!semester) {
         throw new Error("Semester not found");
       }
@@ -66,7 +60,7 @@ subjectSchema.pre("save", async function (next) {
       const semesterSufix = semester.name.charAt(semester.name.length - 1); 
 
       const lastSubject = await mongoose
-        .model("Subject")
+        .model("ArtSubject")
         .findOne({ code: new RegExp(`^${namePart}\\d{3}$`, "i") })
         .sort({ createdAt: -1 });
 
@@ -86,4 +80,4 @@ subjectSchema.pre("save", async function (next) {
   next();
 });
 
-export default mongoose.model("Subject", subjectSchema);
+export default mongoose.model("ArtSubject", artSubjectSchema);

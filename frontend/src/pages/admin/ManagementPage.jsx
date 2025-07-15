@@ -25,7 +25,10 @@ import { axiosInstance } from "../../lib/axios";
 import { Trash } from "lucide-react";
 
 const ManagementPage = () => {
-  const {updateSelectedTab, getBatches, getSemesters, getTeachers, batches, semesters, teachers, deleteSemester, updateSemester, deleteBatch, updateBatch } = useAdminStore();
+  const { getBatches, getSemesters, getTeachers, getArtSems,
+          batches, semesters, teachers, artSems, 
+          updateSemester,  updateBatch, updateSelectedTab, updateArtSem,
+          deleteBatch, deleteSemester,  deleteArtSems,} = useAdminStore();
   const {deleteTeacher} = useStaffStore();
     const [selectedTab, setSelectedTab] = useState(() => {
     return localStorage.getItem("selectedTab") || "current Semester";
@@ -49,18 +52,21 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
       setItems(batches);
     } else if (selectedTab === "semester Subjects") {
       setItems(semesters);
+    } else if (selectedTab === "arts Subjects") {
+      setItems(artSems);
     } else if (selectedTab === "batches") {
       setItems(batches);
     } else if (selectedTab === "teachers") {
       setItems(teachers);
     }
-  }, [selectedTab, batches, semesters, teachers]);
+  }, [selectedTab, batches, semesters, teachers, artSems]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         getBatches();
         getSemesters();
+        getArtSems();
         getTeachers();
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -90,6 +96,8 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
           await deleteBatch(itemId);
         } else if (selectedTab === "semester Subjects") {
           await deleteSemester(itemId);
+        }  else if (selectedTab === "arts Subjects") {
+          await deleteArtSems(itemId);
         } else if (selectedTab === "teachers") {
           await deleteTeacher(itemId);
         }
@@ -117,9 +125,9 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
         await updateBatch(itemId, updatedValue);
       } else if (selectedTab === "semester Subjects") {
         await updateSemester(itemId, updatedValue);
-      } else if (selectedTab === "teachers") {
-        // Assuming teachers are stored externally, do necessary update here if needed
-      }
+      } else if (selectedTab === "arts Subjects") {
+        await updateArtSem(itemId, updatedValue);
+      } 
   
       setEditingItem(null);
       setNewItemValue("");
@@ -138,7 +146,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 ">
      <div className="w-full overflow-x-auto">
       <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 w-max sm:w-auto whitespace-nowrap">
-        {["current Semester", "semester Subjects", "batches", "teachers"].map((tab) => (
+        {["current Semester", "current Art Sems", "semester Subjects", "arts Subjects", "batches", "teachers"].map((tab) => (
           <Button
             key={tab}
             onClick={() => {
@@ -159,7 +167,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
     </div>
 
 
-    { selectedTab !== "current Semester" && ( <div className="relative w-full sm:w-72">
+    { selectedTab !== "current Semester" && selectedTab !== "current Art Sems" && ( <div className="relative w-full sm:w-72">
       <FiSearch className="absolute left-3 top-3.5 text-gray-400 dark:text-gray-500" />
       <Input
         type="text"
@@ -170,7 +178,8 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
       />
     </div>)}
       </div>
-        {selectedTab === "current Semester" ? ( <SemesterAssignment batches={batches} semesters={semesters} />)
+        {selectedTab === "current Semester" ? ( <SemesterAssignment batches={batches} semesters={semesters} tab={selectedTab} />)
+        : selectedTab === "current Art Sems" ? ( <SemesterAssignment batches={batches} semesters={artSems} tab={selectedTab}  art={true} />) 
         : (<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {/* Add New Card */}
           <div
@@ -257,7 +266,9 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
                     navigate(`/dashboard/admin/attendance/${item._id}`);
                   } else if (selectedTab === "semester Subjects") {
                     navigate(`/dashboard/admin/semester/${item._id}`);
-                  }else if (selectedTab === "teachers") {
+                  } else if (selectedTab === "arts Subjects") {
+                    navigate(`/dashboard/admin/arts/${item._id}`);
+                  } else if (selectedTab === "teachers") {
                     navigate(`/dashboard/admin/teacher-subjects/${item._id}`);
                   }
                 }}
@@ -451,7 +462,7 @@ const SearchBar = ({ value, onChange, placeholder }) => (
     )}
   </div>
 )
-function SemesterAssignment({batches, semesters}) {
+function SemesterAssignment({batches, semesters, tab, art = false}) {
   const [batchAssignments, setBatchAssignments] = useState({})
   const [message, setMessage] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -460,10 +471,14 @@ function SemesterAssignment({batches, semesters}) {
   useEffect(() => {
     const modified = {}
     for (const cl of batches) {
+      if(art){
+      modified[cl._id] = cl.currentArtSemester || ""
+      }else{
       modified[cl._id] = cl.currentSemester || ""
+      }
     }
     setBatchAssignments(modified)
-  }, [batches])
+  }, [batches, tab])
 
   const handleSemesterSelect = async (classId, semesterId) => {
     
@@ -476,6 +491,7 @@ function SemesterAssignment({batches, semesters}) {
       await axiosInstance.post("/mng/asign-semester", {
         classId,
         semesterId,
+        art
       })
 
       setMessage({ type: "success", text: "Semester assigned successfully!" })

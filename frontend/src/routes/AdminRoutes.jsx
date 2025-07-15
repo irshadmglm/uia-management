@@ -44,6 +44,7 @@ const AdminRoutes = () => {
       <Route path="management" element={<ManagementPage />} />
       <Route path="attendance/:batchId" element={<AdminAttendance />} />
       <Route path="semester/:semesterId" element={<SemesterPage />} />
+      <Route path="arts/:artsId" element={<SemesterPage />} />
       {/* <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} /> */}
 
       <Route path="teacher-subjects/:teacherId" element={<AssignedSubjects />} />

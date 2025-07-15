@@ -16,8 +16,8 @@ const CurruntSemSubjects = () => {
     <>
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-4 pt-24">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-          Sem Subjects
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+          My Subjects
         </h2>
 
         {isLoading ? (
@@ -37,22 +37,22 @@ const CurruntSemSubjects = () => {
                       {index + 1}
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white capitalize">
                         {subject.name}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-300">
+                      <p className="text-xs text-gray-500 dark:text-gray-300">
                       Teacher: {subject?.subTeacherInfo?.[0]?.name || "Teacher not assigned"}
                       </p>
                       {
                         subject?.subTeacher2Info.length > 0  &&
-                        <p className="text-sm text-gray-500 dark:text-gray-300">
+                        <p className="text-xs text-gray-500 dark:text-gray-300">
                         Teacher 2: {subject?.subTeacher2Info?.[0]?.name || "Teacher not assigned"}
                         </p>
                       }
-                      <p className="text-sm text-gray-500 dark:text-gray-300">
+                      <p className="text-xs text-gray-500 dark:text-gray-300">
                         mark: {subject?.mark}
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-300">
+                      <p className="text-xs text-gray-500 dark:text-gray-300">
                        CE mark: {subject?.CEmark === true ? "Yes" : "No"}
                       </p>
                     </div>

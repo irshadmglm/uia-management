@@ -7,20 +7,28 @@ import { useParams } from "react-router-dom";
 import { useAdminStore } from "../../store/useAdminMngStore";
 
 const SemesterPage = () => {
-  const { semesterId } = useParams();
+  const { semesterId, artsId } = useParams();
   const [newSubject, setNewSubject] = useState({ name: "", mark: "", CEmark: "" });
   const [showAddCard, setShowAddCard] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [editedSubject, setEditedSubject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [semSubjects, setSemSubjects] = useState([])
 
-  const { subjects, getSubjects, addSubject, deleteSubject, updateSubject, getSemesters, semesters } = useAdminStore();
+  const { subjects, artSubjects, getSubjects, getArtSubjects, addSubject, deleteSubject, deleteArtSubject, updateSubject, updateArtSubject, getSemesters, semesters, artSems, getArtSems } = useAdminStore();
 
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        await getSubjects(semesterId);
-        await getSemesters();
+        if(semesterId){
+          getSubjects(semesterId)
+          getSemesters();
+
+        }else if(artsId){
+          getArtSubjects(artsId)
+          getArtSems();
+        }
+        
       } catch (error) {
         console.error("Error fetching subjects:", error);
       } finally {
@@ -28,18 +36,29 @@ const SemesterPage = () => {
       }
     };
     fetchSubjects();
-  }, [semesterId, getSubjects, getSemesters]);
+  }, [semesterId, artsId, getSubjects, getSemesters, getArtSems]);
 
-
+  useEffect(() => {
+   if(semesterId){
+    setSemSubjects(subjects);
+   } else if (artsId){
+    setSemSubjects(artSubjects)
+   }
+  }, [subjects, artSubjects])
+  
 
   const handleAddSubject = async () => {
     if (!newSubject.name || !newSubject.mark) return;
     try {
-      await addSubject(semesterId, {
+     const id = semesterId || artsId;
+
+      await addSubject(id, {
         name: newSubject.name.trim(),
         mark: newSubject.mark,
         CEmark: newSubject.CEmark === "true",
+        isArtSub: Boolean(artsId),
       });
+
       setNewSubject({ name: "", mark: "", CEmark: "" });
       setShowAddCard(false);
     } catch (error) {
@@ -49,7 +68,11 @@ const SemesterPage = () => {
 
   const handleDeleteSubject = async (id) => {
     try {
-      await deleteSubject(id);
+      if (semesterId) {
+        await deleteSubject(id);
+      }else if(artsId){
+      await deleteArtSubject(id);
+      }
     } catch (error) {
       console.error("Error deleting subject:", error);
     }
@@ -57,7 +80,12 @@ const SemesterPage = () => {
 
   const handleEditSubject = async (id) => {
     try {
-      await updateSubject(id, editedSubject);
+      if (semesterId) {
+        await updateSubject(id, editedSubject);
+      }else if(artsId){
+      await await updateArtSubject(id, editedSubject);
+      }
+      
       setEditIndex(null);
       setEditedSubject(null);
     } catch (error) {
@@ -77,9 +105,18 @@ const SemesterPage = () => {
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
       <Header page="Subjects" />
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-xl font-bold mb-6 mt-12">
-          Semester: {semesters?.find((s) => s._id === semesterId)?.name || " "}
-        </h1>
+
+
+          <h1 className="text-xl font-bold mb-6 mt-12">
+              Semester:{" "}
+              {semesterId
+                ? semesters?.find((s) => s._id === semesterId)?.name || "Unknown"
+                : artsId
+                ? artSems?.find((s) => s._id === artsId)?.name || "Unknown"
+                : "Unknown"}
+            </h1>
+
+
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Add New Subject Card */}
@@ -131,7 +168,7 @@ const SemesterPage = () => {
           </div>
 
           {/* Subject Cards */}
-          {subjects.map((subject, index) => (
+          {semSubjects?.map((subject, index) => (
             <div
               key={subject._id}
               className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
@@ -177,11 +214,13 @@ const SemesterPage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Name: {subject.name}</h3>
-                  <p>Mark: {subject.mark}</p>
-                  <p>CE Mark: {subject.CEmark ? "Yes" : "No"}</p>
-                  <div className="flex justify-end gap-2 pt-2">
+                <div className="space-y-2 flex  justify-between">
+                <div>
+                    <h3 className="text-sm font-semibold">Name: {subject.name}</h3>
+                  <p className="text-slate-400 text-sm font-semibold" >Mark: {subject.mark}</p>
+                  <p className="text-slate-400 text-sm font-semibold">CE Mark: {subject.CEmark ? "Yes" : "No"}</p>
+                </div>
+                  <div className="flex justify-end gap-1 ">
                     <Button
                       onClick={() => {
                         setEditIndex(index);
@@ -193,7 +232,7 @@ const SemesterPage = () => {
                     </Button>
                     <Button
                       onClick={() => handleDeleteSubject(subject._id)}
-                      className="bg-red-600 text-white hover:bg-red-700"
+                      className="text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       <FiTrash2 />
                     </Button>

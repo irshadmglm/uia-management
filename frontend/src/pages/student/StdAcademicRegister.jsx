@@ -36,7 +36,7 @@ const AcademicRegister = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 100, damping: 10, delay: index * 0.1 }}
           >
-            <Card title={card.title} icon={card.icon} route={card.route} />
+            <Card title={card.title} icon={card.icon} {...(card.route ? { route: card.route } : { url: card.url })} />
           </motion.div>
 
         ))}

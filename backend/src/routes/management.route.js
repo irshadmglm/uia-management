@@ -1,5 +1,5 @@
 import express from "express";
-import { academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteBatch,  deleteSemester,  deleteSubject,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
+import { academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteArtSem,  deleteArtSubject,  deleteBatch,  deleteSemester,  deleteSubject,  getArtSems,  getArtSubjects,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postArtSem, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateArtSem, updateArtSubject, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
 
 
 const router = express.Router();
@@ -15,6 +15,14 @@ router.post('/semester', postSemester);
 router.delete('/semester/delete/:semesterId', deleteSemester);
 
 router.put('/semester/update/:semesterId', updateSemester);
+
+router.get('/art-sem', getArtSems);
+
+router.post('/art-sem', postArtSem);
+
+router.delete('/art-sem/delete/:semesterId', deleteArtSem);
+
+router.put('/art-sem/update/:semesterId', updateArtSem);
 
 router.get('/batches', getBatches);
 
@@ -35,6 +43,12 @@ router.post('/subjects/:semesterId', postSubject)
 router.delete('/subject/delete/:subjectId', deleteSubject);
 
 router.put('/subject/update/:subjectId', updateSubject);
+
+router.get('/art-subjects/:semesterId', getArtSubjects);
+
+router.delete('/art-subject/delete/:subjectId', deleteArtSubject);
+
+router.put('/art-subject/update/:subjectId', updateArtSubject);
 
 router.post('/asign-teacher', asignBatchTeacher)
 
