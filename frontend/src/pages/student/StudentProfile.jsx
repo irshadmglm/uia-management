@@ -27,7 +27,7 @@ const StudentProfile = () => {
             <div className="w-32 h-32 bg-white rounded-full p-1 shadow-lg">
               <img
                 className="rounded-full object-cover w-full h-full"
-                src="https://png.pngtree.com/png-vector/20250221/ourmid/pngtree-cheerful-child-in-islamic-dress-with-a-warm-expression-png-image_15543168.png"
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO-15oVSs246BVTRobf0Ye3gECp5_E3-OKUGgAD4N8HZgj8xa-PElzug6S6tW0sdlT1cY&usqp=CAU"
                 alt="Student Profile"
               />
             </div>
