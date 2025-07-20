@@ -14,8 +14,11 @@ const SelectField = ({ label, name, value, options, icon, onChange }) => {
         <option value="">Select {label}</option>
       
         {options.map((option) => (
-          <option key={option} value={option}>{option}</option>
-        ))}
+  <option key={option} value={option}>
+    {option.charAt(0).toUpperCase() + option.slice(1)}
+  </option>
+))}
+
       </select>
     </div>
   </div>

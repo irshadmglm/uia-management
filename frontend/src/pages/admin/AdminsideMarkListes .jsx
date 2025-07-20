@@ -90,6 +90,19 @@ const AdminsideMarkListes = () => {
     }
   };
 
+const isPass = (subjects, sem) => {
+  const passPercent = sem.includes("AL") ? 0.45 : 0.40;
+  return subjects?.every(s => s.mark >= passPercent * s.total);
+};
+
+const percentage = (subjects) => {
+  const totalMarks = subjects.reduce((acc, s) => acc + s.mark, 0);
+  const totalMax = subjects.reduce((acc, s) => acc + s.total, 0);
+  return totalMax ? ((totalMarks / totalMax) * 100).toFixed(2) : "0.00";
+};
+
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-4 pt-24 flex justify-center">
       <Header />
@@ -164,18 +177,39 @@ const AdminsideMarkListes = () => {
                                 className="w-full bg-transparent text-gray-900 dark:text-gray-200 font-medium focus:outline-none"
                               />
                             </td>
-                            <td
-                              className={`px-3 py-3 text-center ${
-                                sub.mark >= (0.3 * sub.total)
-                                  ? "text-green-600 font-bold"
-                                  : "text-red-600 font-bold"
-                              }`}
-                            >
-                              {sub.mark >= (0.3 * sub.total) ? "P" : "F"}
-                            </td>
+                             <td
+                            className={`px-3 py-2 text-center ${
+                              sem?.name?.includes("AL")
+                                ? sub.mark >= 0.45 * sub.total
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                                : sub.mark >= 0.40 * sub.total
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                            } font-bold`}
+                          >
+                            {sem?.name?.includes("AL")
+                              ? sub.mark >= 0.45 * sub.total
+                                ? "P"
+                                : "F"
+                              : sub.mark >= 0.40 * sub.total
+                                ? "P"
+                                : "F"}
+                          </td>
+                          
                           </tr>
                         ))}
                       </tbody>
+                     <tfoot className="bg-gray-200 dark:bg-gray-700 font-bold">
+                        <tr>
+                          <td className="px-6 py-3">{percentage(ml.subjects)}%</td>
+                          <td className="px-3 py-3">{ml?.subjects?.reduce((acc, s) => acc + s.mark, 0)}</td>
+                          <td className="px-3 py-3">{ml?.subjects?.reduce((acc, s) => acc + s.total, 0)}</td>
+                          <td className="px-3 py-3 text-center">{isPass(ml.subjects, sem.name) ? "P" : "F"}</td>
+                        </tr>
+                      </tfoot>
+
+
                     </table>
                   </div>
 

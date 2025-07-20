@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2, User, School, List, Lock, UserCheck2Icon } from "lucide-react";
+import { Eye, EyeOff, Loader2, User, School, List, Lock, UserCheck2Icon, User2, GraduationCap, GraduationCapIcon } from "lucide-react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import Header from "../components/Header";
@@ -12,6 +12,7 @@ const LoginPage = (props) => {
   const { id } = useParams();
   const {login, isLoggingIn } = useAuthStore();
   const [student, setStudent] = useState([])
+  const [showPassword, setShowPassword] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -60,12 +61,13 @@ const LoginPage = (props) => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
 
-          <SelectField label="Role" name="role" value={formData.role} icon={<UserCheck2Icon />} onChange={setFormData} options={["student", "teacher", "admin"]} />
+          <SelectField label="Role" name="role" value={formData.role} icon={<GraduationCapIcon />} onChange={setFormData} options={["student", "teacher", "admin"]} />
             
-            <InputField label="Username" name="username" value={formData.email} icon={<MdEmail />} onChange={setFormData} />
+            <InputField label="Username" name="username" value={formData.email} icon={<User2 />} onChange={setFormData} />
            
             <InputField label="Password" name="password" value={formData.password} icon={<Lock />} onChange={setFormData} />
 
+            
             <button type="submit" className="btn bg-sky-700 w-full text-gray-50" disabled={isLoggingIn}>
               {isLoggingIn ? (
                 <>

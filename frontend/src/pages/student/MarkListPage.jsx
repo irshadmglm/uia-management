@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useMarksStore } from "../../store/useMarksStore";
 import Header from "../../components/Header";
 import { useAuthStore } from "../../store/useAuthStore";
-import { Loader2 } from "lucide-react";
+import { Loader2, MinusCircle } from "lucide-react";
 import { FiSend, FiLock, FiEdit, FiPlus } from "react-icons/fi";
 import toast from "react-hot-toast";
 
@@ -72,8 +72,15 @@ const MarkListPage = () => {
   };
 
   const handleAddRow = () => {
+    console.log("marks", ...marks);
+    
     setMarks((prev) => [...prev, { subject: "", mark: 0, total: 100 }]);
   };
+
+const handleRemoveRow = (index) => {
+  setMarks((prev) => prev.filter((row, i) => i !== index));
+};
+
 
   const handleSubmit = async () => {
     if (!authUser || !selectedSemester || marks.length === 0) {
@@ -116,9 +123,9 @@ const MarkListPage = () => {
  
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24 flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-3 pt-24 flex justify-center">
       <Header />
-      <div className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+      <div className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-4 text-center font-oswald">
           {selectedSemester?.name || "Select a semester"}
         </h2>
@@ -144,10 +151,14 @@ const MarkListPage = () => {
           <table className="w-full text-left border-collapse ">
             <thead className="rounded-lg">
               <tr className="bg-gradient-to-r from-sky-600 via-sky-700 to-sky-800 text-white ">
-                <th className="px-6 py-3">Subject</th>
-                <th className="px-3 py-3">Mark</th>
-                <th className="px-3 py-3">Total</th>
-                <th className="px-3 py-3">Status</th>
+                <th className="px-8 py-3 text-xs sm:text-sm">Subject</th>
+                <th className="px-2 py-3 text-xs sm:text-sm">Mark</th>
+                <th className="px-2 py-3 text-xs sm:text-sm">Total</th>
+                <th className="px-1 py-3 text-xs sm:text-sm">Status</th>
+                {(!markList.isApproved || markList.editingStatus === "allow") && (
+                    <th className="px-1 py-3 text-xs sm:text-sm">Remove</th>
+                  )}
+
               </tr>
             </thead>
             <tbody>
@@ -156,13 +167,13 @@ const MarkListPage = () => {
                   key={i}
                   className="border-b border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                 >
-                  <td className="px-6 py-2">
+                  <td className="px-4 py-2">
                     <input
                       type="text"
                       value={row.subject}
                       onChange={(e) => handleInputChange(i, "subject", e.target.value)}
                       disabled={readOnly}
-                      className="w-full bg-transparent text-gray-900 dark:text-gray-200 focus:outline-none"
+                      className="w-full bg-transparent text-gray-900 dark:text-gray-200 focus:outline-none text-xs sm:text-sm"
                     />
                   </td>
                   <td className="px-3 py-2">
@@ -171,7 +182,7 @@ const MarkListPage = () => {
                       value={row.mark}
                       onChange={(e) => handleInputChange(i, "mark", e.target.value)}
                       disabled={readOnly}
-                      className={`w-full bg-transparent focus:outline-none text-gray-900 dark:text-gray-200 ${
+                      className={`text-xs sm:text-sm w-full bg-transparent focus:outline-none text-gray-900 dark:text-gray-200 ${
                         row.mark > row.total ? "text-red-600 font-bold" : "text-gray-900"
                       }`}
                     />
@@ -182,11 +193,11 @@ const MarkListPage = () => {
                       value={row.total}
                       onChange={(e) => handleInputChange(i, "total", e.target.value)}
                       disabled={readOnly}
-                      className="w-full bg-transparent focus:outline-none text-gray-900 dark:text-gray-200"
+                      className="text-xs sm:text-sm w-full bg-transparent focus:outline-none text-gray-900 dark:text-gray-200"
                     />
                   </td>
                 <td
-                className={`px-3 py-2 text-center ${
+                className={`text-xs sm:text-sm px-3 py-2 text-center ${
                   selectedSemester?.name?.includes("AL")
                     ? row.mark >= 0.45 * row.total
                       ? "text-green-600"
@@ -205,6 +216,18 @@ const MarkListPage = () => {
                     : "F"}
               </td>
 
+              <td className="text-xs sm:text-sm px-3 py-2 text-center">
+                <button
+                  onClick={() => handleRemoveRow(i)}
+                  className="text-red-500 hover:text-red-700"
+                  title="Remove"
+                >
+                  <MinusCircle size={18} />
+                </button>
+              </td>
+
+
+
 
                 </tr>
               ))}
@@ -212,10 +235,11 @@ const MarkListPage = () => {
             {/* Table footer with totals */}
             <tfoot className="bg-gray-200 dark:bg-gray-700 font-bold">
               <tr>
-                <td className="px-6 py-3">{percent}%</td>
-                <td className="px-3 py-3">{totalMarks}</td>
-                <td className="px-3 py-3">{totalMax}</td>
-                <td className="px-3 py-3 text-center">{overallStatus}</td>
+                <td className="px-6 py-3 text-xs sm:text-sm">{percent}%</td>
+                <td className="px-3 py-3 text-xs sm:text-sm">{totalMarks}</td>
+                <td className="px-3 py-3 text-xs sm:text-sm">{totalMax}</td>
+                <td className="px-3 py-3 text-center text-xs sm:text-sm">{overallStatus}</td>
+                <td className="px-3 py-3 text-xs sm:text-sm"></td>
               </tr>
             </tfoot>
           </table>
@@ -226,7 +250,7 @@ const MarkListPage = () => {
               onClick={handleAddRow}
               className="mt-4 flex items-center text-violet-800 dark:text-violet-400 hover:underline focus:outline-none"
             >
-              <FiPlus className="mr-2" size={20} /> Add Subject
+              <FiPlus className="mr-2" size={18} /> Add Subject
             </button>
           )}
         </div>
