@@ -2,10 +2,10 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useMarksStore } from "../../store/useMarksStore";
 import Header from "../../components/Header";
-import { Loader2, Save, CheckCircle, Check } from "lucide-react";
+import { Loader2, Save, CheckCircle, Check, MinusCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../../store/useAuthStore";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiPlus } from "react-icons/fi";
 import { axiosInstance } from "../../lib/axios";
 
 const AdminsideMarkListes = () => {
@@ -31,6 +31,7 @@ const AdminsideMarkListes = () => {
       const ml = markList.find((m) => m.semesterId === sem._id) || { subjects: [], isApproved: false, _id: null };
       allMarks[sem._id] = { ...ml, subjects: ml.subjects.map(s => ({ ...s })) };
     }
+    
     setMarksData(allMarks);
     setOriginalData(JSON.parse(JSON.stringify(allMarks)));
   }, [semesters, markList]);
@@ -43,6 +44,42 @@ const AdminsideMarkListes = () => {
       return next;
     });
   };
+
+const handleAddRow = (semId) => {
+  setMarksData((prev) => {
+    const next = { ...prev };
+
+    const subjects = [...next[semId].subjects];
+
+    subjects.push({ subject: "", mark: 0, total: 100 })
+
+    next[semId] = {
+      ...next[semId],
+      subjects,
+    };
+
+    return next;
+  });
+  };
+
+const handleRemoveRow = (semId, index) => {
+  setMarksData((prev) => {
+    const next = { ...prev };
+
+    const subjects = [...next[semId].subjects];
+
+    subjects.splice(index, 1);
+
+    next[semId] = {
+      ...next[semId],
+      subjects,
+    };
+
+    return next;
+  });
+};
+
+
 
   const handleAllowEdit = async (markListId) => {
     setAllowingEdit(true);
@@ -128,10 +165,11 @@ const percentage = (subjects) => {
                     <table className="w-full text-left border-collapse rounded-lg overflow-hidden shadow-md">
                       <thead>
                         <tr className="bg-slate-500 dark:bg-gray-700 text-gray-200 dark:text-white">
-                          <th className="px-6 py-3 text-lg">Subject</th>
-                          <th className="px-3 py-3 text-lg">Mark</th>
-                          <th className="px-3 py-3 text-lg">Total</th>
-                          <th className="px-3 py-3 text-lg">Status</th>
+                              <th className="px-8 py-3 text-xs sm:text-sm">Subject</th>
+                              <th className="px-2 py-3 text-xs sm:text-sm">Mark</th>
+                              <th className="px-2 py-3 text-xs sm:text-sm">Total</th>
+                              <th className="px-1 py-3 text-xs sm:text-sm">Status</th>
+                              <th className="px-1 py-3 text-xs sm:text-sm">Remove</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -140,7 +178,7 @@ const percentage = (subjects) => {
                             key={idx}
                             className="border-b border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                           >
-                            <td className="px-6 py-3">
+                            <td className="px-6 py-3 text-xs sm:text-sm">
                               <input
                                 type="text"
                                 value={sub.subject}
@@ -151,7 +189,7 @@ const percentage = (subjects) => {
                                 className="w-full bg-transparent text-gray-900 dark:text-gray-200 font-medium focus:outline-none"
                               />
                             </td>
-                            <td className="px-3 py-3">
+                            <td className="px-3 py-3 text-xs sm:text-sm">
                               <input
                                 type="number"
                                 value={sub.mark}
@@ -166,7 +204,7 @@ const percentage = (subjects) => {
                                 }`}
                               />
                             </td>
-                            <td className="px-3 py-3">
+                            <td className="px-3 py-3 text-xs sm:text-sm">
                               <input
                                 type="number"
                                 value={sub.total}
@@ -178,8 +216,8 @@ const percentage = (subjects) => {
                               />
                             </td>
                              <td
-                            className={`px-3 py-2 text-center ${
-                              sem?.name?.includes("AL")
+                            className={`px-3 py-2 text-xs sm:text-sm text-center ${
+                              sem.name.includes("AL")
                                 ? sub.mark >= 0.45 * sub.total
                                   ? "text-green-600"
                                   : "text-red-600"
@@ -188,7 +226,7 @@ const percentage = (subjects) => {
                                   : "text-red-600"
                             } font-bold`}
                           >
-                            {sem?.name?.includes("AL")
+                            {sem.name.includes("AL")
                               ? sub.mark >= 0.45 * sub.total
                                 ? "P"
                                 : "F"
@@ -196,36 +234,54 @@ const percentage = (subjects) => {
                                 ? "P"
                                 : "F"}
                           </td>
+                          <td className="text-xs sm:text-sm px-3 py-2  text-center">
+                                          <button
+                                            onClick={() => handleRemoveRow(sem._id, idx)}
+                                            className="text-red-500 hover:text-red-700"
+                                            title="Remove"
+                                          >
+                                            <MinusCircle size={18} />
+                                          </button>
+                                        </td>
                           
                           </tr>
                         ))}
                       </tbody>
                      <tfoot className="bg-gray-200 dark:bg-gray-700 font-bold">
                         <tr>
-                          <td className="px-6 py-3">{percentage(ml.subjects)}%</td>
-                          <td className="px-3 py-3">{ml?.subjects?.reduce((acc, s) => acc + s.mark, 0)}</td>
-                          <td className="px-3 py-3">{ml?.subjects?.reduce((acc, s) => acc + s.total, 0)}</td>
-                          <td className="px-3 py-3 text-center">{isPass(ml.subjects, sem.name) ? "P" : "F"}</td>
+                          <td className="px-6 py-3 text-xs sm:text-sm">{percentage(ml.subjects)}%</td>
+                          <td className="px-3 py-3 text-xs sm:text-sm">{ml?.subjects?.reduce((acc, s) => acc + s.mark, 0)}</td>
+                          <td className="px-3 py-3 text-xs sm:text-sm">{ml?.subjects?.reduce((acc, s) => acc + s.total, 0)}</td>
+                          <td className="px-3 py-3 text-xs sm:text-sm text-center">{isPass(ml.subjects, sem.name) ? "P" : "F"}</td>
+                          <td className="px-3 py-3 text-xs sm:text-sm"></td>
                         </tr>
                       </tfoot>
 
 
                     </table>
                   </div>
-
+                 
                   <div className="flex justify-end gap-4">
+                     <button
+                          onClick={()=> handleAddRow(sem._id)}
+                          className="flex items-center gap-2 px-5 py-2 bg-sky-700 hover:bg-indigo-700 text-white rounded-lg shadow"
+                          >
+                        <FiPlus className="" size={18} />
+                      </button>
+                      
                       {ml?.editingStatus === "send" && (
                                 <button
                                   onClick={()=> handleAllowEdit(ml._id)}
                                   disabled={allowingEdit}
-                                  className="flex items-center gap-2 px-5 py-2 bg-sky-700 hover:bg-indigo-700 text-white rounded-lg shadow"
+                                  title="Click to request permission to edit this item"
+                                  className="flex items-center gap-2 px-5  bg-sky-700 hover:bg-indigo-700 text-white rounded-lg shadow"
                                 >
                                   {allowingEdit ? (
                                     <Loader2 className="animate-spin" />
                                   ) : (
-                                    <FiEdit size={18} />
+                                    // <FiEdit size={18} />
+                                  <span className="text-[10px] sm:text-sm">Edit Requested</span>
                                   )}
-                                  <span>Allow Edit</span>
                                 </button>
                               )}
                     <button

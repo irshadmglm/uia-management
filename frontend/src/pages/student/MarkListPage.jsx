@@ -155,10 +155,9 @@ const handleRemoveRow = (index) => {
                 <th className="px-2 py-3 text-xs sm:text-sm">Mark</th>
                 <th className="px-2 py-3 text-xs sm:text-sm">Total</th>
                 <th className="px-1 py-3 text-xs sm:text-sm">Status</th>
-                {(!markList.isApproved || markList.editingStatus === "allow") && (
+                {(!markList.isApproved || markList.editingStatus === "allow" || markList.isEditable ) && (
                     <th className="px-1 py-3 text-xs sm:text-sm">Remove</th>
                   )}
-
               </tr>
             </thead>
             <tbody>
@@ -215,8 +214,9 @@ const handleRemoveRow = (index) => {
                     ? "P"
                     : "F"}
               </td>
-
-              <td className="text-xs sm:text-sm px-3 py-2 text-center">
+                {
+                  (!markList.isApproved || markList.editingStatus === "allow" || markList.isEditable ) &&
+               <td className="text-xs sm:text-sm px-3 py-2 text-center">
                 <button
                   onClick={() => handleRemoveRow(i)}
                   className="text-red-500 hover:text-red-700"
@@ -225,10 +225,7 @@ const handleRemoveRow = (index) => {
                   <MinusCircle size={18} />
                 </button>
               </td>
-
-
-
-
+                }
                 </tr>
               ))}
             </tbody>
@@ -239,7 +236,11 @@ const handleRemoveRow = (index) => {
                 <td className="px-3 py-3 text-xs sm:text-sm">{totalMarks}</td>
                 <td className="px-3 py-3 text-xs sm:text-sm">{totalMax}</td>
                 <td className="px-3 py-3 text-center text-xs sm:text-sm">{overallStatus}</td>
-                <td className="px-3 py-3 text-xs sm:text-sm"></td>
+                
+                 {
+                  (!markList.isApproved || markList.editingStatus === "allow" || markList.isEditable ) &&
+             <td className="px-3 py-3 text-xs sm:text-sm"></td>
+                }
               </tr>
             </tfoot>
           </table>
