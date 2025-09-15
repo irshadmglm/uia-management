@@ -71,6 +71,8 @@ const structuredData = data.map(item => ({
 
     res.status(200).json(structuredData);
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ message: 'Error fetching fees' });
   }
 };
