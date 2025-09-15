@@ -1,5 +1,6 @@
+import SheetsDB from "../lib/googleSheet.js";
 import Fee from "../models/fees.model.js";
-
+const db = new SheetsDB();
 
 
 export const createFee = async (req, res) => {
@@ -18,15 +19,134 @@ export const createFee = async (req, res) => {
   }
 }
 
+export const assignFeesToBatch = async (req, res) => {
+  try {     
+    const { batchId, FeeStructure } = req.body;
+    if (!batchId || !FeeStructure) {
+      return res.status(400).json({ message: 'Batch ID and Fee Structure are required' });
+    }
+    
+
+    const createdFees = await Fee.insertMany(fees);
+    res.status(201).json({ message: 'Fees assigned successfully'});
+  } catch (error) {               
+    console.error(error);
+    res.status(500).json({ message: 'Error assigning fees' });
+  }   
+};
+
 export const getFeesByBatch = async (req, res) => {
   try {
+    const {batch_name} = req.query;
     const fees = await Fee.find({ batchId: req.query.batchId });
     
-    res.status(200).json(fees);
+  const data = await db.readAll(batch_name);
+
+const structuredData = data.map(item => ({
+  cicNumber: item["CIC NO"],
+  name: item.NAME,
+  contact: item["CONTACT NO"],
+  subscription: {
+    perYear: item["ISHTIRAK PER YEAR"],
+    oldBalance: item["OLD BALANCE"],
+    balance: item.BALANCE
+  },
+  payments: {
+    SHAW: item.SHAW,
+    DUL_Q: item["DUL Q"],
+    DUL_H: item["DUL H"],
+    MUH: item.MUH,
+    SAF: item.SAF,
+    RA_A: item["RA A"],
+    RA_AK: item["RA AK"],
+    JUM_U: item["JUM U"],
+    JUM_A: item["JUM A"],
+    RAJ: item.RAJ,
+    SHAH: item.SHAH,
+    RAML: item.RAML
+  }
+}));
+
+
+
+    res.status(200).json(structuredData);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching fees' });
   }
 };
+
+/**
+ * Updates a specific month's payment for a student and recalculates their balance.
+ */
+export const updateFeeStatus = async (req, res) => {
+    try {
+        // --- 1. Extract Data ---
+        const { cicNumber } = req.params;
+        const { batch_name } = req.query;
+        // The frontend sends the entire updated student object in the body
+        const updatedDataFromClient = req.body;
+
+        // --- 2. Validate Input ---
+        if (!batch_name || !updatedDataFromClient || Object.keys(updatedDataFromClient).length === 0) {
+            return res.status(400).json({ message: "Missing batch_name in query or student data in body." });
+        }
+
+        // --- 3. Find the Student's Row in the Sheet ---
+        // IMPORTANT: Your db.readAll function must add a `rowIndex` property to each object
+        // so you know which row to update in the Google Sheet.
+        const allStudents = await db.readAll(batch_name);
+        const studentToUpdate = allStudents.find(student => student["CIC NO"] === cicNumber);
+
+        if (!studentToUpdate) {
+            return res.status(404).json({ message: 'Student not found in the specified batch.' });
+        }
+        
+        const sheetRowIndex = studentToUpdate.rowIndex;
+        if (!sheetRowIndex) {
+            return res.status(500).json({ message: 'Database integration error: rowIndex not found. Cannot update.' });
+        }
+
+        // --- 4. Map Frontend Data to Your Sheet Column Headers ---
+        // This creates an object with the exact column names as keys, which your db helper needs.
+        const updatedRowForSheet = {
+            "SL NO": studentToUpdate.rowIndex - 2,
+            "NAME": updatedDataFromClient.name,
+            "CIC NO": updatedDataFromClient.cicNumber,
+            // Only update the fields that can be edited
+            "CONTACT NO": updatedDataFromClient.contact,
+            "ISHTIRAK PER YEAR": updatedDataFromClient.subscription.perYear,
+            "OLD BALANCE": updatedDataFromClient.subscription.oldBalance,
+            "BALANCE": updatedDataFromClient.subscription.balance, // We trust the frontend's calculation
+            "SHAW": updatedDataFromClient.payments.SHAW,
+            "DUL Q": updatedDataFromClient.payments.DUL_Q,
+            "DUL H": updatedDataFromClient.payments.DUL_H,
+            "MUH": updatedDataFromClient.payments.MUH,
+            "SAF": updatedDataFromClient.payments.SAF,
+            "RA A": updatedDataFromClient.payments.RA_A,
+            "RA AK": updatedDataFromClient.payments.RA_AK,
+            "JUM U": updatedDataFromClient.payments.JUM_U,
+            "JUM A": updatedDataFromClient.payments.JUM_A,
+            "RAJ": updatedDataFromClient.payments.RAJ,
+            "SHAH": updatedDataFromClient.payments.SHAH,
+            "RAML": updatedDataFromClient.payments.RAML,
+        };
+
+        // --- 5. Persist Changes to the Database ---
+        // Your db.updateRow function will use the sheet name, row index, and the updated data.
+       await db.updateRow(batch_name, sheetRowIndex, updatedRowForSheet);
+
+        // --- 6. Send Success Response ---
+        res.status(200).json({
+            message: 'Fee status updated successfully.',
+            data: updatedDataFromClient // Send back the data for frontend state consistency
+        });
+
+    } catch (error) {
+        console.error("Error updating fee status:", error);
+        res.status(500).json({ message: 'An error occurred on the server while updating.' });
+    }
+};
+
 
 export const getFeesByStd = async (req, res) => {
   try {
@@ -40,72 +160,3 @@ export const getFeesByStd = async (req, res) => {
   }
 };
 
-
-// export const updateMonth = async (req, res) => {
-//   try {
-//     const { feeId } = req.params;
-//     const { month, isPaid, amount } = req.body;
-//     if (!isValidId(feeId)) {
-//       return res.status(400).json({ error: "Invalid fee ID" });
-//     }
-//     const updateFields = {};
-//     if (typeof isPaid === "boolean") {
-//       updateFields["months.$.isPaid"] = isPaid;
-//       updateFields["months.$.paidAt"] = isPaid ? new Date() : null;
-//     }
-//     if (typeof amount === "number") {
-//       updateFields["months.$.amount"] = amount;
-//     }
-
-//     const fee = await Fee.findOneAndUpdate(
-//       { _id: feeId, "months.month": month },
-//       { $set: updateFields },
-//       { new: true }
-//     );
-//     if (!fee) return res.status(404).json({ error: "Fee or month not found" });
-//     res.json(fee);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// };
-
-// export const payAll = async (req, res) => {
-//   try {
-//     const { feeId } = req.params;
-//     const { isPaid } = req.body;
-//     if (!isValidId(feeId) || typeof isPaid !== "boolean") {
-//       return res.status(400).json({ error: "Invalid parameters" });
-//     }
-//     const fee = await Fee.findByIdAndUpdate(
-//       feeId,
-//       { 
-//         $set: { 
-//           "months.$[].isPaid": isPaid, 
-//           "months.$[].paidAt": isPaid ? new Date() : null 
-//         } 
-//       },
-//       { new: true }
-//     );
-//     if (!fee) return res.status(404).json({ error: "Fee not found" });
-//     res.json(fee);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// };
-
-// export const deleteFee = async (req, res) => {
-//   try {
-//     const { feeId } = req.params;
-//     if (!isValidId(feeId)) {
-//       return res.status(400).json({ error: "Invalid fee ID" });
-//     }
-//     const fee = await Fee.findByIdAndDelete(feeId);
-//     if (!fee) return res.status(404).json({ error: "Fee not found" });
-//     res.json({ message: "Fee record deleted" });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// };

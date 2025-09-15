@@ -1,107 +1,84 @@
-import { create } from "zustand";
-import toast from "react-hot-toast";
-import { axiosInstance } from "../lib/axios";
-import { useAuthStore } from "./useAuthStore";
+import { create } from 'zustand';
+// Note: Ensure you have an 'axiosInstance' configured elsewhere in your project.
+// For example, in 'src/lib/axios.js'
+import { axiosInstance } from '../lib/axios'; 
+// import toast from "react-hot-toast"; // Uncomment if you use react-hot-toast
 
 export const useFeeStore = create((set, get) => ({
-  fees: {},
-  isLoading: false,
-  error: null,
+    fees: {}, // Cache for fetched data, e.g., { 'BATCH 09': [...] }
+    isLoading: false,
+    error: null,
+    selectedBatch: 'BATCH 09', // Default selected batch
 
-  fetchFees: async (batchId) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await axiosInstance.get(`/fees?batchId=${batchId}`);
-      
-      const feesMap = response.data.reduce((acc, fees) => {
-        acc[fees.studentId] = acc[fees.studentId] || {};
-        acc[fees.studentId][fees.month] = fees.paid;
-        return acc;
-      }, {});
-      set({ fees: feesMap, isLoading: false });
+    // --- Constants ---
+    monthNames: {
+        'SHAW': 'Shawwal', 'DUL Q': "Dhu al-Qi'dah", 'DUL H': 'Dhu al-Hijjah', 
+        'MUH': 'Muharram', 'SAF': 'Safar', 'RA A': "Rabi' al-Awwal", 
+        'RA AK': "Rabi' al-Akhir", 'JUM U': 'Jumada al-Ula', 'JUM A': 'Jumada al-Akhirah', 
+        'RAJ': 'Rajab', 'SHAH': "Sha'ban", 'RAML': 'Ramadan'
+    },
+    batchNames: ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14'],
 
-    } catch (error) {
-      set({ error: error.response?.data?.message || error.message, isLoading: false });
-      toast.error("Failed to fetch fees");
-    }
-  },
+    // --- Actions ---
+    setSelectedBatch: (batchName) => {
+        set({ selectedBatch: batchName });
+    },
 
-  updateFee: async ({ studentId, batchId, month, paid }) => {
-    const previousFees = get().fees;
-    
-    // Proper nested state update
-    set(prev => ({
-      fees: {
-        ...prev.fees,
-        [studentId]: {
-          ...(prev.fees[studentId] || {}),
-          [month]: paid
+    /**
+     * Fetches fee data for a specific batch from the API.
+     */
+    fetchFees: async (batchName) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axiosInstance.get(`/fees?batch_name=${batchName}`);
+            const data = response.data;
+
+            set(state => ({
+                fees: { ...state.fees, [batchName]: data },
+                isLoading: false
+            }));
+        } catch (error) {
+            console.error("Failed to fetch fees:", error);
+            const errorMessage = error.response?.data?.message || 'Failed to fetch student data.';
+            set({ error: errorMessage, isLoading: false });
+            // toast.error(errorMessage); // Uncomment for user notifications
         }
-      }
-    }));
-  
-    try {
-      await axiosInstance.post("/fees", {
-        studentId,
-        batchId,
-        month,
-        paid
-      });
-      toast.success("Fee status updated successfully", { id: "feeUpdate" });
-    } catch (error) {
-      set({ fees: previousFees });
-      toast.error("Failed to update fees", { id: "feeUpdate" });
-    }
-  },
+    },
 
-  getStudentStatus: (studentId) => {
-    const fees = get().fees; 
-    return fees?.[studentId] || {};
-  },
-  
+    /**
+     * Updates a student's entire fee record.
+     * Uses an optimistic update approach for a better user experience.
+     */
+    updateFee: async (cicNumber, updatedStudentData) => {
+      console.log('updated', updatedStudentData);
+      
+        const batchName = get().selectedBatch;
+        const originalData = [...(get().fees[batchName] || [])];
 
-  getStudentProgress: (studentId) => {
-    const status = get().fees[studentId] || {};
-    const paidMonths = Object.values(status).filter(Boolean).length;
-    return Math.round((paidMonths / 12) * 100);
-  },
+        // 1. Optimistic UI Update: Update the state immediately.
+        set(state => {
+            const updatedBatchData = (state.fees[batchName] || []).map(student =>
+                student.cicNumber === cicNumber ? updatedStudentData : student
+            );
+            return {
+                fees: { ...state.fees, [batchName]: updatedBatchData }
+            };
+        });
 
-
-  getBatchStats: (batchId, studentCount) => {
-    const fees = get().fees;
-    const monthlyFee = 3000;
-    
-    // Calculate actual paid months from data
-    let totalPaid = 0;
-    
-    Object.values(fees).forEach(studentMonths => {
-      Object.values(studentMonths).forEach(paid => {
-        if (paid) totalPaid++;
-      });
-    });
-  
-    // Calculate pending based on total possible months
-    const totalPossibleMonths = studentCount * 12;
-    const totalPending = totalPossibleMonths - totalPaid;
-  
-    return {
-      totalPaid,
-      totalPending: Math.max(totalPending, 0), // Ensure non-negative
-      totalAmount: `₹${(totalPaid * monthlyFee).toLocaleString()}`
-    };
-  },
-
-  getStudentFeeStatus: async () => {
-    set({ isLoading: true });
-   try {
-    const authUser = useAuthStore.getState().authUser;
-    const res = await axiosInstance.get(`/fees/get-std-fees/${authUser._id}`);
-    set({fees: res.data})
-   } catch (error) {
-    console.error("Error in getCurruntSemSubjects:", error);
-  } finally {
-    set({ isLoading: false });
-  }
-  } 
-  
+        // 2. API Call: Persist the changes to the backend.
+        try {
+            await axiosInstance.put(`/fees/${cicNumber}?batch_name=${batchName}`, updatedStudentData);
+            // toast.success('Student updated successfully!'); // Uncomment for user notifications
+        } catch (error) {
+            console.error("Failed to update student:", error);
+            const errorMessage = error.response?.data?.message || 'Failed to save changes.';
+            
+            // 3. Revert on Failure: If the API call fails, revert the UI to its original state.
+            set(state => ({
+                error: errorMessage,
+                fees: { ...state.fees, [batchName]: originalData }
+            }));
+            // toast.error(errorMessage); // Uncomment for user notifications
+        }
+    },
 }));

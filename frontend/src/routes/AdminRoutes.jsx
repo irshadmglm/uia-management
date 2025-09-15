@@ -27,6 +27,7 @@ import AdminBatches from "../pages/admin/AdminBatches";
 import BatchStudents from "../pages/admin/BatchStudents";
 import RecordPage from "../pages/admin/RecordPage";
 import AssignedSubjects from "../pages/staff/AssignedSubjects";
+import AssignFees from "../pages/admin/AssignFees";
 
 
 const AdminRoutes = () => {
@@ -57,6 +58,7 @@ const AdminRoutes = () => {
       <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
 
       <Route path="ishthiraq" element={<FeesDashboard />} />
+      <Route path="assign-fees" element={<AssignFees />} />
       {/* <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} /> */}
       <Route path="ce-mark" element={<CEMarkAdmin />} />
       <Route path="ir-mark" element={<IRMarkAdmin />} />
