@@ -77,6 +77,63 @@ const structuredData = data.map(item => ({
   }
 };
 
+export const getFeeByStudent = async (req, res) => {
+  try {
+    // Destructure both batch_name and cicNumber from the query parameters
+    const { batch_name, cicNumber } = req.query;
+
+    // Check if both required parameters are provided
+    if (!batch_name || !cicNumber) {
+      return res.status(400).json({ message: 'Batch name and CIC number are required.' });
+    }
+    
+    // Read all student data from the specified batch
+    const allStudents = await db.readAll(batch_name);
+
+    // Find the specific student by their CIC number
+    // We compare them as strings to avoid type issues (e.g., "101" vs 101)
+    const student = allStudents.find(item => String(item["CIC NO"]) === String(cicNumber));
+
+    // If no student is found with that CIC number, return a 404 error
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found in this batch.' });
+    }
+
+    // If the student is found, structure their data
+    const structuredData = {
+      cicNumber: student["CIC NO"],
+      name: student.NAME,
+      contact: student["CONTACT NO"],
+      subscription: {
+        perYear: student["ISHTIRAK PER YEAR"],
+        oldBalance: student["OLD BALANCE"],
+        balance: student.BALANCE
+      },
+      payments: {
+        SHAW: student.SHAW,
+        DUL_Q: student["DUL Q"],
+        DUL_H: student["DUL H"],
+        MUH: student.MUH,
+        SAF: student.SAF,
+        RA_A: student["RA A"],
+        RA_AK: student["RA AK"],
+        JUM_U: student["JUM U"],
+        JUM_A: student["JUM A"],
+        RAJ: student.RAJ,
+        SHAH: student.SHAH,
+        RAML: student.RAML
+      }
+    };
+
+    // Send the structured data for the single student
+    res.status(200).json(structuredData);
+
+  } catch (error) {
+    console.error('Error fetching student fee:', error); // Use console.error for better logging
+    res.status(500).json({ message: 'Internal server error while fetching student fee' });
+  }
+};
+
 /**
  * Updates a specific month's payment for a student and recalculates their balance.
  */
