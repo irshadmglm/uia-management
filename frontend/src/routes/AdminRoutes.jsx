@@ -16,7 +16,6 @@ import CEMarkAdmin from "../pages/admin/CEMarkAdmin";
 import IRMarkAdmin from "../pages/admin/IRMarkAdmin";
 import StaffProfile from "../pages/admin/StaffProfile";
 import SignupPage from "../pages/admin/SignupPage";
-import FeesDashboard from "../pages/admin/FeesDashbord";
 import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
 import AcademicRegister from "../pages/admin/AcademicRegister";
 import InactiveStdList from "../pages/admin/InactiveStdList";
@@ -28,6 +27,8 @@ import BatchStudents from "../pages/admin/BatchStudents";
 import RecordPage from "../pages/admin/RecordPage";
 import AssignedSubjects from "../pages/staff/AssignedSubjects";
 import AssignFees from "../pages/admin/AssignFees";
+import FeesDashboardAnalytics from "../pages/admin/FeesDashboardAnalytics";
+import FeesRegister from "../pages/admin/FeesRegister";
 
 
 const AdminRoutes = () => {
@@ -57,7 +58,8 @@ const AdminRoutes = () => {
       <Route path="achievements/:studentId" element={<AdminAchievementsPage />} />
       <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
 
-      <Route path="ishthiraq" element={<FeesDashboard />} />
+      <Route path="ishthiraq" element={<FeesDashboardAnalytics />} />
+      <Route path="add-fees" element={<FeesRegister />} />
       <Route path="assign-fees" element={<AssignFees />} />
       {/* <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} /> */}
       <Route path="ce-mark" element={<CEMarkAdmin />} />

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useFeeStore } from '../../store/feesSrore'; // Ensure this path is correct
+import Header from '../../components/Header';
 
 // --- Helper Functions ---
 const formatCurrency = (value) => {
@@ -255,7 +256,7 @@ const AppLoader = () => (
 );
 
 
-export default function FeesDashboard() {
+export default function FeesRegister() {
     const { fees, selectedBatch, isLoading, error, monthNames, batchNames, setSelectedBatch, fetchFees, updateFee } = useFeeStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
@@ -302,10 +303,11 @@ export default function FeesDashboard() {
     }
 
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
+        <div className="bg-gray-100 dark:bg-gray-900 min-h-screen font-sans">
+            <Header />
+            <main className="p-4 sm:p-6 lg:p-8 mt-10">
             <div className="max-w-7xl mx-auto">
                 <header className="mb-8 text-center">
-                    <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100">Student Fee Dashboard</h1>
                     <p className="text-gray-600 dark:text-gray-400 mt-2">Manage and track student fee payments.</p>
                 </header>
 
@@ -331,6 +333,7 @@ export default function FeesDashboard() {
                 {renderContent()}
                 
             </div>
+            </main>
         </div>
     );
 }

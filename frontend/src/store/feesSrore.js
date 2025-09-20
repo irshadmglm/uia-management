@@ -32,9 +32,22 @@ export const useFeeStore = create((set, get) => ({
         set({ selectedBatch: batchName });
     },
 
-    /**
-     * Fetches fee data for a specific batch from the API.
-     */
+    fetchDashboardAnalytics: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axiosInstance.get('/fees/dashboard');
+            const data = response.data;
+            set({ isLoading: false });
+            return data; // Return the fetched analytics data
+        } catch (error) {
+            console.error("Failed to fetch dashboard analytics:", error);
+            const errorMessage = error.response?.data?.message || 'Failed to fetch dashboard analytics.';   
+            set({ error: errorMessage, isLoading: false });
+            return null;
+        }
+    },
+
+
     fetchFees: async (batchName) => {
         set({ isLoading: true, error: null });
         try {

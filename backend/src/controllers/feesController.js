@@ -35,6 +35,162 @@ export const assignFeesToBatch = async (req, res) => {
   }   
 };
 
+// Assuming 'db' is your imported module for reading data, e.g., from Google Sheets.
+// import * as db from '../utils/googleSheets.js'; 
+
+export const getDashboardAnalytics = async (req, res) => {
+  try {
+    const batchNames = ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14'];
+    
+    // An array of the keys for monthly payments to make summing them up easier.
+    const paymentKeys = ['SHAW', 'DUL_Q', 'DUL_H', 'MUH', 'SAF', 'RA_A', 'RA_AK', 'JUM_U', 'JUM_A', 'RAJ', 'SHAH', 'RAML'];
+
+    // --- Step 1: Fetch and Structure Data for All Batches ---
+    // We use Promise.all to fetch data from all sheets concurrently for better performance.
+    const allBatchPromises = batchNames.map(name => db.readAll(name));
+    const results = await Promise.all(allBatchPromises);
+
+    let allStudents = [];
+    results.forEach((batchData, index) => {
+      const currentBatchName = batchNames[index];
+      const structuredData = batchData.map(item => ({
+        batchName: currentBatchName,
+        cicNumber: item["CIC NO"],
+        name: item.NAME,
+        subscription: {
+          perYear: Number(item["ISHTIRAK PER YEAR"]) || 0,
+          balance: Number(item.BALANCE) || 0,
+        },
+        payments: {
+          SHAW: Number(item.SHAW) || 0,
+          DUL_Q: Number(item["DUL Q"]) || 0,
+          DUL_H: Number(item["DUL H"]) || 0,
+          MUH: Number(item.MUH) || 0,
+          SAF: Number(item.SAF) || 0,
+          RA_A: Number(item["RA A"]) || 0,
+          RA_AK: Number(item["RA AK"]) || 0,
+          JUM_U: Number(item["JUM U"]) || 0,
+          JUM_A: Number(item["JUM A"]) || 0,
+          RAJ: Number(item.RAJ) || 0,
+          SHAH: Number(item.SHAH) || 0,
+          RAML: Number(item.RAML) || 0,
+        },
+      }));
+      allStudents.push(...structuredData);
+    });
+
+    // --- Step 2: Initialize Aggregators ---
+    const kpi = {
+      totalStudents: 0,
+      totalRevenueDue: 0,
+      totalCollected: 0,
+      totalOutstanding: 0,
+      defaulterCount: 0,
+    };
+
+    const batchSummary = {};
+    batchNames.forEach(name => {
+      batchSummary[name] = { due: 0, collected: 0, studentCount: 0, defaulterCount: 0 };
+    });
+
+    const monthlyCollection = {};
+    paymentKeys.forEach(key => { monthlyCollection[key] = 0; });
+    
+    let defaultersList = [];
+
+    // --- Step 3: Process All Students in a Single Loop ---
+    for (const student of allStudents) {
+      const totalPaidByStudent = Object.values(student.payments).reduce((sum, amount) => sum + amount, 0);
+
+      // Aggregate KPI data
+      kpi.totalStudents++;
+      kpi.totalRevenueDue += student.subscription.perYear;
+      kpi.totalCollected += totalPaidByStudent;
+      kpi.totalOutstanding += student.subscription.balance;
+
+      if (student.subscription.balance > 0) {
+        kpi.defaulterCount++;
+        defaultersList.push({
+          name: student.name,
+          cicNumber: student.cicNumber,
+          batchName: student.batchName,
+          balance: student.subscription.balance,
+        });
+      }
+
+      // Aggregate Batch Summary data
+      if (batchSummary[student.batchName]) {
+        batchSummary[student.batchName].due += student.subscription.perYear;
+        batchSummary[student.batchName].collected += totalPaidByStudent;
+        batchSummary[student.batchName].studentCount++;
+        if (student.subscription.balance > 0) {
+          batchSummary[student.batchName].defaulterCount++;
+        }
+      }
+      
+      // Aggregate Monthly collection data
+      for (const key of paymentKeys) {
+        monthlyCollection[key] += student.payments[key] || 0;
+      }
+    }
+
+    // --- Step 4: Finalize Data for Charts and Tables ---
+    
+    // Sort defaulters by the highest balance and take the top 10
+    const topDefaulters = defaultersList
+      .sort((a, b) => b.balance - a.balance)
+      .slice(0, 10);
+      
+    // Format chart data from the summary objects
+    const collectionByBatchChart = Object.entries(batchSummary).map(([name, data]) => ({
+      batchName: name,
+      due: data.due,
+      collected: data.collected,
+    }));
+    
+    const defaultersByBatchChart = Object.entries(batchSummary).map(([name, data]) => ({
+      batchName: name,
+      defaulterCount: data.defaulterCount,
+    }));
+
+    const collectionByMonthChart = Object.entries(monthlyCollection).map(([month, amount]) => ({
+      month: month,
+      collected: amount,
+    }));
+    
+    const batchSummaryTable = Object.entries(batchSummary).map(([name, data]) => ({
+      batchName: name,
+      ...data,
+      outstanding: data.due - data.collected
+    }));
+
+
+    // --- Step 5: Construct Final Response Object ---
+    const dashboardData = {
+      kpi,
+      charts: {
+        collectionByBatch: collectionByBatchChart,
+        defaultersByBatch: defaultersByBatchChart,
+        collectionByMonth: collectionByMonthChart,
+        overallPaymentStatus: {
+           collected: kpi.totalCollected,
+           outstanding: kpi.totalOutstanding
+        }
+      },
+      tables: {
+        topDefaulters,
+        batchSummary: batchSummaryTable
+      }
+    };
+    
+    res.status(200).json(dashboardData);
+
+  } catch (error) {
+    console.error("Error fetching dashboard analytics:", error);
+    res.status(500).json({ message: "Error fetching dashboard analytics" });
+  }
+};
+
 export const getFeesByBatch = async (req, res) => {
   try {
     const {batch_name} = req.query;
