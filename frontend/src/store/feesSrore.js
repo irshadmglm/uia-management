@@ -66,38 +66,41 @@ export const useFeeStore = create((set, get) => ({
         }
     },
 
-    fetchFeesByStd : async (batchName, cicNumber) => {
-  set({ isLoading: true, error: null });
-  try {
-    console.log("Fetching fees for batch:", batchName, "CIC Number:", cicNumber);
-    
-    // Extract number from MongoDB batch name
-    const match = batchName.match(/\d+/);
-    if (!match) throw new Error('Invalid batch name');
+fetchFeesByStd: async (batchName, cicNumber) => {
+    set({ isLoading: true, error: null });
+    try {
+      console.log("Fetching fees for batch:", batchName, "CIC Number:", cicNumber);
 
-    const batchNumber = match[0].padStart(2, '0'); 
-    console.log("Extracted batch number:", batchNumber);
-    
-    const name = get().batches[batchNumber];
-    console.log("Mapped batch name:", name);
-    
-    if (!name) throw new Error('Batch not found in mapping');
+      const match = batchName.match(/\d+/);
+      if (!match) throw new Error('Invalid batch name');
 
-    // Fetch data
-    const response = await axiosInstance.get(`/fees/std?batch_name=${name}&cicNumber=${cicNumber}`);
-    console.log("API response:", response);
-    
-    const data = response.data;
+      const batchNumber = match[0].padStart(2, '0');
+      console.log("Extracted batch number:", batchNumber);
 
-    set({ isLoading: false }); // stop loading
-    return data; // Return the fetched data
-  } catch (error) {
-    console.error("Failed to fetch student fee:", error);
-    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch student fee.';
-    set({ error: errorMessage, isLoading: false });
-    return null;
-  }
-},
+      const name = get().batches[batchNumber];
+      console.log("Mapped batch name:", name);
+
+      if (!name) throw new Error('Batch not found in mapping');
+
+      const response = await axiosInstance.get(`/fees/std?batch_name=${name}&cicNumber=${cicNumber}`);
+      console.log("API response:", response);
+
+      const data = response.data;
+
+      set({ isLoading: false }); 
+      return data; 
+    } catch (error) {
+      console.error("Failed to fetch student fee:", error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch student fee.';
+      set({ error: errorMessage, isLoading: false });
+      
+      // --- THIS IS THE FIX ---
+      // Instead of returning null, throw the error
+      // so the component's try/catch block can see it.
+      throw new Error(errorMessage);
+      // -----------------------
+    }
+  },
 
     /**
      * Updates a student's entire fee record.
