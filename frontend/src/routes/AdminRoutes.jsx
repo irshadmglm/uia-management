@@ -29,6 +29,7 @@ import AssignedSubjects from "../pages/staff/AssignedSubjects";
 import AssignFees from "../pages/admin/AssignFees";
 import FeesDashboardAnalytics from "../pages/admin/FeesDashboardAnalytics";
 import FeesRegister from "../pages/admin/FeesRegister";
+import LeaveStatusPage from "../pages/admin/LeaveStatusPage";
 
 
 const AdminRoutes = () => {
@@ -72,7 +73,7 @@ const AdminRoutes = () => {
       <Route path="academic-records" element={<RecordPage  />} />
 
       <Route path="academic-register" element={<AcademicRegister  />} />
-      <Route path="std-attendance-register" element={<BatchAcademicStatus item="stdAttendanceRegister" />} />
+      <Route path="std-attendance-register" element={<LeaveStatusPage />} />
       <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
       <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
       <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />

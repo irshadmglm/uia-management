@@ -16,6 +16,7 @@ import feesRoutes from "./routes/fees.route.js";
 import achivemnetRoutes from "./routes/achivement.route.js"
 import readingProgressRoutes from "./routes/readingProgress.route.js"
 import recordRoutes from "./routes/records.route.js"
+import leaveRoutes from "./routes/leave.route.js";
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use('/api/fees', feesRoutes);
 app.use('/api/achievements', achivemnetRoutes);
 app.use('/api/reading-progress', readingProgressRoutes);
 app.use('/api/records', recordRoutes);
+app.use('/api/leave', leaveRoutes);
 
 app.get("/api/ping", (req, res) => {
   res.status(200).send("Server is alive!");
