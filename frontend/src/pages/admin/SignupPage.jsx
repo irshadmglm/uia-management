@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  User,
-  Lock,
-  Phone,
-  Image as ImageIcon,
-  User2,
-} from "lucide-react";
+import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { 
+  User, Phone, Lock, Save, Loader2, Shield 
+} from "lucide-react";
 import Header from "../../components/Header";
 import InputField from "../../components/InputField";
 import SelectField from "../../components/SelectField";
 import { useAuthStore } from "../../store/useAuthStore";
-import { useParams } from "react-router-dom";
 import { useStaffStore } from "../../store/useStaffStore";
 
 const SignupPage = () => {
@@ -31,8 +24,6 @@ const SignupPage = () => {
     profileImage: null,
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-
   useEffect(() => {
     if (teacherId) {
       getTeacher(teacherId);
@@ -47,14 +38,13 @@ const SignupPage = () => {
         userName: teacher.userName || "",
         phoneNumber: teacher.phoneNumber || "",
         role: teacher.role || "",
-        profileImage: null, // Reset image file (not available in plain teacher object)
       }));
     }
   }, [teacher]);
 
   const validateForm = () => {
     if (!formData.name) return toast.error("Name is required");
-    if (!formData.userName) return toast.error("User Name is required");
+    if (!formData.userName) return toast.error("Username is required");
     if (!formData.phoneNumber) return toast.error("Phone number is required");
     if (!teacherId && !formData.password) return toast.error("Password is required");
     if (!formData.role) return toast.error("Role is required");
@@ -65,129 +55,94 @@ const SignupPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // const formToSend = new FormData();
-    // formToSend.append("name", formData.name);
-    // formToSend.append("userName", formData.userName);
-    // formToSend.append("phoneNumber", formData.phoneNumber);
-    // if (!teacherId) formToSend.append("password", formData.password);
-    // formToSend.append("role", formData.role);
-    // if (formData.profileImage) {
-    //   formToSend.append("profileImage", formData.profileImage);
-    // }
-
     if (teacherId) {
       await updateTeacher(teacherId, formData);
     } else {
-      
       await signup(formData);
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Header page={teacherId ? "Update Teacher" : "Sign Up"} />
-      <div className="flex flex-col items-center justify-center p-5 sm:p-12 mt-16">
-        <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
-          <div className="flex flex-col items-center">
-            <label htmlFor="profileImage" className="cursor-pointer">
-              {formData.profileImage ? (
-                <img
-                  src={URL.createObjectURL(formData.profileImage)}
-                  alt="Profile Preview"
-                  className="w-32 h-32 object-cover rounded-full border-4 border-blue-500"
-                />
-              ) : teacher?.profileImage ? (
-                <img
-                  src={teacher.profileImage}
-                  alt="Profile"
-                  className="w-32 h-32 object-cover rounded-full border-4 border-blue-500"
-                />
-              ) : (
-                <div className="w-32 h-32 flex items-center justify-center rounded-full border-4 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors">
-                  <ImageIcon className="w-10 h-10" />
-                </div>
-              )}
-              <input
-                id="profileImage"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) =>
-                  setFormData({ ...formData, profileImage: e.target.files[0] })
-                }
-              />
-            </label>
-          </div>
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-          <form
-            onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-2 gap-2"
-          >
-            <InputField
-              label="Full Name"
-              name="name"
-              value={formData.name}
-              icon={<User />}
-              onChange={setFormData}
-            />
-            <InputField
-              label="User Name"
-              name="userName"
-              value={formData.userName}
-              icon={<User2 />}
-              onChange={setFormData}
-            />
-            <InputField
-              label="Phone Number"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              icon={<Phone />}
-              onChange={setFormData}
-            />
-            <SelectField
-              label="Role"
-              name="role"
-              value={formData.role}
-              onChange={setFormData}
-              options={["teacher", "admin"]}
-            />
-            {!teacherId && (
-              <div className="relative">
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-dark pb-20">
+      <Header page={teacherId ? "Edit Staff" : "Add Staff"} />
+      
+      <div className="max-w-2xl mx-auto px-4 mt-16">
+        
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-4 shadow-sm">
+            <Shield size={32} />
+          </div>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">
+            {teacherId ? "Update Staff Profile" : "Register New Staff"}
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">
+            Create or modify access for teachers and administrators.
+          </p>
+        </div>
+
+        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <InputField
+                  label="Full Name"
+                  name="name"
+                  value={formData.name}
+                  icon={<User size={18} />}
+                  onChange={(val) => handleInputChange("name", val)}
+                />
+              </div>
+              
+              <InputField
+                label="Username"
+                name="userName"
+                value={formData.userName}
+                icon={<User size={18} />}
+                onChange={(val) => handleInputChange("userName", val)}
+              />
+              
+              <InputField
+                label="Phone Number"
+                name="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                icon={<Phone size={18} />}
+                onChange={(val) => handleInputChange("phoneNumber", val)}
+              />
+              
+              <SelectField
+                label="Role Access"
+                name="role"
+                value={formData.role}
+                onChange={(val) => handleInputChange("role", val)}
+                options={["teacher", "admin"]}
+              />
+
+              {!teacherId && (
                 <InputField
                   label="Password"
                   name="password"
+                  type="password"
                   value={formData.password}
-                  icon={<Lock />}
-                  type={showPassword ? "text" : "password"}
-                  onChange={setFormData}
+                  onChange={(val) => handleInputChange("password", val)}
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-12 text-gray-500"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff /> : <Eye />}
-                </button>
-              </div>
-            )}
-            <div className="col-span-1 md:col-span-2">
-              <button
-                type="submit"
-                className="btn btn-primary w-full"
-                disabled={isSigningUp}
-              >
-                {isSigningUp ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    {teacherId ? "Updating..." : "Signing up..."}
-                  </>
-                ) : teacherId ? (
-                  "Update Teacher"
-                ) : (
-                  "Sign Up"
-                )}
-              </button>
+              )}
             </div>
+
+            <button
+              type="submit"
+              disabled={isSigningUp}
+              className="w-full py-4 mt-4 bg-gradient-to-r from-indigo-600 to-primary-600 hover:from-indigo-700 hover:to-primary-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transform hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {isSigningUp ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+              {teacherId ? "Update Staff Details" : "Create Account"}
+            </button>
+
           </form>
         </div>
       </div>

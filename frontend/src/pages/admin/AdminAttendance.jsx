@@ -1,205 +1,148 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useStudentStore } from "../../store/studentStore";
-import Header from "../../components/Header";
-import Button from "../../components/Button";
 import { useAdminStore } from "../../store/useAdminMngStore";
+import Header from "../../components/Header";
 import StudentTable from "../../components/StudentTable";
+import { Calendar, Users } from "lucide-react";
 
 const AdminAttendance = () => {
   let { batchId } = useParams();
-
   const { getBatches, batches, getTeachers, teachers } = useAdminStore();
-  const { getStudents, students, batchStudents, getBatchStudents } = useStudentStore();
-  const [selectedBatch, setSelectedBatch] = useState({});
-  const [selectedTab, setSelectedTab] = useState("students");
-  const [loading, setLoading] = useState(true);
+  const { batchStudents, getBatchStudents } = useStudentStore();
+  const [selectedBatch, setSelectedBatch] = useState(null);
+  const [activeTab, setActiveTab] = useState("list");
 
   useEffect(() => {
     getBatches();
     getTeachers();
-  }, []);
-  
-  useEffect(() => {
-    getBatchStudents(batchId); 
+    if (batchId) getBatchStudents(batchId);
   }, [batchId]);
-  
 
   useEffect(() => {
-    if (batches.length > 0 && batchStudents.length > 0) {
-      const selected = batches.find((c) => c._id === batchId);
-      setSelectedBatch(selected);
+    if (batches.length > 0 && batchId) {
+      setSelectedBatch(batches.find((c) => c._id === batchId));
     }
-  }, [batches, batchId, batchStudents]);
-  
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      await Promise.all([getBatches(), getStudents(), getTeachers()]);
-      setLoading(false);
-    };
-    load();
-  }, []);
+  }, [batches, batchId]);
+
+  const teacherName = teachers.find(t => t._id === selectedBatch?.classTeacher)?.name || "Not Assigned";
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 pt-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-dark pb-20">
       <Header page="Attendance Management" />
       
-      {/* TOP SECTION */}
-      {selectedBatch && (
-        <div className="w-full max-w-4xl mt-6 p-6 shadow-xl rounded-3xl bg-gray-50 dark:bg-gray-800 text-center">
-          <h2 className="text-xl font-bold">{selectedBatch.name}</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-100">
-            {teachers
-                .filter((t) => t._id === selectedBatch.classTeacher)
-                .map((t) => (
-                <span key={t._id}>Class Mentor: {t.name || "not assigned"}</span>
-                ))}
-            </p>
+      <div className="max-w-7xl mx-auto px-4 mt-8">
+        
+        {/* Banner */}
+        {selectedBatch && (
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                <Users size={28} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{selectedBatch.name}</h1>
+                <p className="text-slate-500">Mentor: <span className="font-medium text-slate-700 dark:text-slate-300">{teacherName}</span></p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setActiveTab("list")}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === "list" 
+                    ? "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white" 
+                    : "text-slate-500 hover:bg-slate-50"
+                }`}
+              >
+                Student List
+              </button>
+              <button 
+                onClick={() => setActiveTab("report")}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === "report" 
+                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" 
+                    : "text-slate-500 hover:bg-slate-50"
+                }`}
+              >
+                Attendance Report
+              </button>
+            </div>
+          </div>
+        )}
 
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Total Students: {batchStudents?.length}
-          </p>
-        </div>
-      )}
-      {/* <div className="flex mt-3 space-x-4 border-b border-gray-300 dark:border-gray-600">
-        {["students", "attendance"].map((tab) => (
-          <Button
-            key={tab}
-            onClick={() => setSelectedTab(tab)}
-            className={`px-6 py-3 rounded-t-lg font-medium transition-all ${
-              selectedTab === tab
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-100 dark:bg-blue-900/20"
-                : "text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-            }`}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </Button>
-        ))}
-      </div> */}
-
-      {/* TAB CONTENT */}
-      {selectedTab === "students" ? (
-        loading ? <p>Loading...</p> : <StudentTable students={batchStudents}  />
-
-      ) : (
-        <AttendanceTable cls={selectedBatch} students={batchStudents} />
-      )}
+        {/* Content */}
+        {activeTab === "list" ? (
+          <StudentTable students={batchStudents} />
+        ) : (
+          <AttendanceReport cls={selectedBatch} students={batchStudents} />
+        )}
+      </div>
     </div>
   );
 };
 
-// STUDENTS TABLE COMPONENT
-// const StudentsTable = ({ students }) => {
-//   return (
-//     <div className="w-full max-w-4xl p-6 mt-6 shadow-xl rounded-3xl bg-gray-50 dark:bg-gray-800">
-//       <h2 className="text-xl font-semibold text-center mb-4">Students List</h2>
-//       <table className="table w-full">
-//         <thead>
-//           <tr className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white">
-//             <th>Roll No</th>
-//             <th>studentId</th>
-//             <th>Name</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {students.map((student) => (
-//             <tr key={student._id} className="hover:bg-gray-100 dark:hover:bg-gray-800">
-//               <td>{student.rollNumber}</td>
-//               <td>{student.studentId}</td>
-//               <td>{student.studentName}</td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// };
+// --- Report Sub-Component ---
+const AttendanceReport = ({ cls, students }) => {
+  const [month, setMonth] = useState(new Date().toLocaleString('default', { month: 'long' }));
+  const [monthData, setMonthData] = useState({});
+  const days = monthData ? Object.keys(monthData).sort((a,b) => a-b) : [];
 
-// ATTENDANCE TABLE COMPONENT
-const AttendanceTable = ({ cls, students }) => {
-    const [attendance, setAttendance] = useState({});
-    const [dayKeys, setDayKeys] = useState([]);
-    const [month, setMonth] = useState(new Date().toLocaleString('default', { month: 'long' }));
-    
-
-    useEffect(() => {
-        if (cls.attendance && cls.attendance[month]) {
-            setAttendance(cls.attendance[month]);
-            setDayKeys(Object.keys(cls.attendance[month])); 
-        }
-    }, [cls, month]); 
-    const handleChange = (event) => {
-        setMonth(event.target.value);
-      }
-
-      function getTotalAttendence (studentId) {
-        let present = 0;
-        for(let day in attendance){
-            if(attendance[day][studentId] === true){
-                present++;
-            }
-        }
-        return present
-      }
+  useEffect(() => {
+    if (cls?.attendance) {
+      setMonthData(cls.attendance[month] || {});
+    }
+  }, [cls, month]);
 
   return (
-    <div className="w-full max-w-4xl p-6 mt-6 shadow-xl rounded-3xl bg-gray-50 dark:bg-gray-800">
-      <h2 className="text-xl font-semibold text-center mb-4">Attendance Sheet</h2>
-      <div className="flex justify-around items-center">
-      <select value={month} onChange={handleChange} className="select select-md  bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-        <option>Months</option>
-        {cls.attendance && Object.keys(cls.attendance).map((m) => (
-          <option key={m} value={m}>{m}</option>
-        ))}
-      </select>
-      <p>working days: {Object.keys(attendance).length}</p>
+    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <h3 className="font-bold text-lg flex items-center gap-2">
+          <Calendar className="text-primary-500" size={20}/> Monthly View
+        </h3>
+        <select 
+          value={month} 
+          onChange={(e) => setMonth(e.target.value)}
+          className="bg-slate-50 dark:bg-slate-900 border-none rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none cursor-pointer"
+        >
+          {cls?.attendance && Object.keys(cls.attendance).map(m => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
       </div>
-      <table className="table w-full">
-        <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white">
-            <th>Day</th>
-            {students.map((std) => (
-              <th key={std._id}>{std.studentName}</th>
-            ))}
-            <th>Total Present</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dayKeys.map((day) => {
-            const dayAttendance = attendance[day] || {}; 
-            return (
-              <tr key={day}>
-                <td>{day}</td>
-                {Object.entries(dayAttendance).map(([std, isPresent]) => (
-                    
-                  <td key={std}>
-                    <input
-                          type="checkbox"
-                          className="checkbox border-1 border-gray-500"
-                          checked={isPresent}
-                        />
-                  </td>
-                ))}
-                  {Array.from({ length: students.length - Object.keys(dayAttendance).length }).map((_, i) => (
-                    <td key={i}></td>
-                    ))}
 
-                <td>{Object.values(dayAttendance).filter((isPresent) => isPresent).length}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-        <tfoot>
-            <tr className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white">
-                <th>Total Days: {Object.keys(attendance).length}</th>
-                {students.map((std) => (
-                <th key={std._id}>{getTotalAttendence(std.studentId)}</th>
-                ))}
-                <th></th>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500">
+            <tr>
+              <th className="px-4 py-3 min-w-[50px] text-center">Day</th>
+              {students.map(s => (
+                <th key={s._id} className="px-2 py-3 text-center min-w-[80px] font-medium truncate max-w-[100px]">
+                  {s.name.split(' ')[0]}
+                </th>
+              ))}
+              <th className="px-4 py-3 text-center font-bold">Present</th>
             </tr>
-        </tfoot>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            {days.map(day => {
+              const dayRecords = monthData[day] || {};
+              const presentCount = Object.values(dayRecords).filter(v => v).length;
+              return (
+                <tr key={day} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                  <td className="px-4 py-3 text-center font-bold text-slate-700 dark:text-slate-300">{day}</td>
+                  {students.map(s => (
+                    <td key={s._id} className="px-2 py-3 text-center">
+                      <div className={`w-2.5 h-2.5 mx-auto rounded-full ${dayRecords[s.studentId] ? "bg-emerald-500" : "bg-rose-500"}`}></div>
+                    </td>
+                  ))}
+                  <td className="px-4 py-3 text-center font-bold text-primary-600">{presentCount}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

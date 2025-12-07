@@ -1,29 +1,46 @@
-import React from 'react'
+import React from 'react';
+import { ChevronDown } from 'lucide-react';
 
 const SelectField = ({ label, name, value, options, icon, onChange }) => {
   return (
-    <div className="form-control">
-    <label className="label font-medium text-gray-700 dark:text-gray-300">{label}</label>
-    <div className="relative ">
-      {icon && <div className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 dark:text-gray-400">{icon}</div>}
+    <div className="relative group mb-4">
+      {icon && (
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10">
+          {icon}
+        </div>
+      )}
+
       <select
-        className="input input-bordered w-full pl-10  bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+        className={`w-full appearance-none bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3.5
+          ${icon ? 'pl-12' : 'pl-4'}
+          outline-none transition-all duration-300
+          focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
+          text-slate-800 dark:text-white cursor-pointer
+        `}
         value={value}
-        onChange={(e) => onChange((prev) => ({ ...prev, [name]: e.target.value }))}
+        onChange={(e) => {
+             // Handle both state setters logic
+             if(typeof onChange === 'function') onChange(prev => ({...prev, [name]: e.target.value}));
+        }}
       >
-        <option value="">Select {label}</option>
-      
+        <option value="" disabled className="text-slate-400">Select {label}</option>
         {options.map((option) => (
-  <option key={option} value={option}>
-    {option.charAt(0).toUpperCase() + option.slice(1)}
-  </option>
-))}
-
+          <option key={option} value={option}>
+            {option.charAt(0).toUpperCase() + option.slice(1)}
+          </option>
+        ))}
       </select>
+
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+        <ChevronDown size={16} />
+      </div>
+
+      {/* Static Label (Selects are harder to float effectively) */}
+      <label className="absolute -top-2 left-3 text-xs text-primary-600 dark:text-primary-400 bg-white dark:bg-slate-900 px-1 font-medium">
+        {label}
+      </label>
     </div>
-  </div>
-  )
-}
+  );
+};
 
-export default SelectField
-
+export default SelectField;

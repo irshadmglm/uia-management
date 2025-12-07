@@ -71,34 +71,33 @@ fetchFeesByStd: async (batchName, cicNumber) => {
     try {
       console.log("Fetching fees for batch:", batchName, "CIC Number:", cicNumber);
 
-      const match = batchName.match(/\d+/);
-      if (!match) throw new Error('Invalid batch name');
+      // 1. Add simple validation
+      if (!batchName) {
+        throw new Error('Batch name is required to fetch student data.');
+      }
+      if (!cicNumber) {
+        throw new Error('CIC number is required to fetch student data.');
+      }
 
-      const batchNumber = match[0].padStart(2, '0');
-      console.log("Extracted batch number:", batchNumber);
-
-      const name = get().batches[batchNumber];
-      console.log("Mapped batch name:", name);
-
-      if (!name) throw new Error('Batch not found in mapping');
-
-      const response = await axiosInstance.get(`/fees/std?batch_name=${name}&cicNumber=${cicNumber}`);
+      // 2. Remove all the complex mapping logic (match, padStart, get().batches)
+      //    Just use the batchName directly.
+      const response = await axiosInstance.get(
+        `/fees/std?batch_name=${batchName}&cicNumber=${cicNumber}`
+      );
+      
       console.log("API response:", response);
-
       const data = response.data;
 
       set({ isLoading: false }); 
       return data; 
+
     } catch (error) {
       console.error("Failed to fetch student fee:", error);
       const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch student fee.';
       set({ error: errorMessage, isLoading: false });
       
-      // --- THIS IS THE FIX ---
-      // Instead of returning null, throw the error
-      // so the component's try/catch block can see it.
+      // This part is perfect, do not change it
       throw new Error(errorMessage);
-      // -----------------------
     }
   },
 

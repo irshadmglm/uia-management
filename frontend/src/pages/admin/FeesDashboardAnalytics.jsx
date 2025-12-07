@@ -1,263 +1,248 @@
-// src/components/FeesDashboardAnalytics.js
-
 import React, { useState, useEffect } from 'react';
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { useFeeStore } from '../../store/feesSrore';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/Header';
+import { TrendingUp, Users, AlertCircle, Wallet, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-// --- Reusable Child Components ---
+// --- Styled Components ---
 
-const KpiCard = ({ title, value, icon }) => (
-  <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center transition duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-    <div className="text-xl sm:text-4xl mr-4">{icon}</div>
-    <div>
-      <p className="text-xs sm:text:sm text-gray-500 dark:text-gray-400">{title}</p>
-      <p className="text-sm sm:text-xl font-bold text-gray-800 dark:text-gray-100">{value}</p>
+const AnalyticCard = ({ title, value, icon: Icon, color, trend }) => (
+  <motion.div 
+    whileHover={{ y: -5 }}
+    className="relative overflow-hidden bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 group"
+  >
+    <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity`}>
+      <Icon size={80} className={color} />
     </div>
-  </div>
-);
-
-const KpiGrid = ({ data }) => (
-  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
-    <KpiCard title="Total Students" value={data.totalStudents} icon="🧑‍🎓" />
-    <KpiCard title="Total Revenue Due" value={`₹${data.totalRevenueDue.toLocaleString('en-IN')}`} icon="💰" />
-    <KpiCard title="Total Collected" value={`₹${data.totalCollected.toLocaleString('en-IN')}`} icon="✅" />
-    <KpiCard title="Total Outstanding" value={`₹${data.totalOutstanding.toLocaleString('en-IN')}`} icon="⏳" />
-    <KpiCard title="Defaulters" value={data.defaulterCount} icon="⚠️" />
-  </div>
-);
-
-const ChartsSection = ({ charts, kpi }) => {
-  const overallStatusData = [
-    { name: 'Collected', value: kpi.totalCollected },
-    { name: 'Outstanding', value: kpi.totalOutstanding },
-  ];
-  const COLORS = ['#00C49F', '#FF8042'];
-
-  // 1. Create dynamic state variables for chart colors
-  const [textColor, setTextColor] = useState('#374151'); // Default to dark gray for light mode
-  const [gridColor, setGridColor] = useState('#e5e7eb'); // Default to light gray for light mode
-  const [tooltipBg, setTooltipBg] = useState('#ffffff'); // Default to white for light mode
-
-  // 2. useEffect to detect theme and update colors
-  useEffect(() => {
-    const updateColors = () => {
-      if (document.documentElement.classList.contains('dark')) {
-        setTextColor('#f3f4f6');     // Light Gray (almost white) for dark mode text
-        setGridColor('#4b5563');     // Darker Gray for dark mode grid
-        setTooltipBg('#1f2937');     // Dark Gray for dark mode tooltip background
-      } else {
-        setTextColor('#374151');     // Dark Gray for light mode text
-        setGridColor('#e5e7eb');     // Light Gray for light mode grid
-        setTooltipBg('#ffffff');     // White for light mode tooltip background
-      }
-    };
-
-    updateColors(); // Set initial colors
-
-    // Set up an observer to watch for theme changes in real-time
-    const observer = new MutationObserver(updateColors);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-
-    return () => observer.disconnect(); // Cleanup on unmount
-  }, []);
-
-  // Define a reusable tooltip style object
-  const tooltipStyle = {
-      backgroundColor: tooltipBg,
-      color: textColor,
-      border: '1px solid',
-      borderColor: gridColor,
-      borderRadius: '0.5rem'
-  };
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-      <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md lg:col-span-3">
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Collection vs. Due by Batch</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={charts.collectionByBatch}>
-            {/* 3. Apply the dynamic state variables to chart props */}
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor}/>
-            <XAxis dataKey="batchName" fontSize={10} tick={{ fill: textColor }} />
-            <YAxis fontSize={10} tickFormatter={(value) => `₹${value / 1000}k`} tick={{ fill: textColor }} />
-            <Tooltip contentStyle={tooltipStyle} cursor={{fill: 'rgba(128, 128, 128, 0.1)'}} />
-            <Legend wrapperStyle={{fontSize: '12px', color: textColor}} />
-            <Bar dataKey="due" fill="#8884d8" name="Total Due" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="collected" fill="#82ca9d" name="Collected" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+    
+    <div className="relative z-10">
+      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${color.replace('text-', 'bg-').replace('500', '100')} dark:bg-opacity-20`}>
+        <Icon size={24} className={color} />
       </div>
-      <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md lg:col-span-2">
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Overall Payment Status</h3>
-          <ResponsiveContainer width="100%" height={300}>
-    <PieChart>
-      <Pie data={overallStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} fill="#8884d8" paddingAngle={5}>
-        {overallStatusData.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+      
+      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
+      <h3 className="text-3xl font-display font-bold text-slate-800 dark:text-white mt-1">
+        {value}
+      </h3>
+      
+      {trend && (
+        <div className="flex items-center gap-1 mt-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+          <TrendingUp size={14} />
+          <span>{trend}</span>
+        </div>
+      )}
+    </div>
+  </motion.div>
+);
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-4 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 text-sm">
+        <p className="font-bold text-slate-800 dark:text-white mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <div key={index} className="flex items-center gap-2 text-xs">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="text-slate-600 dark:text-slate-300 capitalize">{entry.name}:</span>
+            <span className="font-mono font-bold text-slate-900 dark:text-white">
+              {typeof entry.value === 'number' && entry.name !== 'Students' 
+                ? `₹${entry.value.toLocaleString()}` 
+                : entry.value}
+            </span>
+          </div>
         ))}
-      </Pie>
-      {/* UPDATED: Added itemStyle to control the tooltip's text color */}
-      <Tooltip 
-        contentStyle={tooltipStyle} 
-        itemStyle={{ color: textColor }} 
-      />
-      <Legend wrapperStyle={{fontSize: '12px', color: textColor}} />
-    </PieChart>
-  </ResponsiveContainer>
       </div>
-      <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md lg:col-span-5">
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Monthly Collection Trend</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={charts.collectionByMonth}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-            <XAxis dataKey="month" fontSize={10} tick={{ fill: textColor }}/>
-            <YAxis fontSize={10} tickFormatter={(value) => `₹${value / 1000}k`} tick={{ fill: textColor }} />
-            <Tooltip contentStyle={tooltipStyle} cursor={{stroke: gridColor, strokeWidth: 2, strokeDasharray: '3 3'}} />
-            <Legend wrapperStyle={{fontSize: '12px', color: textColor}} />
-            <Line type="monotone" dataKey="collected" stroke="#ff7300" strokeWidth={2} name="Amount Collected" dot={{ r: 4 }} activeDot={{ r: 8 }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
+    );
+  }
+  return null;
 };
 
-const TablesSection = ({ tables }) => (
-  <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md xl:col-span-2 overflow-hidden">
-      <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 p-6">Top 10 Defaulters</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th scope="col" className="px-6 py-3">Name</th>
-              <th scope="col" className="px-6 py-3">Batch</th>
-              <th scope="col" className="px-6 py-3 text-right">Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tables.topDefaulters.length > 0 ? (
-              tables.topDefaulters.map((student, index) => (
-                <tr key={index} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">{student.name}</td>
-                  <td className="px-6 py-4">{student.batchName}</td>
-                  <td className="px-6 py-4 text-right font-medium text-red-500">₹{student.balance.toLocaleString('en-IN')}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="text-center py-8 text-gray-500 dark:text-gray-400">🎉 No defaulters found!</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+const FeesDashboardAnalytics = () => {
+  const { fetchDashboardAnalytics } = useFeeStore();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetchDashboardAnalytics();
+        setData(res);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  if (loading) return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-16 h-16 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
     </div>
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md xl:col-span-3 overflow-hidden">
-      <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 p-6">Batch Summary</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
+  );
+
+  if (!data) return <div className="p-8 text-center text-slate-500">No analytics data available.</div>;
+
+  const { kpi, charts, tables } = data;
+  const COLORS = ['#10b981', '#f43f5e', '#f59e0b', '#3b82f6'];
+
+  return (
+    <div className="space-y-8 pt-6 pb-20">
+      
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">Financial Overview</h1>
+          <p className="text-slate-500 dark:text-slate-400">Track revenue, collections, and dues.</p>
+        </div>
+        <button 
+          onClick={() => navigate("/dashboard/admin/add-fees")}
+          className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/20 transition-all active:scale-95"
+        >
+          <Wallet size={18} /> Manage Fees
+        </button>
+      </div>
+
+      {/* KPI Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <AnalyticCard 
+          title="Total Revenue" 
+          value={`₹${kpi.totalRevenueDue.toLocaleString()}`} 
+          icon={Wallet} 
+          color="text-blue-500" 
+          trend="Projected Income"
+        />
+        <AnalyticCard 
+          title="Collected" 
+          value={`₹${kpi.totalCollected.toLocaleString()}`} 
+          icon={TrendingUp} 
+          color="text-emerald-500"
+          trend={`${((kpi.totalCollected / kpi.totalRevenueDue) * 100).toFixed(1)}% Recovered`}
+        />
+        <AnalyticCard 
+          title="Outstanding" 
+          value={`₹${kpi.totalOutstanding.toLocaleString()}`} 
+          icon={AlertCircle} 
+          color="text-rose-500"
+          trend="Pending Dues"
+        />
+        <AnalyticCard 
+          title="Active Students" 
+          value={kpi.totalStudents} 
+          icon={Users} 
+          color="text-amber-500"
+        />
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Main Trend Chart */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Monthly Collection Trend</h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={charts.collectionByMonth}>
+                <defs>
+                  <linearGradient id="colorCollected" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} tickFormatter={(val) => `₹${val/1000}k`} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="collected" 
+                  stroke="#3b82f6" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#colorCollected)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Donut Chart */}
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2 w-full text-left">Recovery Status</h3>
+          <div className="h-[250px] w-full relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Collected', value: kpi.totalCollected },
+                    { name: 'Outstanding', value: kpi.totalOutstanding }
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  <Cell fill="#10b981" />
+                  <Cell fill="#f43f5e" />
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+            {/* Center Text */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-3xl font-bold text-slate-800 dark:text-white">
+                {((kpi.totalCollected / kpi.totalRevenueDue) * 100).toFixed(0)}%
+              </span>
+              <span className="text-xs text-slate-500 uppercase tracking-wide">Recovered</span>
+            </div>
+          </div>
+          
+          {/* Custom Legend */}
+          <div className="flex gap-4 mt-4">
+            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+              <span className="w-3 h-3 rounded-full bg-emerald-500" /> Collected
+            </div>
+            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+              <span className="w-3 h-3 rounded-full bg-rose-500" /> Pending
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Defaulters Table */}
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <h3 className="font-bold text-slate-800 dark:text-white">Pending Dues Alert</h3>
+          <button className="text-sm text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1">
+            View All <ArrowRight size={14} />
+          </button>
+        </div>
+        <table className="w-full text-left text-sm">
+          <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 font-medium">
             <tr>
-              <th scope="col" className="px-6 py-3">Batch</th>
-              <th scope="col" className="px-6 py-3">Students</th>
-              <th scope="col" className="px-6 py-3 text-right">Due</th>
-              <th scope="col" className="px-6 py-3 text-right">Collected</th>
-              <th scope="col" className="px-6 py-3 text-right">Outstanding</th>
+              <th className="px-6 py-3">Student</th>
+              <th className="px-6 py-3">Batch</th>
+              <th className="px-6 py-3 text-right">Pending Amount</th>
             </tr>
           </thead>
-          <tbody>
-            {tables.batchSummary.map((batch, index) => (
-              <tr key={index} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{batch.batchName}</td>
-                <td className="px-6 py-4">{batch.studentCount}</td>
-                <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">₹{batch.due.toLocaleString('en-IN')}</td>
-                <td className="px-6 py-4 text-right font-medium text-green-600">₹{batch.collected.toLocaleString('en-IN')}</td>
-                <td className="px-6 py-4 text-right font-medium text-orange-500">₹{batch.outstanding.toLocaleString('en-IN')}</td>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            {tables.topDefaulters.map((student, i) => (
+              <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                <td className="px-6 py-3 font-medium text-slate-900 dark:text-white">{student.name}</td>
+                <td className="px-6 py-3 text-slate-500">{student.batchName}</td>
+                <td className="px-6 py-3 text-right font-bold text-rose-500">₹{student.balance.toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
-);
 
-const DashboardSkeleton = () => (
-    <div className="animate-pulse">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
-            {Array.from({ length: 5 }).map((_, i) => (<div key={i} className="bg-gray-200 dark:bg-gray-700 h-24 rounded-lg"></div>))}
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-            <div className="bg-gray-200 dark:bg-gray-700 h-80 rounded-lg lg:col-span-3"></div>
-            <div className="bg-gray-200 dark:bg-gray-700 h-80 rounded-lg lg:col-span-2"></div>
-            <div className="bg-gray-200 dark:bg-gray-700 h-80 rounded-lg lg:col-span-5"></div>
-        </div>
-    </div>
-);
-
-const FeesDashboardAnalytics = () => {
-  const { fetchDashboardAnalytics } = useFeeStore();
-  const [dashboardData, setDashboardData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await fetchDashboardAnalytics();
-        setDashboardData(response);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDashboardData();
-  }, []);
-
-  const renderContent = () => {
-    if (loading) return <DashboardSkeleton />;
-    if (error) return <div className="text-center py-20 text-xl text-red-500">Error: {error}</div>;
-    if (!dashboardData) return <div className="text-center py-20">No data available.</div>;
-    return (
-      <>
-        <KpiGrid data={dashboardData.kpi} />
-        <ChartsSection charts={dashboardData.charts} kpi={dashboardData.kpi} />
-        <TablesSection tables={dashboardData.tables} />
-      </>
-    );
-  };
-
-  return (
-    <div className="bg-slate-50 dark:bg-gray-900 min-h-screen font-sans">
-            <Header />
-            <main className="p-4 sm:p-6 lg:p-8 mt-10">
-      <div className="max-w-7xl mx-auto">
-        {/* UPDATED: Header is now responsive, stacking on mobile */}
-        <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
-            Fees Dashboard
-          </h1>
-          {/* UPDATED: Button hides text on mobile for a cleaner look */}
-          <button className="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75 flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto"
-          onClick={() => navigate("/dashboard/admin/add-fees")}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-            </svg>
-            <span className="hidden sm:inline"> Fees</span>
-          </button>
-        </div>
-        {renderContent()}
-      </div>
-      </main>
     </div>
   );
 };

@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Save, X, Eye, Pencil, Trash2 } from "lucide-react";
+import { 
+  Folder, FileText, Search, Plus, MoreVertical, 
+  ExternalLink, Edit3, Trash2, X, Save, File, 
+  LayoutGrid, List as ListIcon, FolderOpen 
+} from "lucide-react";
 import { useRecordStore } from "../../store/useRecordStore";
 import Header from "../../components/Header";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const RecordPage = () => {
+  const { authUser } = useAuthStore();
   const {
     records,
     fetchRecords,
@@ -13,275 +20,338 @@ const RecordPage = () => {
     isLoading,
   } = useRecordStore();
 
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: "", description: "", folder: "", link: "" });
-  const [editingId, setEditingId] = useState(null);
-  const [activeTab, setActiveTab] = useState("all");
-
+  const [activeFolder, setActiveFolder] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
 
   useEffect(() => {
     fetchRecords();
   }, [fetchRecords]);
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  // Extract unique folders
+  const folders = ["All", ...new Set(records.map(r => r.folder).filter(Boolean))];
+
+  // Filter logic
+  const filteredRecords = records.filter(record => {
+    const matchesFolder = activeFolder === "All" || record.folder === activeFolder;
+    const matchesSearch = record.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFolder && matchesSearch;
+  });
+
+  const handleEdit = (record) => {
+    setEditingRecord(record);
+    setIsModalOpen(true);
   };
 
-  const handleEditClick = (record) => {
-    setFormData({
-      name: record.name || "",
-      description: record.description || "",
-      folder: record.folder || "",
-      link: record.link || "",
-    });
-    setEditingId(record._id);
-    setShowForm(true);
-  };
-
-  const handleDeleteClick = async (id) => {
-    if (window.confirm("Are you sure you want to delete this record?")) {
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this file?")) {
       await deleteRecord(id);
-      // fetchRecords();
     }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name.trim()) return;
-
-    if (editingId) {
-      await updateRecord(editingId, formData);
-    } else {
-      await addRecord(formData);
-    }
-    setFormData({ name: "", description: "", folder: "", link: "" });
-    setEditingId(null);
-    setShowForm(false);
-    // fetchRecords();
-  };
-
-  const handleCancel = () => {
-    setFormData({ name: "", description: "", folder: "", link: "" });
-    setEditingId(null);
-    setShowForm(false);
   };
 
   return (
-    <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-3 pt-20">
-        <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-4 ml-8 font-oswald">
-          Academic Records
-        </h2>
-
-        <div className="p-2">
-          {/* Add / Edit Card */}
-          <div
-            className={`group bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border-2 border-dashed mb-4 ${
-              showForm
-                ? "border-blue-500 dark:border-blue-400"
-                : "border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 cursor-pointer"
-            } max-w-md mx-auto`}
-          >
-            {showForm ? (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                <input
-                  autoFocus
-                  placeholder="Name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-                <textarea
-                  placeholder="Description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-                <input
-                  placeholder="Link"
-                  name="link"
-                  value={formData.link}
-                  onChange={handleChange}
-                  className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              <input
-                  list="folder"
-                  name="folder"
-                  placeholder="Folder"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <datalist id="folder">
-                  {[...new Set(records.map((record) => record.folder))].map((folder, index) => (
-                    <option key={index} value={folder} />
-                  ))}
-                </datalist>
-
-
-
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-                  >
-                    <X size={16} /> Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50"
-                  >
-                    <Save size={16} />
-                    {editingId ? "Update" : "Add"}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div
-                className="h-full flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                onClick={() => {
-                  setShowForm(true);
-                  setEditingId(null);
-                  setFormData({ name: "", description: "", link: "" });
-                }}
-              >
-                <Plus className="w-6 h-6" />
-                <span className="font-medium">Add New Record</span>
-              </div>
-            )}
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-dark pb-20">
+      <Header page="Academic Repository" />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        
+        {/* 1. Top Toolbar */}
+        <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white">
+              Documents & Records
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400">
+              Manage syllabus, circulars, and academic resources.
+            </p>
           </div>
 
-          {records.length > 0 && <FilterTab records={records} activeTab={activeTab} setActiveTab={setActiveTab} /> }
-          
-          {/* Records Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {records.length === 0 && (
-              <p className="text-center text-gray-500 dark:text-gray-400 col-span-full">
-                No records found.
-              </p>
-            )}
-            {records.filter((record)=> activeTab === "all" || record?.folder === activeTab ).map((record, index) => (
-              <div
-                key={record._id || index}
-                className="group bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col justify-between"
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {/* Search */}
+            <div className="relative flex-1 md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                type="text"
+                placeholder="Search files..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition-all shadow-sm"
+              />
+            </div>
+
+            {/* View Toggle */}
+            <div className="flex bg-white dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <button 
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-slate-100 dark:bg-slate-700 text-primary-600" : "text-slate-400"}`}
               >
-                <div className="flex justify-between items-start mb-1">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 flex-shrink-0 rounded-full bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-lg">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <h2 className="text-gray-900 dark:text-white text-lg font-medium">
-                        {record.name}
-                      </h2>
-                      <p className="text-gray-900 dark:text-white text-xs font-medium">
-                        {record?.folder}
-                      </p>
-                      {record.description && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {record.description}
-                        </p>
-                      )}
-                      {record.link && (
-                        <a
-                          href={record.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 dark:text-blue-400 text-sm underline inline-flex items-center gap-1"
-                        >
-                          <Eye size={16} /> View
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleEditClick(record)}
-                      className="text-yellow-500 hover:text-yellow-600"
-                      title="Edit Record"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(record._id)}
-                      className="text-red-500 hover:text-red-600"
-                      title="Delete Record"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+                <LayoutGrid size={18} />
+              </button>
+              <button 
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-lg transition-all ${viewMode === "list" ? "bg-slate-100 dark:bg-slate-700 text-primary-600" : "text-slate-400"}`}
+              >
+                <ListIcon size={18} />
+              </button>
+            </div>
+
+            {/* Add Button (Admin Only) */}
+            {authUser?.role === "admin" && (
+              <button
+                onClick={() => { setEditingRecord(null); setIsModalOpen(true); }}
+                className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/20 transition-all active:scale-95"
+              >
+                <Plus size={20} />
+                <span className="hidden sm:inline">Upload</span>
+              </button>
+            )}
           </div>
         </div>
-      </div>
-    </>
-  );
-};
 
-export default RecordPage;
-
-
-const FilterTab = ({ records, activeTab, setActiveTab }) => {
-
-  const folderCounts = records.reduce((acc, record) => {
-    const folder = record.folder || "Unknown";
-    acc[folder] = (acc[folder] || 0) + 1;
-    return acc;
-  }, {});
-
-  const uniqueFolders = Object.entries(folderCounts); 
-
-  return (
-    <div className="w-full overflow-x-auto">
-      <div className="flex w-max gap-2 px-4 py-2">
-        {/* All Folder */}
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
-            activeTab === "all"
-              ? "bg-yellow-500 text-gray-900 shadow-md"
-              : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-sky-100 dark:hover:bg-gray-700"
-          }`}
-        >
-          All Folder
-          <span className="px-2 py-1 rounded-full text-xs bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
-            {records.length}
-          </span>
-        </button>
-
-        {/* Unique Folders */}
-        {uniqueFolders.map(([folder, count]) => (
-          <button
-            key={folder}
-            onClick={() => setActiveTab(folder)}
-            className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
-              activeTab === folder
-                ? "bg-yellow-500 text-gray-900 shadow-md"
-                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700"
-            }`}
-          >
-            {folder}
-            <span
-              className={`px-2 py-1 rounded-full text-xs ${
-                activeTab === folder
-                  ? "bg-white/20 text-white"
-                  : "bg-blue-100 text-blue-800 dark:bg-sky-900 dark:text-blue-200"
-              }`}
+        {/* 2. Folder Navigation */}
+        <div className="flex overflow-x-auto pb-4 gap-3 scrollbar-hide mb-6">
+          {folders.map(folder => (
+            <button
+              key={folder}
+              onClick={() => setActiveFolder(folder)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all whitespace-nowrap
+                ${activeFolder === folder 
+                  ? "bg-white dark:bg-slate-800 border-primary-500 text-primary-600 shadow-md ring-1 ring-primary-500/20" 
+                  : "bg-slate-100 dark:bg-slate-800/50 border-transparent text-slate-500 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm"}
+              `}
             >
-              {count}
-            </span>
-          </button>
-        ))}
+              {activeFolder === folder ? <FolderOpen size={18} /> : <Folder size={18} />}
+              <span className="font-medium text-sm">{folder}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* 3. File Display Area */}
+        {filteredRecords.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+            <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+              <FolderOpen size={32} />
+            </div>
+            <p>No records found in this folder.</p>
+          </div>
+        ) : (
+          <motion.div 
+            layout
+            className={
+              viewMode === "grid" 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+                : "flex flex-col gap-3"
+            }
+          >
+            <AnimatePresence>
+              {filteredRecords.map((record) => (
+                <FileCard 
+                  key={record._id} 
+                  record={record} 
+                  viewMode={viewMode}
+                  onEdit={() => handleEdit(record)}
+                  onDelete={() => handleDelete(record._id)}
+                  isAdmin={authUser?.role === "admin"}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
       </div>
+
+      {/* 4. Add/Edit Modal */}
+      {isModalOpen && (
+        <RecordModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          initialData={editingRecord}
+          folders={folders}
+          onSubmit={editingRecord ? updateRecord : addRecord}
+        />
+      )}
     </div>
   );
 };
 
+// --- Sub-Component: File Card ---
+const FileCard = ({ record, viewMode, onEdit, onDelete, isAdmin }) => {
+  const isGrid = viewMode === "grid";
 
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className={`group relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:shadow-lg transition-all duration-300 overflow-hidden
+        ${isGrid ? "p-5 flex flex-col h-full" : "p-4 flex items-center justify-between"}
+      `}
+    >
+      {/* Icon & Decor */}
+      <div className={`flex items-start gap-4 ${isGrid ? "mb-4" : ""}`}>
+        <div className={`shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-slate-800 text-blue-600 dark:text-blue-400
+          ${isGrid ? "w-14 h-14" : "w-12 h-12"}
+        `}>
+          <FileText size={isGrid ? 28 : 24} />
+        </div>
+        
+        <div className="min-w-0 flex-1">
+          <h3 className="font-bold text-slate-800 dark:text-white truncate" title={record.name}>
+            {record.name}
+          </h3>
+          {isGrid && (
+            <>
+              <span className="inline-block px-2 py-0.5 mt-1 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-700 text-slate-500">
+                {record.folder || "Uncategorized"}
+              </span>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 h-10">
+                {record.description || "No description provided."}
+              </p>
+            </>
+          )}
+          {!isGrid && (
+             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-md">
+               {record.description} • <span className="font-medium text-slate-400">{record.folder}</span>
+             </p>
+          )}
+        </div>
+      </div>
+
+      {/* Actions Footer */}
+      <div className={`flex items-center gap-2 ${isGrid ? "mt-auto pt-4 border-t border-slate-100 dark:border-slate-700/50" : ""}`}>
+        {record.link && (
+          <a 
+            href={record.link} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-50 hover:bg-blue-50 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium rounded-lg transition-colors group/link"
+          >
+            <ExternalLink size={16} className="group-hover/link:text-blue-500" />
+            Open
+          </a>
+        )}
+        
+        {isAdmin && (
+          <div className={`flex gap-1 ${!isGrid && "ml-4"}`}>
+            <button onClick={onEdit} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+              <Edit3 size={18} />
+            </button>
+            <button onClick={onDelete} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors">
+              <Trash2 size={18} />
+            </button>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+// --- Sub-Component: Modal Form ---
+const RecordModal = ({ isOpen, onClose, initialData, onSubmit, folders }) => {
+  const [formData, setFormData] = useState({
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    folder: initialData?.folder || "",
+    link: initialData?.link || ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    if(initialData) await onSubmit(initialData._id, formData);
+    else await onSubmit(formData);
+    setIsSubmitting(false);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden"
+      >
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+            {initialData ? "Edit File" : "Upload New File"}
+          </h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500">
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">File Name</label>
+            <div className="relative">
+              <File className="absolute left-3 top-3 text-slate-400" size={18} />
+              <input 
+                required
+                value={formData.name}
+                onChange={e => setFormData({...formData, name: e.target.value})}
+                className="w-full pl-10 p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none"
+                placeholder="e.g. Exam Schedule 2025"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Folder / Category</label>
+            <div className="relative">
+              <Folder className="absolute left-3 top-3 text-slate-400" size={18} />
+              <input 
+                list="folderOptions"
+                value={formData.folder}
+                onChange={e => setFormData({...formData, folder: e.target.value})}
+                className="w-full pl-10 p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none"
+                placeholder="e.g. Syllabus"
+              />
+              <datalist id="folderOptions">
+                {folders.filter(f => f !== "All").map(f => <option key={f} value={f} />)}
+              </datalist>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Link URL</label>
+            <div className="relative">
+              <ExternalLink className="absolute left-3 top-3 text-slate-400" size={18} />
+              <input 
+                value={formData.link}
+                onChange={e => setFormData({...formData, link: e.target.value})}
+                className="w-full pl-10 p-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none"
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
+            <textarea 
+              rows={3}
+              value={formData.description}
+              onChange={e => setFormData({...formData, description: e.target.value})}
+              className="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none resize-none"
+              placeholder="Add details..."
+            />
+          </div>
+
+          <div className="pt-2 flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl font-medium transition-colors">
+              Cancel
+            </button>
+            <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/20 transition-all">
+              <Save size={18} /> Save Record
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+};
+
+export default RecordPage;

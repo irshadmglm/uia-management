@@ -3,7 +3,6 @@ import AppRoutes from "./routes/AppRoutes";
 import { useAuthStore } from "./store/useAuthStore";
 import { useThemeStore } from "./store/useThemeStore";
 import { useEffect, useState } from "react";
-import { Loader } from "lucide-react";
 import InstallPrompt from "./components/InstallPrompt";
 
 function App() {
