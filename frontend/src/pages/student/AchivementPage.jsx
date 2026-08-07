@@ -7,7 +7,9 @@ import StatsCards from "../../components/StatsCards"
 import AchievementForm from "../../components/AchievementForm"
 import EmptyState from "../../components/EmptyState"
 import AchievementCard from "../../components/AchievementCard"
-import Header from "../../components/Header"
+import CustomSelect from '../../components/CustomSelect';
+
+
 
 
 const AchievementPage = () => {
@@ -83,9 +85,9 @@ const AchievementPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-sky-100 dark:from-gray-900 dark:to-gray-800">
-        <Header />
-      <div className="max-w-7xl mx-auto p-4 md:p-8 mt-16">
+    <div className="dark: dark:">
+        
+      <div className="max-w-7xl mx-auto p-4 md:p-8">
         {/* Header Section */}
         <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6 mb-6">
@@ -145,7 +147,7 @@ const AchievementPage = () => {
 
             {/* Filters */}
             {/* <div className="flex gap-4">
-              <select
+              <CustomSelect
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-base focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-100 transition-all duration-200 min-w-32"
@@ -153,9 +155,9 @@ const AchievementPage = () => {
                 <option value="all">All Status</option>
                 <option value="approved">Approved</option>
                 <option value="pending">Pending</option>
-              </select>
+              </CustomSelect>
 
-              <select
+              <CustomSelect
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-base focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-100 transition-all duration-200 min-w-32"
@@ -163,7 +165,7 @@ const AchievementPage = () => {
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
                 <option value="achievement">By Achievement</option>
-              </select>
+              </CustomSelect>
             </div>
           </div>
         </div> */}

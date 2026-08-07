@@ -62,6 +62,37 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  impersonate: async (studentId) => {
+    set({ isLoggingIn: true });
+    try {
+      const res = await axiosInstance.post(`/auth/impersonate/${studentId}`);
+      set({ authUser: res.data });
+      toast.success(`Impersonating ${res.data.name}`);
+      
+      // Force redirect to the root so AppRoutes re-evaluates the role
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
+
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to impersonate");
+    } finally {
+      set({ isLoggingIn: false });
+    }
+  },
+
+  stopImpersonate: async () => {
+    try {
+      await axiosInstance.post("/auth/stop-impersonate");
+      toast.success("Returned to Admin Dashboard");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to stop impersonating");
+    }
+  },
+
  changePassword: async (currentPassword, newPassword ) => {
   try {
     const user = get().authUser;

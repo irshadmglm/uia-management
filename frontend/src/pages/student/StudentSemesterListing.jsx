@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../components/Header";
+
 import { useMarksStore } from "../../store/useMarksStore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -34,8 +34,8 @@ const StudentSemesterListing = () => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24">
+      
+      <div className="dark: dark: p-6">
         <motion.div
           className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
           variants={containerVariants}

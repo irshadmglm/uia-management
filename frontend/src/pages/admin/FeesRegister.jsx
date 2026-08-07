@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useFeeStore } from '../../store/feesSrore'; // Ensure this path is correct
-import Header from '../../components/Header';
+import CustomSelect from '../../components/CustomSelect';
+
+
 
 // --- Helper Functions ---
 const formatCurrency = (value) => {
@@ -303,8 +305,8 @@ export default function FeesRegister() {
     }
 
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 min-h-screen font-sans">
-            <Header />
+        <div className="font-sans">
+            
             <main className="p-4 sm:p-6 lg:p-8 mt-10">
             <div className="max-w-7xl mx-auto">
                 <header className="mb-8 text-center">
@@ -313,13 +315,13 @@ export default function FeesRegister() {
 
                 <div className="mb-8 max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
                     <div className="flex-shrink-0">
-                        <select
+                        <CustomSelect
                             value={selectedBatch}
                             onChange={handleBatchChange}
                             className="w-full sm:w-auto px-4 py-3 text-gray-700 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                         >
                             {batchNames.map(batchName => <option key={batchName} value={batchName}>{batchName}</option>)}
-                        </select>
+                        </CustomSelect>
                     </div>
                     <input
                         type="text"

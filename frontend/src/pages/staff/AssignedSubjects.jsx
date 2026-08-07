@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircle, Loader2 } from "lucide-react";
-import Header from "../../components/Header";
+
 import { useStaffStore } from "../../store/useStaffStore";
 import { MdAdd, MdAddAlert, MdAddCircle, MdAddHomeWork, MdMarkunread } from "react-icons/md";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -27,8 +27,8 @@ const AssignedSubjects = () => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-4 pt-24">
+      
+      <div className="dark: dark: p-4">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
          Subjects
         </h2>
@@ -46,7 +46,7 @@ const AssignedSubjects = () => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full  bg-sky-700 text-white flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-sky-700 text-white flex items-center justify-center font-bold">
                       {index + 1}
                     </div>
                     <div>
@@ -80,7 +80,7 @@ const AssignedSubjects = () => {
                        rel="noopener noreferrer"
                        aria-label="Open internal mark sheet in a new tab"
                        > 
-                    <div className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-amber-500 rounded-full px-3 py-2 shadow-md w-fit ">
+                    <div className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-amber-500 rounded-full px-3 py-2 shadow-md w-fit">
                        <MdAdd className="w-4 h-4 text-white animate-pulse" />
                         <span className="text-xs font-medium text-white animate-pulse">CE Mark</span>
                     </div>

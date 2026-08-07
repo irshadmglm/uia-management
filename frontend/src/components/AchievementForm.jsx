@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import CustomSelect from './CustomSelect';
+
 
 const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
   const [formData, setFormData] = useState({
@@ -116,7 +118,7 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
             <label htmlFor="agencyLevel" className="block text-sm font-semibold text-gray-700">
               Agency/Level
             </label>
-            <select
+            <CustomSelect
               id="agencyLevel"
               name="agencyLevel"
               value={formData.agencyLevel}
@@ -131,7 +133,7 @@ const AchievementForm = ({ onSubmit, onCancel, initialData, isEditing }) => {
               <option value="International">International Level</option>
               <option value="University">University Level</option>
               <option value="College">College Level</option>
-            </select>
+            </CustomSelect>
           </div>
 
           <div className="space-y-2">

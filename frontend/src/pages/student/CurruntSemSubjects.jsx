@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { CheckCircle, Loader2 } from "lucide-react";
-import Header from "../../components/Header";
+
 import { MdAdd, MdAddAlert, MdAddCircle, MdAddHomeWork, MdMarkunread } from "react-icons/md";
 import { useStudentStore } from "../../store/studentStore";
 import { useParams } from "react-router-dom";
@@ -14,8 +14,8 @@ const CurruntSemSubjects = () => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-4 pt-24">
+      
+      <div className="dark: dark: p-4">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6 text-center">
           My Subjects
         </h2>
@@ -33,7 +33,7 @@ const CurruntSemSubjects = () => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full  bg-sky-700 text-white flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-sky-700 text-white flex items-center justify-center font-bold">
                       {index + 1}
                     </div>
                     <div>

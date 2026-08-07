@@ -19,9 +19,11 @@ import {
 import { axiosInstance } from "../../lib/axios"
 import { useAdminStore } from "../../store/useAdminMngStore"
 import { useStudentStore } from "../../store/studentStore"
-import Header from "../../components/Header"
+
 import { ListChecks } from "lucide-react"
 import TimetableAssignment from "./TimetableAsigment"
+import CustomSelect from '../../components/CustomSelect';
+
 
 const StatusBadge = ({ isAssigned, label }) => (
   <span
@@ -49,55 +51,58 @@ const AssignmentCard = ({
   icon: Icon = FiUser
 }) => (
   <div
-    className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 
-    overflow-hidden transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1"
+    className="bg-white dark:bg-[#11322f] rounded-2xl shadow-sm border border-gray-100 dark:border-[#0d2522] 
+    overflow-hidden transition-all duration-300 hover:shadow-md hover:border-brand-teal/30 group"
   >
-    <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
-      <h3 className="font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+    <div className="bg-brand-mint/5 dark:bg-[#0d2522] px-5 py-4 flex justify-between items-center border-b border-gray-100 dark:border-transparent">
+      <h3 className="font-semibold text-gray-800 dark:text-white flex items-center gap-3">
         {name}
         <StatusBadge isAssigned={isAssigned} />
       </h3>
       <button
         onClick={() => toggleEdit(id)}
-        className="text-gray-700 hover:text-sky-600 dark:text-gray-400 dark:hover:text-sky-400 
-        transition-colors duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
+        className="text-gray-400 hover:text-brand-teal dark:text-gray-500 dark:hover:text-brand-mint transition-colors duration-200 p-2 rounded-full hover:bg-white dark:hover:bg-[#11322f]"
         aria-label={isEditing ? "Cancel editing" : "Edit assignment"}
       >
-        {isEditing ? <FiX className="w-5 h-5" /> : <FiEdit2 className="w-5 h-5" />}
+        {isEditing ? <FiX className="w-4 h-4" /> : <FiEdit2 className="w-4 h-4" />}
       </button>
     </div>
 
-    <div className="p-6">
+    <div className="p-5">
       {isEditing ? (
         children
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 dark:text-sky-300">
-              <Icon className="w-7 h-7" />
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-brand-mint/10 dark:bg-[#0d2522] flex items-center justify-center text-brand-teal dark:text-brand-mint flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <Icon className="w-6 h-6" />
             </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Assigned</p>
-              <p className="font-medium text-gray-800 dark:text-white text-sm">
-                {assignedName || "Not assigned yet"}
-                {periodTeacher1 > 0 &&  <span className="ml-2 text-sm text-gray-500">Period: {periodTeacher1}</span>}
-              </p> 
-              {
-                assignedName2 && 
-                <p className="font-medium text-gray-800 dark:text-white text-sm">
-                {assignedName2 || "Not assigned yet"}
-                {periodTeacher2 > 0 && <span className="ml-2 text-sm text-gray-500">Period: {periodTeacher2}</span>}
-              </p>
-              }
+            <div className="pt-1 w-full">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium mb-1">Assigned To</p>
+              <div className="space-y-2">
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-900 dark:text-white text-sm">
+                    {assignedName || "Not assigned yet"}
+                  </span>
+                  {periodTeacher1 > 0 && <span className="text-xs text-gray-500 font-normal">Period {periodTeacher1}</span>}
+                </div>
+                {assignedName2 && (
+                  <div className="flex flex-col border-t border-gray-100 dark:border-gray-700/50 pt-2">
+                    <span className="font-medium text-gray-900 dark:text-white text-sm">
+                      {assignedName2}
+                    </span>
+                    {periodTeacher2 > 0 && <span className="text-xs text-gray-500 font-normal">Period {periodTeacher2}</span>}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {!isAssigned && (
             <button
               onClick={() => toggleEdit(id)}
-              className="w-full mt-3 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg 
-              transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow
-              focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              className="w-full mt-2 py-2.5 bg-brand-teal hover:bg-brand-teal/90 text-white rounded-xl 
+              transition-all duration-200 flex items-center justify-center gap-2 shadow-sm font-medium"
             >
               <FiPlus className="w-4 h-4" />
               Assign Now
@@ -147,21 +152,21 @@ const NotificationMessage = ({ message, onDismiss }) => {
 }
 
 const SearchBar = ({ value, onChange, placeholder }) => (
-  <div className="relative w-full max-w-sm">
-    <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+  <div className="relative w-full">
+    <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
     <input
       type="text"
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="pl-10 pr-4 py-2.5 w-full rounded-lg border border-gray-300 dark:border-gray-600 
-      bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 
-      focus:border-sky-500 transition-all duration-200"
+      className="pl-12 pr-10 py-3 w-full rounded-xl border-0 shadow-sm
+      bg-white dark:bg-[#11322f] text-gray-900 dark:text-white 
+      focus:ring-2 focus:ring-brand-teal transition-all duration-200"
     />
     {value && (
       <button 
         onClick={() => onChange("")}
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-brand-teal dark:hover:text-brand-mint bg-gray-50 dark:bg-[#0d2522] rounded-full p-1"
         aria-label="Clear search"
       >
         <FiX className="w-4 h-4" />
@@ -291,23 +296,25 @@ useEffect(() => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div className="mb-3 sm:mb-0 w-full md:w-auto">
-          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 block">Select Batch</label>
-          <select
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6 w-full">
+        <div className="w-full md:w-1/3 max-w-xs">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">Select Batch</label>
+          <CustomSelect
             value={selectedBatch?._id || ""}
             onChange={(e) =>
               setSelectedBatch(batches.find((b) => b._id === e.target.value))
             }
-            className="w-full md:w-64 border-0 bg-gray-100 dark:bg-gray-700 rounded-lg py-2.5 px-3 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-sky-500 appearance-none"
+            className="w-full border-0 bg-white dark:bg-[#11322f] shadow-sm rounded-xl py-3 px-4 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-brand-teal appearance-none transition-shadow"
           >
             <option value="" disabled>Select batch</option>
             {batches.map((b) => (
               <option key={b._id} value={b._id}>{b.name}</option>
             ))}
-          </select>
+          </CustomSelect>
         </div>
-        <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search subjects..." />
+        <div className="w-full md:flex-1">
+          <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Search subjects..." />
+        </div>
       </div>
 
       <NotificationMessage message={message} onDismiss={() => setMessage(null)} />
@@ -342,7 +349,7 @@ useEffect(() => {
                   {/* Teacher 1 */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Teacher 1</label>
-                    <select
+                    <CustomSelect
                       value={sub.subTeacher}
                       onChange={(e) => handleTeacherSelect(subject._id, e.target.value)}
                       className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -351,11 +358,11 @@ useEffect(() => {
                       {teachers.map((t) => (
                         <option key={t._id} value={t._id}>{t.name}</option>
                       ))}
-                    </select>
+                    </CustomSelect>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Period</label>
-                    <select
+                    <CustomSelect
                       value={sub.periodTeacher1}
                       onChange={(e) => handlePeriodSelect(subject._id, e.target.value)}
                       className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -364,13 +371,13 @@ useEffect(() => {
                       {[0,1,2,3,4,5,6,7,8,9,10].map(p => (
                         <option key={p} value={p}>{p}</option>
                       ))}
-                    </select>
+                    </CustomSelect>
                   </div>
 
                   {/* Teacher 2 */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Teacher 2</label>
-                    <select
+                    <CustomSelect
                       value={sub.subTeacher2}
                       onChange={(e) => handleTeacherSelect(subject._id, e.target.value, true)}
                       className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -379,11 +386,11 @@ useEffect(() => {
                       {teachers.map((t) => (
                         <option key={t._id} value={t._id}>{t.name}</option>
                       ))}
-                    </select>
+                    </CustomSelect>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Period</label>
-                    <select
+                    <CustomSelect
                       value={sub.periodTeacher2}
                       onChange={(e) => handlePeriodSelect(subject._id, e.target.value, true)}
                       className="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -392,7 +399,7 @@ useEffect(() => {
                       {[0,1,2,3,4,5,6,7,8,9,10].map(p => (
                         <option key={p} value={p}>{p}</option>
                       ))}
-                    </select>
+                    </CustomSelect>
                   </div>
                 </div>
               </AssignmentCard>
@@ -490,7 +497,7 @@ function BatchTeacherAssignment({ batches, teachers }) {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Select Teacher
                   </label>
-                  <select
+                  <CustomSelect
                     value={batchAssignments[batch._id] || ""}
                     onChange={(e) => handleTeacherSelect(batch._id, e.target.value)}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
@@ -503,7 +510,7 @@ function BatchTeacherAssignment({ batches, teachers }) {
                         {t.name}
                       </option>
                     ))}
-                  </select>
+                  </CustomSelect>
                 </div>
               </AssignmentCard>
             )
@@ -599,7 +606,7 @@ function SemesterAssignment({batches, semesters}) {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Select Semester
                   </label>
-                  <select
+                  <CustomSelect
                     value={batchAssignments[batch._id] || ""}
                     onChange={(e) => handleSemesterSelect(batch._id, e.target.value)}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
@@ -612,7 +619,7 @@ function SemesterAssignment({batches, semesters}) {
                         {s.name}
                       </option>
                     ))}
-                  </select>
+                  </CustomSelect>
                 </div>
               </AssignmentCard>
             )
@@ -715,7 +722,7 @@ const ClassLeaderAssignment = ({ batches, students }) => {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Select Class Leader 1
                   </label>
-                  <select
+                  <CustomSelect
                     value={assignment.classLeader}
                     onChange={(e) => handleLeaderSelect(batch._id, e.target.value)}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
@@ -727,12 +734,12 @@ const ClassLeaderAssignment = ({ batches, students }) => {
                         {student.name}
                       </option>
                     ))}
-                  </select>
+                  </CustomSelect>
 
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Select Class Leader 2
                   </label>
-                  <select
+                  <CustomSelect
                     value={assignment.classLeader2}
                     onChange={(e) => handleLeaderSelect(batch._id, e.target.value, true)}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
@@ -744,7 +751,7 @@ const ClassLeaderAssignment = ({ batches, students }) => {
                         {student.name}
                       </option>
                     ))}
-                  </select>
+                  </CustomSelect>
                 </div>
               </AssignmentCard>
             )
@@ -788,26 +795,26 @@ function AssignDutiesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
-      <Header />
-      <div className="max-w-7xl mx-auto px-4 mt-14 sm:px-6 lg:px-8">
+    <div className="py-2 transition-colors duration-300">
       
-      <header className="mb-10">
+      <div className="w-full">
+      
+      <header className="sticky top-0 z-30 bg-[#f3f7f6]/95 dark:bg-[#0d2522]/95 backdrop-blur-md py-4 mb-8 border-b border-gray-200/50 dark:border-transparent shadow-sm dark:shadow-none">
         <div className="relative overflow-x-auto scrollbar-hide">
-          <div className="flex space-x-2 p-1 bg-white dark:bg-gray-800 rounded-xl shadow-md w-max md:max-w-3xl mx-auto">
+          <div className="flex w-full p-1.5 bg-white dark:bg-[#11322f] rounded-xl shadow-sm border border-gray-100 dark:border-transparent">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full font-medium text-sm flex items-center gap-2 transition-all duration-300
+                className={`flex-1 min-w-[140px] px-4 py-3 rounded-lg font-medium text-sm flex justify-center items-center gap-2 transition-all duration-300 group
                   ${
                     activeTab === tab.id
-                      ? "bg-sky-600 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      ? "bg-brand-teal text-white shadow-md"
+                      : "text-gray-600 dark:text-gray-400 hover:text-brand-teal dark:hover:text-brand-mint hover:bg-gray-50 dark:hover:bg-[#153e3a]"
                   }`}
               >
-                <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? "text-white" : "text-sky-600 dark:text-sky-400"}`} />
-                <span className="text-sm">{tab.label}</span>
+                <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? "text-white" : "text-gray-400 group-hover:text-brand-teal dark:group-hover:text-brand-mint transition-colors"}`} />
+                <span className="truncate">{tab.label}</span>
               </button>
             ))}
           </div>

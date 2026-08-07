@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+
 import Card from "../../components/Card";
 import { motion } from 'framer-motion';
 import { Award, Book, ClipboardCheck, HandCoins, ListTodo, Medal, Users } from "lucide-react";
@@ -26,9 +26,9 @@ const CalssTeacherHome = () => {
       { title: "Ishthiraq", icon:  HandCoins, route: `/dashboard/teacher/ishthiraq/${batchId}`  },
     ];
     return (
-      <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800">
-        <Header />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20 w-full max-w-6xl p-4">
+      <div className="flex flex-col items-center dark: dark:">
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-6xl p-4">
           {cards.map((card, index) => (
             <motion.div
             key={index}

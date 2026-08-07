@@ -6,6 +6,8 @@ import { useStudentStore } from "../../store/studentStore";
 import { useAdminStore } from "../../store/useAdminMngStore";
 import { use } from "react";
 import { useFeeStore } from "../../store/feesSrore";
+import CustomSelect from '../../components/CustomSelect';
+
 
 const AssignFees = () => {
   const { batchStudents, getBatchStudents } = useStudentStore();
@@ -73,7 +75,7 @@ const AssignFees = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-12 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
       <h2 className="text-2xl font-bold mb-6 text-center text-sky-800 dark:text-blue-300">
         Assign Fees
       </h2>
@@ -82,7 +84,7 @@ const AssignFees = () => {
         <label className="font-semibold text-gray-700 dark:text-gray-200">
           Select Batch:
         </label>
-        <select
+        <CustomSelect
           value={selectedBatch}
           onChange={(e) => setSelectedBatch(e.target.value)}
           className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none"
@@ -93,7 +95,7 @@ const AssignFees = () => {
               {batch.name}
             </option>
           ))}
-        </select>
+        </CustomSelect>
       </div>
 
       {loading ? (

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { useMarksStore } from "../../store/useMarksStore";
-import Header from "../../components/Header";
+
 import { useAuthStore } from "../../store/useAuthStore";
 import { Loader2, MinusCircle } from "lucide-react";
 import { FiSend, FiLock, FiEdit, FiPlus } from "react-icons/fi";
@@ -123,8 +123,8 @@ const handleRemoveRow = (index) => {
  
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-3 pt-24 flex justify-center">
-      <Header />
+    <div className="dark: dark: p-3 flex justify-center">
+      
       <div className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-4 text-center font-oswald">
           {selectedSemester?.name || "Select a semester"}
@@ -148,9 +148,9 @@ const handleRemoveRow = (index) => {
 
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse ">
+          <table className="w-full text-left border-collapse">
             <thead className="rounded-lg">
-              <tr className="bg-gradient-to-r from-sky-600 via-sky-700 to-sky-800 text-white ">
+              <tr className="bg-gradient-to-r from-sky-600 via-sky-700 to-sky-800 text-white">
                 <th className="px-8 py-3 text-xs sm:text-sm">Subject</th>
                 <th className="px-2 py-3 text-xs sm:text-sm">Mark</th>
                 <th className="px-2 py-3 text-xs sm:text-sm">Total</th>

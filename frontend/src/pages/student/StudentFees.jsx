@@ -4,8 +4,8 @@ import { motion, AnimatePresence, useInView, animate } from 'framer-motion';
 // --- YOUR ZUSTAND STORE IMPORTS ---
 import { useFeeStore } from '../../store/feesSrore';
 import { useAuthStore } from '../../store/useAuthStore';
-import Header from '../../components/Header';
-// import Header from '../../components/Header'; // You can re-add your header if needed
+
+//  // You can re-add your header if needed
 
 // --- HELPER FUNCTION ---
 const formatCurrency = (value) => {
@@ -185,7 +185,7 @@ export default function StudentFeePortal() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
+            <div className="flex flex-col justify-center items-center">
                 <SpinnerIcon />
                 <p className="mt-4 text-gray-600 dark:text-gray-400">Loading your fee details...</p>
             </div>
@@ -194,7 +194,7 @@ export default function StudentFeePortal() {
 
     if (error) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+            <div className="flex justify-center items-center p-4">
                 <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold text-gray-600 dark:text-gray-400">Oops! Something went wrong.</h2>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">{error}</p>
@@ -205,7 +205,7 @@ export default function StudentFeePortal() {
 
     if (!studentData) {
         return (
-             <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+             <div className="flex justify-center items-center p-4">
                 <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300">No Data Available</h2>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">Could not find any fee information for your account.</p>
@@ -220,8 +220,8 @@ export default function StudentFeePortal() {
     const paid = total - balance;
 
     return (
-        <div className="bg-gray-50 dark:bg-gray-900 min-h-screen font-sans text-gray-800 dark:text-gray-200">
-            <Header />
+        <div className="font-sans text-gray-800 dark:text-gray-200">
+            
             <div className="container mx-auto max-w-2xl p-4 md:p-6 mt-10">
                 <motion.header
                     className="my-6 text-center"

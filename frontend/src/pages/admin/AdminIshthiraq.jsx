@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react"; // or use Heroicons if preferred
-import Header from "../../components/Header";
+
 import { useNavigate } from "react-router-dom";
 import { useAdminStore } from "../../store/useAdminMngStore";
 
@@ -34,8 +34,8 @@ const AdminIshthiraq = ({item}) => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24">
+      
+      <div className="dark: dark: p-6">
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-4 ml-8 font-oswald">
           {item}
         </h2>

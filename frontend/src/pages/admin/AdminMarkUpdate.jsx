@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from "react";
-import Header from "../../components/Header";
+
 import { useMarksStore } from "../../store/useMarksStore";
 import { useNavigate } from "react-router-dom";
 import { useAdminStore } from "../../store/useAdminMngStore";
@@ -20,9 +20,9 @@ useEffect(() => {
   const navigate = useNavigate();
   return (
     <>
-      <Header />
+      
       { 
-        <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24">
+        <div className="dark: dark: p-6">
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <h2 className="col-span-full text-2xl font-extrabold text-gray-900 dark:text-white mb-4 ml-8 font-oswald">
               Batches
@@ -42,7 +42,7 @@ useEffect(() => {
                     )}
 
                     <div className="flex items-center">
-                    <div className="w-10 h-10 flex-shrink-0 rounded-full  bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-lg mr-4">
+                    <div className="w-10 h-10 flex-shrink-0 rounded-full bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-lg mr-4">
                         {index + 1}
                     </div>
                     <div className="text-gray-900 dark:text-gray-200 text-lg font-medium font-sans">

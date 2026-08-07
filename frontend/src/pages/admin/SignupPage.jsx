@@ -10,7 +10,7 @@ import {
   User2,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import Header from "../../components/Header";
+
 import InputField from "../../components/InputField";
 import SelectField from "../../components/SelectField";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -84,9 +84,9 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Header page={teacherId ? "Update Teacher" : "Sign Up"} />
-      <div className="flex flex-col items-center justify-center p-5 sm:p-12 mt-16">
+    <div className="flex flex-col text-gray-900 dark:text-white">
+      
+      <div className="flex flex-col items-center justify-center p-5 sm:p-12">
         <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
           <div className="flex flex-col items-center">
             <label htmlFor="profileImage" className="cursor-pointer">

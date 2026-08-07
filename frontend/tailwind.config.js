@@ -15,7 +15,15 @@ export default {
   ],
   darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'brand-teal': '#143d3b',
+        'brand-teal-dark': '#0d2b29',
+        'brand-mint': '#00b87c',
+        'brand-mint-light': '#e6f7f2',
+        'brand-bg': '#f4f7f6',
+      }
+    },
   },
   plugins: [daisyui, typography],
   daisyui: {

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import Button from "../../components/Button";
 import Input from "../../components/AdminInput";
 import { FiPlus, FiSave, FiX, FiLoader, FiEdit, FiTrash2 } from "react-icons/fi";
-import Header from "../../components/Header";
+
 import { useParams } from "react-router-dom";
 import { useAdminStore } from "../../store/useAdminMngStore";
+import CustomSelect from '../../components/CustomSelect';
+
 
 const SemesterPage = () => {
   const { semesterId, artsId } = useParams();
@@ -95,19 +97,19 @@ const SemesterPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-white dark:bg-gray-900">
+      <div className="flex justify-center items-center">
         <FiLoader className="animate-spin text-blue-600 w-16 h-16" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
-      <Header page="Subjects" />
+    <div className="text-gray-900 dark:text-white transition-colors duration-300">
+      
       <div className="container mx-auto py-8 px-4">
 
 
-          <h1 className="text-xl font-bold mb-6 mt-12">
+          <h1 className="text-xl font-bold mb-6">
               Semester:{" "}
               {semesterId
                 ? semesters?.find((s) => s._id === semesterId)?.name || "Unknown"
@@ -141,7 +143,7 @@ const SemesterPage = () => {
                   value={newSubject.mark}
                   onChange={(e) => setNewSubject({ ...newSubject, mark: e.target.value })}
                 />
-                <select
+                <CustomSelect
                   value={newSubject.CEmark}
                   onChange={(e) => setNewSubject({ ...newSubject, CEmark: e.target.value })}
                   className="input input-bordered p-2 rounded-md"
@@ -149,7 +151,7 @@ const SemesterPage = () => {
                   <option value="">CE Mark</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
-                </select>
+                </CustomSelect>
                 <div className="flex justify-end gap-2">
                   <Button onClick={() => setShowAddCard(false)} className="hover:bg-gray-200 dark:hover:bg-gray-700">
                     <FiX />
@@ -188,7 +190,7 @@ const SemesterPage = () => {
                       setEditedSubject((prev) => ({ ...prev, mark: e.target.value }))
                     }
                   />
-                  <select
+                  <CustomSelect
                     value={editedSubject?.CEmark ? "true" : "false"}
                     onChange={(e) =>
                       setEditedSubject((prev) => ({
@@ -200,7 +202,7 @@ const SemesterPage = () => {
                   >
                     <option value="true">CE: Yes</option>
                     <option value="false">CE: No</option>
-                  </select>
+                  </CustomSelect>
                   <div className="flex justify-end gap-2">
                     <Button onClick={() => setEditIndex(null)} className="hover:bg-gray-200 dark:hover:bg-gray-700">
                       <FiX />
@@ -214,13 +216,13 @@ const SemesterPage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-2 flex  justify-between">
+                <div className="space-y-2 flex justify-between">
                 <div>
                     <h3 className="text-sm font-semibold">Name: {subject.name}</h3>
                   <p className="text-slate-400 text-sm font-semibold" >Mark: {subject.mark}</p>
                   <p className="text-slate-400 text-sm font-semibold">CE Mark: {subject.CEmark ? "Yes" : "No"}</p>
                 </div>
-                  <div className="flex justify-end gap-1 ">
+                  <div className="flex justify-end gap-1">
                     <Button
                       onClick={() => {
                         setEditIndex(index);

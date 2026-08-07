@@ -10,15 +10,15 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
-import Header from '../../components/Header';
+
 import ChangePasswordModal from '../../components/ChangePasswordModal';
 
 const StudentProfile = () => {
   const {authUser} = useAuthStore()
     const [showChangePassword, setShowChangePassword] = useState(false);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 to-sky-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center ">
-        <Header />
+    <div className="dark: dark: flex items-center justify-center">
+        
 
       <div className="bg-white dark:bg-gray-900 sm:rounded-2xl shadow-2xl w-full max-w-3xl sm:h-auto">
         {/* Header */}
@@ -35,7 +35,7 @@ const StudentProfile = () => {
         </div>
 
         {/* Profile Info */}
-        <div className="mt-20 px-6 pb-10 text-center">
+        <div className="px-6 pb-10 text-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{authUser.name}</h2>
           <p className="text-sky-600 dark:text-sky-400 mb-6">{authUser.batchName}</p>
 

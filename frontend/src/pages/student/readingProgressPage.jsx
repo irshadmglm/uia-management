@@ -7,7 +7,9 @@ import ReadingStatsCards from "../../components/ReadingStatsCards"
 import ReadingProgressForm from "../../components/ReadingProgressForm"
 import ReadingEmptyState from "../../components/ReadingEmptyState"
 import ReadingProgressCard from "../../components/ReadingProgressCard"
-import Header from "../../components/Header"
+import CustomSelect from '../../components/CustomSelect';
+
+
 
 
 const ReadingProgressPage = () => {
@@ -87,10 +89,10 @@ const ReadingProgressPage = () => {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:bg-gradient-to-br  dark:from-gray-900 dark:to-gray-800 `}
+      className={`transition-colors duration-300 dark: dark:`}
     >
-        <Header />
-      <div className="max-w-7xl mx-auto p-4 md:p-8 mt-16">
+        
+      <div className="max-w-7xl mx-auto p-4 md:p-8">
         {/* Header Section */}
         <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4 sm:gap-6 mb-6">
@@ -154,7 +156,7 @@ const ReadingProgressPage = () => {
             </div>
 
             <div className="flex gap-4">
-              <select
+              <CustomSelect
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200 min-w-32"
@@ -162,9 +164,9 @@ const ReadingProgressPage = () => {
                 <option value="all">All Status</option>
                 <option value="approved">Approved</option>
                 <option value="pending">Pending</option>
-              </select>
+              </CustomSelect>
 
-              <select
+              <CustomSelect
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200 min-w-32"
@@ -173,7 +175,7 @@ const ReadingProgressPage = () => {
                 <option value="oldest">Oldest First</option>
                 <option value="bookName">By Book Name</option>
                 <option value="pages">By Pages</option>
-              </select>
+              </CustomSelect>
             </div>
           </div>
         </div> */}

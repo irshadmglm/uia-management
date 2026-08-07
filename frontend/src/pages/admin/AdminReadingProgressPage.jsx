@@ -6,8 +6,10 @@ import LoadingSpinner from "../../components/LoadingSpinner"
 import AdminReadingStatsCards from "../../components/AdminReadingStatsCards"
 import AdminEmptyState from "../../components/AdminEmptyState"
 import ReadingProgressDetailsModal from "../../components/ReadingProgressDetailsModal"
-import Header from "../../components/Header"
+
 import { useParams } from "react-router-dom"
+import CustomSelect from '../../components/CustomSelect';
+
 
 
 
@@ -122,9 +124,9 @@ const AdminReadingProgressPage = () => {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 `}
+      className={`transition-colors duration-300 dark: dark:`}
     >
-        <Header />
+        
       <div className="max-w-7xl mx-auto p-4 md:p-8 mt-10">
         {/* Header Section */}
         <div className="mb-8">
@@ -185,7 +187,7 @@ const AdminReadingProgressPage = () => {
             </div>
 
             <div className="flex gap-4">
-              <select
+              <CustomSelect
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200 min-w-32"
@@ -193,9 +195,9 @@ const AdminReadingProgressPage = () => {
                 <option value="all">All Status</option>
                 <option value="approved">Approved</option>
                 <option value="pending">Pending</option>
-              </select>
+              </CustomSelect>
 
-              <select
+              <CustomSelect
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-4 py-3 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-base text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-blue-500/20 transition-all duration-200 min-w-32"
@@ -205,7 +207,7 @@ const AdminReadingProgressPage = () => {
                 <option value="student">By Student</option>
                 <option value="book">By Book Name</option>
                 <option value="pages">By Pages</option>
-              </select>
+              </CustomSelect>
             </div>
           </div>
 

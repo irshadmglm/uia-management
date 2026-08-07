@@ -22,7 +22,7 @@ import autoTable from "jspdf-autotable";
 import { useParams } from "react-router-dom"
 import { useStaffStore } from "../../store/useStaffStore"
 import { useStudentStore } from "../../store/studentStore"
-import Header from "../../components/Header"
+
 
 const months = [ "شوّال", "ذو القعدة", "ذو الحجة", "محرّم", "صفر", "ربيع الأوّل",
    "ربيع الآخر", "جمادى الأولى", "جمادى الأخرى", "رجب", "شعبان", "رمضان"];
@@ -145,16 +145,16 @@ export default function FeesTeacher() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
       </div>
     )
   }
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen space-y-6 transition-colors">
+    <div className="p-4 sm:p-6 space-y-6 transition-colors">
       {/* Header */}
-      <Header />
+      
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pt-6">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">

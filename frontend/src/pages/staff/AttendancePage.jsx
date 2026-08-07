@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useStudentStore } from "../../store/studentStore";
-import Header from "../../components/Header";
+
 import { useStaffStore } from "../../store/useStaffStore";
 import { useParams } from "react-router-dom";
 import Button from "../../components/Button";
+import CustomSelect from '../../components/CustomSelect';
+
 
 
 const AttendancePage = () => {
@@ -14,8 +16,8 @@ const AttendancePage = () => {
 
   
   return (
-    <div className="min-h-screen flex flex-col  items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 pt-12 mt-14">
-    <Header page={"Attendance Sheet"} />
+    <div className="flex flex-col items-center text-gray-900 dark:text-white p-4">
+    
     <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 w-full sm:w-auto">
         {["take", "total", ].map((tab) => (
           <Button
@@ -112,8 +114,8 @@ const DayAttendence = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 pt-12">
-      <Header page={"Attendance Sheet"} />
+    <div className="flex flex-col items-center text-gray-900 dark:text-white p-4">
+      
       
       { isLoading ? (
         <motion.div
@@ -227,12 +229,12 @@ function MonthAttendance({ classname }) {
 
   return (
    <div>
-        <select value={month} onChange={handleChange} className="select select-md mt-14 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+        <CustomSelect value={month} onChange={handleChange} className="select select-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <option>Months</option>
         {selectedBatch?.attendance && Object.keys(selectedBatch.attendance).map((m) => (
           <option key={m} value={m}>{m}</option>
         ))}
-      </select>
+      </CustomSelect>
 
      <div className="overflow-x-auto p-8 shadow-xl rounded-3xl w-full max-w-4xl">
     <table className="table table-xs">

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRegisterdStudentStore } from "../../store/useRegisterdStudentStore";
-import Header from "../../components/Header";
+import CustomSelect from '../../components/CustomSelect';
+
+
 
 const RegisterdStudents = () => {
   const [openDetails, setOpenDetails] = useState({});
@@ -28,9 +30,9 @@ const RegisterdStudents = () => {
   
 
   return (
-    <div className="min-h-screen overflow-x-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4">
-      <Header page={"Registered Students"} />
-      <select value={selectedBatch} onChange={handleChange} className="select select-md mt-14  bg-white dark:bg-gray-900 text-gray-900 dark:text-white ">
+    <div className="overflow-x-auto text-gray-900 dark:text-white p-4">
+      
+      <CustomSelect value={selectedBatch} onChange={handleChange} className="select select-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <option>All Batch</option>
       <option>1</option>
       <option>2</option>
@@ -42,8 +44,8 @@ const RegisterdStudents = () => {
       <option>8</option>
       <option>9</option>
       <option>10</option>
-    </select>
-      <table className="table w-full border border-gray-300 dark:border-gray-700 mt-2 ">
+    </CustomSelect>
+      <table className="table w-full border border-gray-300 dark:border-gray-700 mt-2">
         {/* Table Head */}
         <thead className="bg-gray-100 dark:bg-gray-800">
           <tr>

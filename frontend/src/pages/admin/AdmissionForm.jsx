@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Phone, Loader2, User, School, Lock, Image as ImageIcon, Calendar1Icon, PhoneCall, FolderOpenIcon, } from "lucide-react";
-import Header from "../../components/Header";
+
 import Footer from "../../components/Footer";
 import InputField from "../../components/InputField";
 import SelectField from "../../components/SelectField";
@@ -108,8 +108,8 @@ const AdmissionForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col">
-      <Header page={"Student Admission Form"} />
+    <div className="text-gray-900 dark:text-white flex flex-col">
+      
       <main className="flex-grow flex justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-4xl bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
           <div className="text-center mb-8">

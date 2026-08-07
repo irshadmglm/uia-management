@@ -5,7 +5,7 @@ import { FiSearch, FiPlus, FiEdit2, FiSave, FiX } from "react-icons/fi";
 import { Navigate, useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 import { useAdminStore } from "../../store/useAdminMngStore";
-
+import CustomSelect from '../../components/CustomSelect';
 import { 
   FiBook, 
   FiUsers, 
@@ -139,91 +139,99 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
 
   
   return (
-    <div className=" mx-auto  min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <div className="mx-auto transition-colors duration-300">
      
-      <Header page={"Management"} />
-     <div className="p-5 mt-16" >
-     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 ">
-     <div className="w-full overflow-x-auto">
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 w-max sm:w-auto whitespace-nowrap">
-        {["current Semester", "current Art Sems", "semester Subjects", "arts Subjects", "batches", "teachers"].map((tab) => (
-          <Button
-            key={tab}
-            onClick={() => {
-              setSelectedTab(tab);
-              setShowAddCard(false);
-              setEditingItem(null);
-            }}
-            className={`px-3 py-3 rounded-t-lg transition-all duration-300 font-medium ${
-              selectedTab === tab
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
-            }`}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </Button>
-        ))}
-      </div>
-    </div>
+      <header className="sticky top-0 z-30 bg-[#f3f7f6]/95 dark:bg-[#0d2522]/95 backdrop-blur-md py-3 -mx-3 px-3 sm:-mx-5 sm:px-5 lg:-mx-10 lg:px-10 mb-6 border-b border-gray-200/50 dark:border-[#0d2522] shadow-sm dark:shadow-none">
+        <div className="relative overflow-x-auto scrollbar-hide">
+          <div className="flex w-max min-w-full p-1.5 bg-white dark:bg-[#11322f] rounded-xl shadow-sm border border-gray-100 dark:border-transparent gap-1">
+            {["current Semester", "current Art Sems", "semester Subjects", "arts Subjects", "batches", "teachers"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => {
+                  setSelectedTab(tab);
+                  setShowAddCard(false);
+                  setEditingItem(null);
+                }}
+                className={`flex-shrink-0 px-3 py-2.5 rounded-lg font-medium text-xs sm:text-sm flex justify-center items-center gap-2 transition-all duration-300 group whitespace-nowrap
+                  ${
+                    selectedTab === tab
+                      ? "bg-brand-teal text-white shadow-md"
+                      : "text-gray-600 dark:text-gray-400 hover:text-brand-teal dark:hover:text-brand-mint hover:bg-gray-50 dark:hover:bg-[#153e3a]"
+                  }`}
+              >
+                <span>{tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
 
-
-    { selectedTab !== "current Semester" && selectedTab !== "current Art Sems" && ( <div className="relative w-full sm:w-72">
-      <FiSearch className="absolute left-3 top-3.5 text-gray-400 dark:text-gray-500" />
-      <Input
-        type="text"
-        placeholder="Search..."
-        className="pl-10 pr-4 py-2.5 rounded-lg border-gray-300 dark:border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:focus:border-blue-400 dark:focus:ring-blue-400 w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-    </div>)}
-      </div>
+     <div className="pt-2">
+      {selectedTab !== "current Semester" && selectedTab !== "current Art Sems" && (
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 w-full">
+          <div className="w-full md:w-1/4 max-w-xs">
+            <CustomSelect
+              className="w-full border-0 bg-white dark:bg-[#11322f] shadow-sm rounded-xl py-3 px-4 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-brand-teal"
+            >
+              <option value="all">All Items</option>
+              <option value="recent">Recently Added</option>
+            </CustomSelect>
+          </div>
+          <div className="relative w-full md:flex-1">
+            <SearchBar
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder="Search..."
+            />
+          </div>
+        </div>
+      )}
         {selectedTab === "current Semester" ? ( <SemesterAssignment batches={batches} semesters={semesters} tab={selectedTab} />)
         : selectedTab === "current Art Sems" ? ( <SemesterAssignment batches={batches} semesters={artSems} tab={selectedTab}  art={true} />) 
         : (<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {/* Add New Card */}
           <div
-            className={`group bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border-2 border-dashed ${
+            className={`group bg-white dark:bg-[#11322f] p-4 rounded-2xl shadow-sm border-2 border-dashed ${
               showAddCard
-                ? "border-blue-500 dark:border-blue-400"
-                : "border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 cursor-pointer transition-colors duration-300"
+                ? "border-brand-teal dark:border-brand-mint"
+                : "border-gray-200 dark:border-gray-700 hover:border-brand-teal dark:hover:border-brand-mint cursor-pointer transition-colors duration-300"
             }`}
           >
                         {showAddCard ? (
                 selectedTab === "teachers" ? (
                   <Navigate to="/dashboard/admin/signup" />
                 ) : (
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 h-full justify-center">
                     <Input
                       autoFocus
                       placeholder={`New ${selectedTab.slice(0, -1)} name`}
                       value={newItemName}
                       onChange={(e) => setNewItemName(e.target.value)}
-                      className="w-full p-2 rounded-lg border-gray-300 dark:border-gray-600 "
+                      className="w-full p-2.5 rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#0d2522] focus:ring-2 focus:ring-brand-teal"
                     />
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-2 mt-2">
                       <Button
-                        onClick={() => setShowAddCard(false)}
-                        className="px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={(e) => { e.stopPropagation(); setShowAddCard(false); }}
+                        className="px-3 py-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-[#0d2522] dark:hover:text-gray-300"
                       >
-                        <FiX className="w-4 h-4" />
+                        <FiX className="w-5 h-5" />
                       </Button>
                       <Button
-                        onClick={handleAddItem}
-                        className="px-3 py-1.5 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
+                        onClick={(e) => { e.stopPropagation(); handleAddItem(); }}
+                        className="px-3 py-1.5 bg-brand-teal text-white rounded-lg hover:bg-brand-teal/90 shadow-sm"
                       >
-                        <FiSave className="w-4 h-4" />
+                        <FiSave className="w-5 h-5" />
                       </Button>
                     </div>
                   </div>
                 )
               ) : (
                 <div
-                  className="h-full flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                  className="h-full min-h-[100px] flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 group-hover:text-brand-teal dark:group-hover:text-brand-mint transition-colors duration-300"
                   onClick={() => setShowAddCard(true)}
                 >
-                  <FiPlus className="w-6 h-6" />
-                  <span className="font-medium">Add New</span>
+                  <FiPlus className="w-8 h-8 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+                  <span className="font-medium text-sm tracking-wide">Add New</span>
                 </div>
               )}
   
@@ -243,11 +251,11 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
     return (
       <div
         key={index}
-        className="group bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-300"
+        className="group bg-white dark:bg-[#11322f] p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-[#0d2522] hover:shadow-md hover:border-brand-teal/30 transition-all duration-300"
       >
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 flex-shrink-0 rounded-full bg-sky-800 dark:bg-sky-600 text-white flex items-center justify-center font-bold text-lg">
+        <div className="flex justify-between items-center h-full">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="w-12 h-12 flex-shrink-0 rounded-xl bg-brand-mint/10 dark:bg-[#0d2522] text-brand-teal dark:text-brand-mint flex items-center justify-center font-bold text-lg group-hover:scale-105 transition-transform duration-300">
               {index + 1}
             </div>
 
@@ -256,11 +264,11 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
                 type="text"
                 value={newItemValue}
                 onChange={(e) => setNewItemValue(e.target.value)}
-                className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-50 dark:bg-[#0d2522] text-gray-900 dark:text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-brand-teal border border-transparent focus:border-brand-teal"
               />
             ) : (
               <div
-                className="text-gray-900 dark:text-gray-200 text-lg font-medium font-sans cursor-pointer"
+                className="text-gray-800 dark:text-gray-100 text-lg font-semibold cursor-pointer hover:text-brand-teal dark:hover:text-brand-mint transition-colors"
                 onClick={() => {
                   if (selectedTab === "batches") {
                     navigate(`/dashboard/admin/attendance/${item._id}`);
@@ -278,13 +286,13 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
             )}
           </div>
 
-          <div className="flex">
+          <div className="flex items-center gap-1 ml-4">
             {isEditing ? (
               <Button
                 onClick={() => handleUpdateItem(item._id, index)}
-                className="text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30  rounded"
+                className="text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 p-2 rounded-lg transition-colors"
               >
-                <FiSave />
+                <FiSave className="w-5 h-5" />
               </Button>
             ) : (
               <Button
@@ -297,17 +305,17 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
                 }
               }}
               
-                className="text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded"
+                className="text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 p-2 rounded-lg transition-colors"
               >
-                <FiEdit2 />
+                <FiEdit2 className="w-5 h-5" />
               </Button>
             )}
 
             <Button
               onClick={() => handleDeleteItem(item._id, index)}
-              className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30  rounded"
+              className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
             >
-              <Trash size={18} />
+              <Trash className="w-5 h-5" />
             </Button>
             <ConfirmPopup
                 isOpen={showConfirm}
@@ -344,54 +352,68 @@ const AssignmentCard = ({
   id, 
   name, 
   isAssigned, 
-  assignedName, 
+  assignedName,
+  assignedName2, 
+  periodTeacher1,
+  periodTeacher2,
   isEditing, 
   toggleEdit, 
   children,
   icon: Icon = FiUser
 }) => (
   <div
-    className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 
-    overflow-hidden transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1"
+    className="bg-white dark:bg-[#11322f] rounded-2xl shadow-sm border border-gray-100 dark:border-[#0d2522] 
+    overflow-hidden transition-all duration-300 hover:shadow-md hover:border-brand-teal/30 group"
   >
-    <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
-      <h3 className="font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+    <div className="bg-brand-mint/5 dark:bg-[#0d2522] px-5 py-4 flex justify-between items-center border-b border-gray-100 dark:border-transparent">
+      <h3 className="font-semibold text-gray-800 dark:text-white flex items-center gap-3">
         {name}
         <StatusBadge isAssigned={isAssigned} />
       </h3>
       <button
         onClick={() => toggleEdit(id)}
-        className="text-gray-700 hover:text-sky-600 dark:text-gray-400 dark:hover:text-sky-400 
-        transition-colors duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
+        className="text-gray-400 hover:text-brand-teal dark:text-gray-500 dark:hover:text-brand-mint transition-colors duration-200 p-2 rounded-full hover:bg-white dark:hover:bg-[#11322f]"
         aria-label={isEditing ? "Cancel editing" : "Edit assignment"}
       >
-        {isEditing ? <FiX className="w-5 h-5" /> : <FiEdit2 className="w-5 h-5" />}
+        {isEditing ? <FiX className="w-4 h-4" /> : <FiEdit2 className="w-4 h-4" />}
       </button>
     </div>
 
-    <div className="p-6">
+    <div className="p-5">
       {isEditing ? (
         children
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 dark:text-sky-300">
-              <Icon className="w-7 h-7" />
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-brand-mint/10 dark:bg-[#0d2522] flex items-center justify-center text-brand-teal dark:text-brand-mint flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+              <Icon className="w-6 h-6" />
             </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Assigned</p>
-              <p className="font-medium text-gray-800 dark:text-white text-lg">
-                {assignedName || "Not assigned yet"}
-              </p>
+            <div className="pt-1 w-full">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium mb-1">Assigned To</p>
+              <div className="space-y-2">
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-900 dark:text-white text-sm">
+                    {assignedName || "Not assigned yet"}
+                  </span>
+                  {periodTeacher1 > 0 && <span className="text-xs text-gray-500 font-normal">Period {periodTeacher1}</span>}
+                </div>
+                {assignedName2 && (
+                  <div className="flex flex-col border-t border-gray-100 dark:border-gray-700/50 pt-2">
+                    <span className="font-medium text-gray-900 dark:text-white text-sm">
+                      {assignedName2}
+                    </span>
+                    {periodTeacher2 > 0 && <span className="text-xs text-gray-500 font-normal">Period {periodTeacher2}</span>}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {!isAssigned && (
             <button
               onClick={() => toggleEdit(id)}
-              className="w-full mt-3 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg 
-              transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow
-              focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              className="w-full mt-2 py-2.5 bg-brand-teal hover:bg-brand-teal/90 text-white rounded-xl 
+              transition-all duration-200 flex items-center justify-center gap-2 shadow-sm font-medium"
             >
               <FiPlus className="w-4 h-4" />
               Assign Now
@@ -403,15 +425,14 @@ const AssignmentCard = ({
   </div>
 )
 const EmptyState = ({ searchTerm }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-10 text-center max-w-md mx-auto">
-    <div className="bg-gray-100 dark:bg-gray-700 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-      <FiAlertCircle className="w-10 h-10 text-gray-500 dark:text-gray-400" />
+  <div className="bg-white dark:bg-[#11322f] rounded-2xl shadow-sm border border-gray-100 dark:border-[#0d2522] p-12 text-center max-w-md mx-auto my-8">
+    <div className="bg-brand-mint/10 dark:bg-[#0d2522] w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+      <FiAlertCircle className="w-12 h-12 text-brand-teal/50 dark:text-brand-mint/50" />
     </div>
-    <h3 className="text-xl font-medium text-gray-800 dark:text-white mb-3">No items found</h3>
-    <p className="text-gray-600 dark:text-gray-400 mb-6">
+    <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-3">No items found</h3>
+    <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
       {searchTerm ? "Try a different search term" : "Add items to start making assignments"}
     </p>
-  
   </div>
 )
 
@@ -440,22 +461,19 @@ const NotificationMessage = ({ message, onDismiss }) => {
 }
 
 const SearchBar = ({ value, onChange, placeholder }) => (
-  <div className="relative w-full max-w-sm">
-    <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+  <div className="relative w-full">
+    <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
     <input
       type="text"
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="pl-10 pr-4 py-2.5 w-full rounded-lg border border-gray-300 dark:border-gray-600 
-      bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-sky-500 
-      focus:border-sky-500 transition-all duration-200"
+      className="pl-12 pr-10 py-3 w-full rounded-xl border-0 shadow-sm bg-white dark:bg-[#11322f] text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-teal transition-all duration-200"
     />
     {value && (
       <button 
         onClick={() => onChange("")}
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-        aria-label="Clear search"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-brand-teal transition-colors"
       >
         <FiX className="w-4 h-4" />
       </button>
@@ -517,12 +535,22 @@ function SemesterAssignment({batches, semesters, tab, art = false}) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end mb-6">
-        <SearchBar 
-          value={searchTerm}
-          onChange={setSearchTerm}
-          placeholder="Search batches..."
-        />
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 w-full">
+        <div className="w-full md:w-1/4 max-w-xs">
+          <CustomSelect
+            className="w-full border-0 bg-white dark:bg-[#11322f] shadow-sm rounded-xl py-3 px-4 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-brand-teal"
+          >
+            <option value="all">All Items</option>
+            <option value="recent">Recently Added</option>
+          </CustomSelect>
+        </div>
+        <div className="relative w-full md:flex-1">
+          <SearchBar 
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Search batches..."
+          />
+        </div>
       </div>
 
       <NotificationMessage 
@@ -552,20 +580,18 @@ function SemesterAssignment({batches, semesters, tab, art = false}) {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Select Semester
                   </label>
-                  <select
+                  <CustomSelect
                     value={batchAssignments[batch._id] || ""}
                     onChange={(e) => handleSemesterSelect(batch._id, e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                    bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 
-                    focus:ring-sky-500 focus:border-sky-500 transition-all duration-200"
+                    className="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md px-3 py-2 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Select Semester...</option>
+                    <option value="" disabled>Select Semester...</option>
                     {semesters.map((s) => (
                       <option key={s._id} value={s._id}>
                         {s.name}
                       </option>
                     ))}
-                  </select>
+                  </CustomSelect>
                 </div>
               </AssignmentCard>
             )

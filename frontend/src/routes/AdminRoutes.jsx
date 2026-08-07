@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import AdminHome from "../pages/admin/AdminHome";
+import AdminLibraryPage from "../pages/admin/AdminLibraryPage";
 import StudentList from "../pages/admin/StudentList";
 import StudentForm from "../pages/admin/StudentForm";
 import AdmissionForm from "../pages/admin/AdmissionForm";
@@ -32,54 +33,59 @@ import FeesRegister from "../pages/admin/FeesRegister";
 import LeaveStatusPage from "../pages/admin/LeaveStatusPage";
 
 
+import AdminLayout from "../components/AdminLayout";
+
 const AdminRoutes = () => {
   return (
     <Routes>
-      <Route index element={<AdminHome />} />
-      <Route path="users" element={<StudentList />} />
-      <Route path="inactive-std" element={<InactiveStdList />} />
-      <Route path="users/add" element={<StudentForm />} />
-      <Route path="users/edit/:id" element={<StudentForm edit />} />
-      <Route path="admission-form" element={<AdmissionForm />} />
-      <Route path="registered-students" element={<RegisterdStudents />} />
-      <Route path="timetable-Assign" element={<TimetableAsigment />} />
-      <Route path="assign-duties" element={<AssignDutiesPage />} />
-      <Route path="management" element={<ManagementPage />} />
-      <Route path="attendance/:batchId" element={<AdminAttendance />} />
-      <Route path="semester/:semesterId" element={<SemesterPage />} />
-      <Route path="arts/:artsId" element={<SemesterPage />} />
-      {/* <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} /> */}
+      <Route path="/" element={<AdminLayout />}>
+        <Route index element={<AdminHome />} />
+        <Route path="users" element={<StudentList />} />
+        <Route path="inactive-std" element={<InactiveStdList />} />
+        <Route path="users/add" element={<StudentForm />} />
+        <Route path="users/edit/:id" element={<StudentForm edit />} />
+        <Route path="admission-form" element={<AdmissionForm />} />
+        <Route path="registered-students" element={<RegisterdStudents />} />
+        <Route path="timetable-Assign" element={<TimetableAsigment />} />
+        <Route path="assign-duties" element={<AssignDutiesPage />} />
+        <Route path="management" element={<ManagementPage />} />
+        <Route path="attendance/:batchId" element={<AdminAttendance />} />
+        <Route path="semester/:semesterId" element={<SemesterPage />} />
+        <Route path="arts/:artsId" element={<SemesterPage />} />
+        {/* <Route path="batches/marklist/:batchId" element={<MarkSubmitedStudentsPage />} /> */}
 
-      <Route path="teacher-subjects/:teacherId" element={<AssignedSubjects />} />
+        <Route path="teacher-subjects/:teacherId" element={<AssignedSubjects />} />
 
-      <Route path="batches/:item" element={<AdminBatches />} />
-      <Route path="batches/:item/:batchId" element={<BatchStudents />} />
+        <Route path="batches/:item" element={<AdminBatches />} />
+        <Route path="batches/:item/:batchId" element={<BatchStudents />} />
 
-      <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />
-      <Route path="achievements/:studentId" element={<AdminAchievementsPage />} />
-      <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
+        <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />
+        <Route path="achievements/:studentId" element={<AdminAchievementsPage />} />
+        <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
 
-      <Route path="ishthiraq" element={<FeesDashboardAnalytics />} />
-      <Route path="add-fees" element={<FeesRegister />} />
-      <Route path="assign-fees" element={<AssignFees />} />
-      {/* <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} /> */}
-      <Route path="ce-mark" element={<CEMarkAdmin />} />
-      <Route path="ir-mark" element={<IRMarkAdmin />} />
-      <Route path="profile" element={<StaffProfile />} />
-      <Route path="std-edit/:studentId" element={<AdmissionForm />} />
-      <Route path="staff-edit/:teacherId" element={<SignupPage />} />
-      <Route path="signup" element={<SignupPage />} />
+        <Route path="ishthiraq" element={<FeesDashboardAnalytics />} />
+        <Route path="add-fees" element={<FeesRegister />} />
+        <Route path="assign-fees" element={<AssignFees />} />
+        {/* <Route path="ishthiraq" element={<AdminIshthiraq item="ishthiraq" />} /> */}
+        <Route path="ce-mark" element={<CEMarkAdmin />} />
+        <Route path="ir-mark" element={<IRMarkAdmin />} />
+        <Route path="profile" element={<StaffProfile />} />
+        <Route path="std-edit/:studentId" element={<AdmissionForm />} />
+        <Route path="staff-edit/:teacherId" element={<SignupPage />} />
+        <Route path="signup" element={<SignupPage />} />
 
-      <Route path="academic-records" element={<RecordPage  />} />
+        <Route path="academic-records" element={<RecordPage  />} />
 
-      <Route path="academic-register" element={<AcademicRegister  />} />
-      <Route path="std-attendance-register" element={<LeaveStatusPage />} />
-      <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
-      <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
-      <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
-      
+        <Route path="academic-register" element={<AcademicRegister  />} />
+        <Route path="std-attendance-register" element={<LeaveStatusPage />} />
+        <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
+        <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
+        <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
+        <Route path="library" element={<AdminLibraryPage />} />
+        
 
-      <Route path="*" element={<AdminHome />} />
+        <Route path="*" element={<AdminHome />} />
+      </Route>
     </Routes>
   );
 };

@@ -3,7 +3,7 @@ import { useStudentStore } from "../../store/studentStore";
 import { Eye, EyeOff, Loader2, User, School, List } from "lucide-react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import Header from "../../components/Header";
+
 import Footer from "../../components/Footer";
 import axios from "axios";
 import InputField from "../../components/InputField";
@@ -71,8 +71,8 @@ const StudentForm = (props) => {
   
 
   return (
-    <div className="min-h-screen grid bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Header />
+    <div className="grid text-gray-900 dark:text-white">
+      
       <div className="flex flex-col justify-center items-center p-6 sm:p-12 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center mb-8">

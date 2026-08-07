@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../components/Header";
+
 import Footer from "../../components/Footer";
 import StudentTable from "../../components/StudentTable";
 import { AlertCircle, RefreshCw } from "lucide-react";
@@ -23,8 +23,8 @@ const InactiveStdList = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Header user={true} />
+    <div className="flex flex-col items-center text-gray-900 dark:text-white">
+      
 
       {isLoading ? (
         <div className="mt-10 text-center">

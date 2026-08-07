@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLeaveStore } from "../../store/useLeaveStore";
-import Header from "../../components/Header";
+
 import { Search, Users, AlertTriangle, CheckCircle, Plus, Edit2, Trash2, X } from "lucide-react";
 import { motion } from "framer-motion";
+import CustomSelect from '../../components/CustomSelect';
+
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
   <div className={`p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border-l-4 ${color} flex items-center gap-4`}>
@@ -138,9 +140,9 @@ const LeaveStatusPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors pb-20">
-      <Header />
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 mt-20">
+    <div className="transition-colors pb-20">
+      
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
         
         {/* Top Controls */}
         <div className="flex flex-col lg:flex-row justify-between gap-4 mb-8">
@@ -149,13 +151,13 @@ const LeaveStatusPage = () => {
                 <p className="text-gray-500 dark:text-gray-400">Live Sync with Google Sheets</p>
             </div>
             <div className="flex gap-3 w-full lg:w-auto">
-                <select 
+                <CustomSelect 
                     value={selectedBatch} 
                     onChange={e => setSelectedBatch(e.target.value)}
                     className="select select-bordered bg-white dark:bg-gray-800 shadow-sm rounded-xl dark:text-white"
                 >
                     {sheetBatches.map(b => <option key={b}>{b}</option>)}
-                </select>
+                </CustomSelect>
                 <button onClick={() => setIsAddOpen(true)} className="btn bg-sky-600 hover:bg-sky-700 text-white border-none rounded-xl gap-2 shadow-lg shadow-sky-200 dark:shadow-none">
                     <Plus size={18} /> Add
                 </button>

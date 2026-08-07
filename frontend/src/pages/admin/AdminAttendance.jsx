@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useStudentStore } from "../../store/studentStore";
-import Header from "../../components/Header";
+
 import Button from "../../components/Button";
 import { useAdminStore } from "../../store/useAdminMngStore";
 import StudentTable from "../../components/StudentTable";
+import CustomSelect from '../../components/CustomSelect';
+
 
 const AdminAttendance = () => {
   let { batchId } = useParams();
@@ -42,8 +44,8 @@ const AdminAttendance = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 pt-12">
-      <Header page="Attendance Management" />
+    <div className="flex flex-col items-center text-gray-900 dark:text-white p-4">
+      
       
       {/* TOP SECTION */}
       {selectedBatch && (
@@ -147,12 +149,12 @@ const AttendanceTable = ({ cls, students }) => {
     <div className="w-full max-w-4xl p-6 mt-6 shadow-xl rounded-3xl bg-gray-50 dark:bg-gray-800">
       <h2 className="text-xl font-semibold text-center mb-4">Attendance Sheet</h2>
       <div className="flex justify-around items-center">
-      <select value={month} onChange={handleChange} className="select select-md  bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+      <CustomSelect value={month} onChange={handleChange} className="select select-md bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <option>Months</option>
         {cls.attendance && Object.keys(cls.attendance).map((m) => (
           <option key={m} value={m}>{m}</option>
         ))}
-      </select>
+      </CustomSelect>
       <p>working days: {Object.keys(attendance).length}</p>
       </div>
       <table className="table w-full">

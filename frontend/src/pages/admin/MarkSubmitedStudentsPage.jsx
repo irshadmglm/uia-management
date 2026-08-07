@@ -3,7 +3,7 @@ import { Eye, Search } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useStudentStore } from "../../store/studentStore";
 import { useMarksStore } from "../../store/useMarksStore";
-import Header from "../../components/Header";
+
 import { useAuthStore } from "../../store/useAuthStore";
 
 const MarkSubmitedStudentsPage = () => {
@@ -39,8 +39,8 @@ const MarkSubmitedStudentsPage = () => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-gray-800 p-6 pt-24">
+      
+      <div className="dark: dark: p-6">
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white font-oswald ml-2">
           Students' Mark List

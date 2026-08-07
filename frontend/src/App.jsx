@@ -5,6 +5,7 @@ import { useThemeStore } from "./store/useThemeStore";
 import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 import InstallPrompt from "./components/InstallPrompt";
+import ImpersonationBanner from "./components/ImpersonationBanner";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -46,6 +47,7 @@ function App() {
 
   return (
     <div data-theme={theme}>
+      <ImpersonationBanner />
       <AppRoutes />
       <Toaster />
 
