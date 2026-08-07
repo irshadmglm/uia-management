@@ -1,8 +1,10 @@
 import express from "express";
-import { academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteArtSem,  deleteArtSubject,  deleteBatch,  deleteSemester,  deleteSubject,  getArtSems,  getArtSubjects,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postArtSem, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateArtSem, updateArtSubject, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
+import { getDashboardMetrics, academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteArtSem,  deleteArtSubject,  deleteBatch,  deleteSemester,  deleteSubject,  getArtSems,  getArtSubjects,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postArtSem, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateArtSem, updateArtSubject, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
 
 
 const router = express.Router();
+
+router.get('/dashboard-metrics', getDashboardMetrics);
 
 router.get('/timetable', getTimetable);
 

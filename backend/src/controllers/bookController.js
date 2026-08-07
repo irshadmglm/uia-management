@@ -1,11 +1,12 @@
 import Book from "../models/book.model.js";
+import LibraryTransaction from "../models/libraryTransaction.model.js";
 
 export const getBooks = async (req, res) => {
     try {
       const books = await Book.find().sort({ bookNumber: 1 });
   
       if (!books || books.length === 0) {
-        return res.status(404).json({ success: false, message: "No books found" });
+        return res.status(200).json({ success: true, books: [] });
       }
   
       res.status(200).json({ success: true, books });
@@ -16,25 +17,26 @@ export const getBooks = async (req, res) => {
 
 export const addBook = async (req, res) => {
     try {
-      let { title, bookNumber, author } = req.body;
-  
-      if (!title || !bookNumber || !author) {
-        return res.status(400).json({ success: false, message: "Missing required fields: title, author, or bookNumber" });
-      }
-  
-      bookNumber = parseInt(bookNumber, 10);
-  
-      const existingBook = await Book.findOne({ bookNumber });
-      if (existingBook) {
-        return res.status(400).json({ success: false, message: "This bookNumber is already registered" });
-      }
-  
-      const newBook = new Book({
-        title,
-        bookNumber,
-        author,
-        status: "available"
-      });
+    let { title, bookNumber, author, category } = req.body;
+
+    if (!title || !bookNumber || !author) {
+      return res.status(400).json({ success: false, message: "Missing required fields: title, author, or bookNumber" });
+    }
+
+    bookNumber = parseInt(bookNumber, 10);
+
+    const existingBook = await Book.findOne({ bookNumber });
+    if (existingBook) {
+      return res.status(400).json({ success: false, message: "This bookNumber is already registered" });
+    }
+
+    const newBook = new Book({
+      title,
+      bookNumber,
+      author,
+      category: category || "General",
+      status: "available"
+    });
   
       const savedBook = await newBook.save();
   
@@ -76,9 +78,99 @@ export const deleteBook = async (req, res) => {
         return res.status(404).json({ success: false, message: "Book not found" });
       }
   
-      res.status(200).json({ success: true, message: "Book deleted successfully" });
-    } catch (error) {
-      res.status(500).json({ success: false, error: error.message });
-    }
+    res.status(200).json({ success: true, message: "Book deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
 
+export const issueBook = async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const { userId, userName, userRole, dueDate } = req.body;
+
+    if (!userId || !userName) {
+      return res.status(400).json({ success: false, message: "User ID and Name are required" });
+    }
+
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({ success: false, message: "Book not found" });
+    }
+    if (book.status === "borrowed") {
+      return res.status(400).json({ success: false, message: "Book is already borrowed" });
+    }
+
+    const issueDate = new Date();
+
+    // Update Book
+    book.status = "borrowed";
+    book.borrowedBy = userId;
+    book.studentName = userName;
+    book.issueDate = issueDate;
+    book.dueDate = dueDate || null;
+    await book.save();
+
+    // Create Transaction
+    const transaction = new LibraryTransaction({
+      bookId: book._id,
+      bookTitle: book.title,
+      userId,
+      userName,
+      userRole,
+      issueDate,
+      dueDate: book.dueDate,
+      status: "active"
+    });
+    await transaction.save();
+
+    res.status(200).json({ success: true, message: "Book issued successfully", book, transaction });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const returnBook = async (req, res) => {
+  try {
+    const { bookId } = req.params;
+
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({ success: false, message: "Book not found" });
+    }
+    if (book.status === "available") {
+      return res.status(400).json({ success: false, message: "Book is already available" });
+    }
+
+    // Find active transaction
+    const transaction = await LibraryTransaction.findOne({ bookId: book._id, status: "active" });
+    if (transaction) {
+      transaction.status = "returned";
+      transaction.returnDate = new Date();
+      await transaction.save();
+    }
+
+    // Update Book
+    book.status = "available";
+    book.borrowedBy = null;
+    book.studentName = null;
+    book.issueDate = null;
+    book.dueDate = null;
+    await book.save();
+
+    res.status(200).json({ success: true, message: "Book returned successfully", book });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const getUserHistory = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const history = await LibraryTransaction.find({ userId }).sort({ issueDate: -1 });
+
+    res.status(200).json({ success: true, history });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};

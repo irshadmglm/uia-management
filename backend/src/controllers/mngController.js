@@ -6,6 +6,9 @@ import Timetable from "../models/timetable.model.js";
 import Semester from "../models/semester.model.js";
 import ArtSemester from "../models/artsemester.model.js";
 import ArtSubject from "../models/artsubject.model.js";
+import Student from "../models/student.model.js";
+import Record from "../models/records.model.js";
+import Book from "../models/book.model.js";
 
 export const getTimetable = async (req, res) => {
   try {
@@ -1097,4 +1100,25 @@ export const getAttendance = async (req, res) => {
 };
 
 
+export const getDashboardMetrics = async (req, res) => {
+  try {
+    const [totalStudents, totalBatches, totalStaff, totalRecords, totalBooks] = await Promise.all([
+      Student.countDocuments(),
+      Batch.countDocuments(),
+      Staff.countDocuments(),
+      Record.countDocuments(),
+      Book.countDocuments(),
+    ]);
 
+    res.status(200).json({
+      totalStudents,
+      totalBatches,
+      totalStaff,
+      totalRecords,
+      totalBooks,
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard metrics:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

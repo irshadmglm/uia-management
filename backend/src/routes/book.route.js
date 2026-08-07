@@ -1,5 +1,5 @@
 import express from "express";
-import { updateBook, deleteBook, addBook, getBooks } from "../controllers/bookController.js";
+import { updateBook, deleteBook, addBook, getBooks, issueBook, returnBook, getUserHistory } from "../controllers/bookController.js";
 
 const router = express.Router();
 
@@ -10,6 +10,10 @@ router.post("/add", addBook);
 router.put("/update/:bookId", updateBook); 
 
 router.delete("/delete/:bookId", deleteBook); 
+
+router.put("/issue/:bookId", issueBook);
+router.put("/return/:bookId", returnBook);
+router.get("/history/:userId", getUserHistory);
 
 export default router;
 
