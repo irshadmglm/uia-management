@@ -77,6 +77,8 @@ export const login = async (req, res) => {
 
     if (role === "student") {
       user = await User.findOne({ cicNumber:Number(username), isActive: true });
+    } else if (role === "parent") {
+      user = await User.findOne({ parentNumber:Number(username), isActive: true });
     } else {
       user = await Staff.findOne({ userName:username });
     }
@@ -103,7 +105,7 @@ export const login = async (req, res) => {
       phoneNumber: user.phoneNumber || null,
       whatsupNumber: user.whatsupNumber || null,
       parentNumber: user.parentNumber || null,
-      role: user.role || null,
+      role: role === "parent" ? "parent" : (user.role || null),
       profileImage: user.profileImage || null,
     };
 
