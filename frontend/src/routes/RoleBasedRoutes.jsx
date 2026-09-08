@@ -13,6 +13,8 @@ const RoleBasedRoutes = () => {
       return <Navigate to="/dashboard/teacher" replace />;
     case "student":
       return <Navigate to="/dashboard/student" replace />;
+    case "parent":
+      return <Navigate to="/dashboard/parent" replace />;
     default:
       return <Navigate to="/dashboard" replace />;
   }

@@ -11,7 +11,7 @@ const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yU
 
 const QuickAction = ({ title, icon: Icon, to, url, colorClass }) => {
   const content = (
-    <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between p-3 sm:p-4 bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-md hover:border-brand-teal/30 transition-all gap-2 sm:gap-0 h-full">
+    <div className="group flex flex-col sm:flex-row items-center sm:items-center justify-between p-3 sm:p-4 bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-md hover:border-brand-teal/30 transition-all gap-2 sm:gap-0 h-full">
       <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
         <div className={`p-2 sm:p-3 rounded-xl ${colorClass}`}>
           <Icon size={18} className="text-white" />
@@ -23,9 +23,9 @@ const QuickAction = ({ title, icon: Icon, to, url, colorClass }) => {
   );
 
   if (url) {
-    return <a href={url} target="_blank" rel="noopener noreferrer" className="group block h-full">{content}</a>;
+    return <a href={url} target="_blank" rel="noopener noreferrer" className="block h-full">{content}</a>;
   }
-  return <Link to={to} className="group block h-full">{content}</Link>;
+  return <Link to={to} className="block h-full">{content}</Link>;
 };
 
 const StudentHome = () => {
@@ -36,16 +36,18 @@ const StudentHome = () => {
     getStudentBatch();
   }, [getStudentBatch]);
   
+  const baseRoute = `/dashboard/${authUser?.role === 'parent' ? 'parent' : 'student'}`;
+  
   const actions = [
-    { title: "Academic Register", icon: ClipboardList, route: "/dashboard/student/academic-register", colorClass: "bg-blue-500" },
-    { title: "Subjects", icon: BookCopyIcon, route: "/dashboard/student/subjects", colorClass: "bg-purple-500" },
-    { title: "Achievement", icon: Award, route: "/dashboard/student/achievement", colorClass: "bg-amber-500" },
-    { title: "Reading Progress", icon: BookUserIcon, route: "/dashboard/student/reading-progress", colorClass: "bg-emerald-500" },
-    { title: "Mark List", icon: ListChecks, route: "/dashboard/student/semester-list", colorClass: "bg-cyan-500" },
-    { title: "Ishthiraq", icon: LucideHandCoins, route: "/dashboard/student/ishthiraq", colorClass: "bg-rose-500" },
-    { title: "Internal Mark", icon: BookMarked, url: batch?.IRmarkList, colorClass: "bg-indigo-500" },
-    { title: "CE Mark", icon: BookMarked, url: batch?.CEmarkList, colorClass: "bg-teal-500" },
-    { title: "Downloads", icon: DownloadCloud, url: downloadsUrl, colorClass: "bg-orange-500" }
+    { title: "Academic Register", icon: ClipboardList, route: `${baseRoute}/academic-register`, colorClass: "bg-gradient-to-br from-blue-400 to-blue-600" },
+    { title: "Subjects", icon: BookCopyIcon, route: `${baseRoute}/subjects`, colorClass: "bg-gradient-to-br from-purple-400 to-purple-600" },
+    { title: "Achievement", icon: Award, route: `${baseRoute}/achievement`, colorClass: "bg-gradient-to-br from-amber-400 to-amber-600" },
+    { title: "Reading Progress", icon: BookUserIcon, route: `${baseRoute}/reading-progress`, colorClass: "bg-gradient-to-br from-emerald-400 to-emerald-600" },
+    { title: "Mark List", icon: ListChecks, route: `${baseRoute}/semester-list`, colorClass: "bg-gradient-to-br from-cyan-400 to-cyan-600" },
+    { title: "Ishthiraq", icon: LucideHandCoins, route: `${baseRoute}/ishthiraq`, colorClass: "bg-gradient-to-br from-rose-400 to-rose-600" },
+    { title: "Internal Mark", icon: BookMarked, url: batch?.IRmarkList, colorClass: "bg-gradient-to-br from-indigo-400 to-indigo-600" },
+    { title: "CE Mark", icon: BookMarked, url: batch?.CEmarkList, colorClass: "bg-gradient-to-br from-teal-400 to-teal-600" },
+    { title: "Downloads", icon: DownloadCloud, url: downloadsUrl, colorClass: "bg-gradient-to-br from-orange-400 to-orange-600" }
   ];
 
   return (
@@ -71,16 +73,23 @@ const StudentHome = () => {
               <span className="text-[10px] font-medium text-white/30 uppercase tracking-wider">Student Portal</span>
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight">
-              Welcome back, <span className="text-brand-mint">{authUser?.name || 'Student'}</span>! 👋
+              Welcome back, <span className="text-brand-mint">
+                {authUser?.role === 'parent' ? `Parent of ${authUser?.name}` : authUser?.name || 'Student'}
+              </span>! 👋
             </h1>
             <p className="text-white/50 max-w-lg text-xs sm:text-sm mt-2 leading-relaxed">
-              Here is your personal academic hub. View your records, subjects, and achievements.
+              {authUser?.role === 'parent' 
+                ? "Here is your child's academic hub. View their records, subjects, and achievements."
+                : "Here is your personal academic hub. View your records, subjects, and achievements."
+              }
             </p>
           </div>
 
           <div className="hidden sm:flex flex-col items-center justify-center w-20 h-20 rounded-2xl bg-brand-mint/10 border border-brand-mint/20 flex-shrink-0">
             <span className="text-3xl leading-none">🎓</span>
-            <span className="text-[9px] text-brand-mint/60 font-bold uppercase tracking-wider mt-1">Student</span>
+            <span className="text-[9px] text-brand-mint/60 font-bold uppercase tracking-wider mt-1">
+              {authUser?.role === 'parent' ? 'Parent' : 'Student'}
+            </span>
           </div>
         </div>
       </div>
@@ -91,7 +100,7 @@ const StudentHome = () => {
           <BookOpen size={18} className="text-brand-teal" />
           Academic Actions
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           {actions.map((action, index) => (
             <QuickAction 
               key={index}
@@ -99,7 +108,7 @@ const StudentHome = () => {
               icon={action.icon} 
               to={action.route} 
               url={action.url}
-              colorClass={`bg-gradient-to-br ${action.colorClass.replace('bg-', 'from-')}-400 to-${action.colorClass.replace('bg-', '')}-600`} 
+              colorClass={action.colorClass} 
             />
           ))}
         </div>

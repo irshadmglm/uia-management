@@ -35,13 +35,13 @@ const CalssTeacherHome = () => {
   }, [getBatchById, batchId]);
   
   const actions = [
-    { title: "Students' Details", icon: Users, route: `/dashboard/teacher/batch-students/${batchId}`, colorClass: "bg-blue-500" },  
-    { title: "Semester Exam Results", icon: Award, route: `/dashboard/teacher/batches/marklist/${batchId}`, colorClass: "bg-purple-500" },
-    { title: "Achivements", icon: Medal, route: `/dashboard/teacher/batches/achievements/${batchId}`, colorClass: "bg-amber-500" },
-    { title: "Reading Progress", icon: Book, route: `/dashboard/teacher/batches/reading-progress/${batchId}`, colorClass: "bg-emerald-500" },
-    { title: "CE Mark", icon: ClipboardCheck, url: batch?.CEmarkList, colorClass: "bg-cyan-500" },
-    { title: "Internal Mark", icon: ListTodo, url: batch?.IRmarkList, colorClass: "bg-indigo-500" },
-    { title: "Ishthiraq", icon: HandCoins, route: `/dashboard/teacher/ishthiraq/${batchId}`, colorClass: "bg-rose-500" },
+    { title: "Students' Details", icon: Users, route: `/dashboard/teacher/batch-students/${batchId}`, colorClass: "bg-gradient-to-br from-blue-400 to-blue-600" },  
+    { title: "Semester Exam Results", icon: Award, route: `/dashboard/teacher/batches/marklist/${batchId}`, colorClass: "bg-gradient-to-br from-purple-400 to-purple-600" },
+    { title: "Achivements", icon: Medal, route: `/dashboard/teacher/batches/achievements/${batchId}`, colorClass: "bg-gradient-to-br from-amber-400 to-amber-600" },
+    { title: "Reading Progress", icon: Book, route: `/dashboard/teacher/batches/reading-progress/${batchId}`, colorClass: "bg-gradient-to-br from-emerald-400 to-emerald-600" },
+    { title: "CE Mark", icon: ClipboardCheck, url: batch?.CEmarkList, colorClass: "bg-gradient-to-br from-cyan-400 to-cyan-600" },
+    { title: "Internal Mark", icon: ListTodo, url: batch?.IRmarkList, colorClass: "bg-gradient-to-br from-indigo-400 to-indigo-600" },
+    { title: "Ishthiraq", icon: HandCoins, route: `/dashboard/teacher/ishthiraq/${batchId}`, colorClass: "bg-gradient-to-br from-rose-400 to-rose-600" },
   ];
 
   return (
@@ -95,7 +95,7 @@ const CalssTeacherHome = () => {
               icon={action.icon} 
               to={action.route} 
               url={action.url}
-              colorClass={`bg-gradient-to-br ${action.colorClass.replace('bg-', 'from-')}-400 to-${action.colorClass.replace('bg-', '')}-600`} 
+              colorClass={action.colorClass} 
             />
           ))}
         </div>

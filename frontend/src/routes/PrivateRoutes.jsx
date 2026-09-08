@@ -14,6 +14,9 @@ const PrivateRoutes = () => {
       {authUser.role === "student" && (
         <Route path="student/*" element={<StudentRoutes />} />
       )}
+      {authUser.role === "parent" && (
+        <Route path="parent/*" element={<StudentRoutes />} />
+      )}
       {authUser.role === "teacher" && (
         <Route path="teacher/*" element={<TeacherRoutes />} />
       )}

@@ -92,7 +92,7 @@ const LoginPage = () => {
               value={formData.role} 
               icon={<GraduationCapIcon />} 
               onChange={setFormData} 
-              options={["student", "teacher", "admin"]} 
+              options={["student", "parent", "teacher", "admin"]} 
             />
             
             <InputField 
