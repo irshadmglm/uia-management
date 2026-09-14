@@ -1,5 +1,6 @@
 import SheetsDB from "../lib/googleSheet.js";
 import Fee from "../models/fees.model.js";
+import Student from "../models/student.model.js";
 const db = new SheetsDB();
 
 
@@ -277,7 +278,19 @@ export const getFeeByStudent = async (req, res) => {
     }
 
     if (!student) {
-      return res.status(404).json({ message: 'Student fee record not found in the system.' });
+      // Fetch from MongoDB if missing from Google Sheets
+      const dbStudent = await Student.findOne({ cicNumber: Number(targetCic) });
+      
+      return res.status(200).json({
+        cicNumber: targetCic,
+        name: dbStudent ? dbStudent.name : "Unknown Student",
+        contact: dbStudent ? dbStudent.phoneNumber : "",
+        subscription: { perYear: 0, oldBalance: 0, balance: 0 },
+        payments: {
+          SHAW: 0, DUL_Q: 0, DUL_H: 0, MUH: 0, SAF: 0, RA_A: 0,
+          RA_AK: 0, JUM_U: 0, JUM_A: 0, RAJ: 0, SHAH: 0, RAML: 0
+        }
+      });
     }
 
     const structuredData = {
