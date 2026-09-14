@@ -66,21 +66,34 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { username, password, role} = req.body;
+  const { username, password, role } = req.body;
   
   try {
     if (!role) {
       return res.status(400).json({ message: "Role is required" });
     }
 
+    if (!username) {
+      return res.status(400).json({ message: "Username or ID is required" });
+    }
+
+    const cleanUsername = String(username).trim();
     let user;
 
     if (role === "student") {
-      user = await User.findOne({ cicNumber:Number(username), isActive: true });
+      const cicNum = Number(cleanUsername);
+      if (isNaN(cicNum)) {
+        return res.status(400).json({ message: "Invalid Student CIC Number. For Admin/Teacher login, please select your correct Role." });
+      }
+      user = await User.findOne({ cicNumber: cicNum, isActive: true });
     } else if (role === "parent") {
-      user = await User.findOne({ parentNumber:Number(username), isActive: true });
+      const parentNum = Number(cleanUsername);
+      if (isNaN(parentNum)) {
+        return res.status(400).json({ message: "Invalid Parent Phone Number. Please enter a valid number." });
+      }
+      user = await User.findOne({ parentNumber: parentNum, isActive: true });
     } else {
-      user = await Staff.findOne({ userName:username });
+      user = await Staff.findOne({ userName: { $regex: new RegExp(`^${cleanUsername}$`, "i") } });
     }
 
     if (!user) {
