@@ -14,31 +14,34 @@ import AdminAchievementsPage from "../pages/admin/AdminAchievementsPage";
 import AdminReadingProgressPage from "../pages/admin/AdminReadingProgressPage";
 import AcademicRegister from "../pages/staff/StaffAcademicRegister";
 import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
+import TeacherLayout from "../components/TeacherLayout";
 
 const TeacherRoutes = () => {
   return (
     <Routes>
-      <Route index element={<TeacherHome />} />
-      <Route path="attendance/:classname" element={<AttendancePage />} />
-      <Route path="calss-teacher-home/:batchId" element={<CalssTeacherHome />} />
-      <Route path="batch-students/:batchId" element={<BatchStudentsDetails />} />
-      <Route path="grace-mark" element={<TeacherAddGraceMark />} />
-      <Route path="assigned-subjects" element={<AssignedSubjects />} />
-      <Route path="ishthiraq/:batchId" element={<FeesTeacher />} />
-      <Route path="profile" element={<StaffProfile />} />
-    
-      <Route path="batches/:item/:batchId" element={<BatchStudents />} />
-      <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />
-      <Route path="achievements/:studentId" element={<AdminAchievementsPage />} />
-      <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
+      <Route path="/" element={<TeacherLayout />}>
+        <Route index element={<TeacherHome />} />
+        <Route path="attendance/:classname" element={<AttendancePage />} />
+        <Route path="calss-teacher-home/:batchId" element={<CalssTeacherHome />} />
+        <Route path="batch-students/:batchId" element={<BatchStudentsDetails />} />
+        <Route path="grace-mark" element={<TeacherAddGraceMark />} />
+        <Route path="assigned-subjects" element={<AssignedSubjects />} />
+        <Route path="ishthiraq/:batchId" element={<FeesTeacher />} />
+        <Route path="profile" element={<StaffProfile />} />
+      
+        <Route path="batches/:item/:batchId" element={<BatchStudents />} />
+        <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />
+        <Route path="achievements/:studentId" element={<AdminAchievementsPage />} />
+        <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
 
-      <Route path="academic-register" element={<AcademicRegister  />} />
-      <Route path="std-attendance-register" element={<BatchAcademicStatus item="stdAttendanceRegister" />} />
-      <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
-      <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
-      <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
+        <Route path="academic-register" element={<AcademicRegister  />} />
+        <Route path="std-attendance-register" element={<BatchAcademicStatus item="stdAttendanceRegister" />} />
+        <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
+        <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
+        <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
 
-      <Route path="*" element={<TeacherHome />} />
+        <Route path="*" element={<TeacherHome />} />
+      </Route>
     </Routes>
   );
 };

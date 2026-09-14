@@ -71,20 +71,16 @@ fetchFeesByStd: async (batchName, cicNumber) => {
     try {
       console.log("Fetching fees for batch:", batchName, "CIC Number:", cicNumber);
 
-      const match = batchName.match(/\d+/);
-      if (!match) throw new Error('Invalid batch name');
+      let name = batchName || '';
+      if (batchName) {
+        const match = batchName.match(/\d+/);
+        if (match) {
+          const batchNumber = match[0].padStart(2, '0');
+          name = get().batches[batchNumber] || batchName;
+        }
+      }
 
-      const batchNumber = match[0].padStart(2, '0');
-      console.log("Extracted batch number:", batchNumber);
-
-      const name = get().batches[batchNumber];
-      console.log("Mapped batch name:", name);
-
-      if (!name) throw new Error('Batch not found in mapping');
-
-      const response = await axiosInstance.get(`/fees/std?batch_name=${name}&cicNumber=${cicNumber}`);
-      console.log("API response:", response);
-
+      const response = await axiosInstance.get(`/fees/std?batch_name=${encodeURIComponent(name)}&cicNumber=${encodeURIComponent(cicNumber)}`);
       const data = response.data;
 
       set({ isLoading: false }); 
@@ -93,12 +89,7 @@ fetchFeesByStd: async (batchName, cicNumber) => {
       console.error("Failed to fetch student fee:", error);
       const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch student fee.';
       set({ error: errorMessage, isLoading: false });
-      
-      // --- THIS IS THE FIX ---
-      // Instead of returning null, throw the error
-      // so the component's try/catch block can see it.
       throw new Error(errorMessage);
-      // -----------------------
     }
   },
 
