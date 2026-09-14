@@ -36,6 +36,24 @@ export const useBooksStore = create((set, get) => ({
         }
     },
 
+    bulkImportBooks: async (booksData, duplicateAction = "skip") => {
+        set({ isRegistering: true });
+        try {
+            const res = await axiosInstance.post('/books/bulk-import', {
+                books: booksData,
+                duplicateAction
+            });
+            toast.success(res.data.message || "Bulk import completed successfully");
+            get().getBooks();
+            return res.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Bulk import failed");
+            return null;
+        } finally {
+            set({ isRegistering: false });
+        }
+    },
+
     updateBook: async (bookId, data) => {
         set({ isRegistering: true });
         try {

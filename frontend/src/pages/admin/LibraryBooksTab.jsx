@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { 
   PlusCircle, Search, Edit2, Trash2, ArrowRightLeft, 
   BookOpenCheck, Clock, BookOpen, Filter, RefreshCw,
-  Hash, User, Tag, LayoutGrid, List
+  Hash, User, Tag, LayoutGrid, List, FileSpreadsheet
 } from 'lucide-react';
 import { useBooksStore } from '../../store/useBooksStore';
 import ConfirmPopup from '../../components/ConfirmPopup';
 import { BookFormModal, IssueBookModal } from './LibraryModals';
+import LibraryBulkImportModal from './LibraryBulkImportModal';
 import CustomSelect from '../../components/CustomSelect';
 
 const StatusBadge = ({ status, studentName, issueDate }) => {
@@ -142,7 +143,7 @@ const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn }) => (
 );
 
 const LibraryBooksTab = () => {
-  const { books, getBooks, booksLoading, deleteBook, addBook, updateBook, issueBook, returnBook } = useBooksStore();
+  const { books, getBooks, booksLoading, deleteBook, addBook, updateBook, issueBook, returnBook, bulkImportBooks, isRegistering } = useBooksStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [viewMode, setViewMode] = useState('grid');
@@ -153,6 +154,7 @@ const LibraryBooksTab = () => {
   const [bookToEdit, setBookToEdit] = useState(null);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [bookToIssue, setBookToIssue] = useState(null);
+  const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
 
   useEffect(() => { getBooks(); }, [getBooks]);
 
@@ -186,6 +188,10 @@ const LibraryBooksTab = () => {
   const handleReturnClick = async (book) => {
     if (window.confirm(`Return "${book.title}"?`)) await returnBook(book._id);
   };
+  const handleBulkImport = async (booksData, duplicateAction) => {
+    const result = await bulkImportBooks(booksData, duplicateAction);
+    return !!result;
+  };
 
   return (
     <div className="space-y-4">
@@ -207,6 +213,12 @@ const LibraryBooksTab = () => {
         onClose={() => { setIsIssueModalOpen(false); setBookToIssue(null); }}
         onSubmit={handleIssueSubmit}
         book={bookToIssue}
+      />
+      <LibraryBulkImportModal
+        isOpen={isBulkImportModalOpen}
+        onClose={() => setIsBulkImportModalOpen(false)}
+        onImport={handleBulkImport}
+        isImporting={isRegistering}
       />
 
       {/* Toolbar */}
@@ -258,6 +270,15 @@ const LibraryBooksTab = () => {
                 <List size={16} />
               </button>
             </div>
+
+            <button
+              onClick={() => setIsBulkImportModalOpen(true)}
+              className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white px-3.5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm"
+              title="Bulk Import Excel / CSV Catalogue"
+            >
+              <FileSpreadsheet size={16} />
+              <span className="hidden sm:inline">Bulk Import</span>
+            </button>
 
             <button
               onClick={() => { setIsAddEditModalOpen(true); setBookToEdit(null); }}
