@@ -24,143 +24,9 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useStudentStore } from "../store/studentStore";
 import CustomSelect from "./CustomSelect";
+import StudentProfileModal from "./StudentProfileModal";
 
-// --- Student Detail Modal Component ---
-const StudentDetailModal = ({ student, isOpen, onClose }) => {
-  if (!isOpen || !student) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
-      <div 
-        className="bg-white dark:bg-[#11322f] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-scaleIn border border-gray-100 dark:border-[#0d2522]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="relative h-32 bg-gradient-to-r from-brand-teal to-sky-500">
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors backdrop-blur-md"
-          >
-            <X size={20} />
-          </button>
-        </div>
-        
-        <div className="px-6 pb-6 pt-0 relative">
-          <div className="flex justify-between items-end -mt-16 mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-white dark:border-[#11322f] shadow-lg overflow-hidden bg-white">
-              <img 
-                src={student.profileImage || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO-15oVSs246BVTRobf0Ye3gECp5_E3-OKUGgAD4N8HZgj8xa-PElzug6S6tW0sdlT1cY&usqp=CAU"} 
-                alt={student.name} 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="flex gap-2 mb-2">
-              <div className="px-3 py-1 bg-brand-mint/20 text-brand-teal dark:text-brand-mint rounded-lg text-sm font-semibold shadow-sm border border-brand-mint/30">
-                CIC: {student.cicNumber}
-              </div>
-            </div>
-          </div>
-
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{student.name}</h2>
-          <p className="text-brand-teal dark:text-brand-mint font-medium mb-6 flex items-center gap-2">
-            <Users size={16} /> {student.batchName}
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Contact Info</h3>
-              
-              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-[#0d2522] p-3 rounded-xl border border-gray-100 dark:border-transparent">
-                <div className="p-2 bg-white dark:bg-[#11322f] rounded-lg shadow-sm text-brand-teal">
-                  <Phone size={18} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Phone Number</p>
-                  <p className="font-medium">{student.phoneNumber}</p>
-                </div>
-              </div>
-
-              {student.whatsupNumber && (
-                <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-[#0d2522] p-3 rounded-xl border border-gray-100 dark:border-transparent">
-                  <div className="p-2 bg-white dark:bg-[#11322f] rounded-lg shadow-sm text-brand-teal">
-                    <img src="https://cdn-icons-png.flaticon.com/128/5968/5968841.png" alt="WhatsApp" className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">WhatsApp</p>
-                    <a href={`https://wa.me/${student.whatsupNumber}`} target="_blank" rel="noopener noreferrer" className="font-medium hover:text-brand-teal transition-colors">
-                      {student.whatsupNumber}
-                    </a>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-[#0d2522] p-3 rounded-xl border border-gray-100 dark:border-transparent">
-                <div className="p-2 bg-white dark:bg-[#11322f] rounded-lg shadow-sm text-brand-teal">
-                  <Mail size={18} />
-                </div>
-                <div className="overflow-hidden">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Email Address</p>
-                  <p className="font-medium truncate">{student.email}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Personal Info</h3>
-              
-              {student.parentName && (
-                <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-[#0d2522] p-3 rounded-xl border border-gray-100 dark:border-transparent">
-                  <div className="p-2 bg-white dark:bg-[#11322f] rounded-lg shadow-sm text-brand-teal">
-                    <User size={18} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Parent Name</p>
-                    <p className="font-medium">{student.parentName}</p>
-                  </div>
-                </div>
-              )}
-
-              {student.place && (
-                <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-[#0d2522] p-3 rounded-xl border border-gray-100 dark:border-transparent">
-                  <div className="p-2 bg-white dark:bg-[#11322f] rounded-lg shadow-sm text-brand-teal">
-                    <MapPin size={18} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Place / Location</p>
-                    <p className="font-medium">{student.place}</p>
-                  </div>
-                </div>
-              )}
-
-              {student.dob && (
-                <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-[#0d2522] p-3 rounded-xl border border-gray-100 dark:border-transparent">
-                  <div className="p-2 bg-white dark:bg-[#11322f] rounded-lg shadow-sm text-brand-teal">
-                    <Calendar size={18} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Date of Birth</p>
-                    <p className="font-medium">{new Date(student.dob).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              )}
-
-              {student.bloodGroup && (
-                <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-[#0d2522] p-3 rounded-xl border border-gray-100 dark:border-transparent">
-                  <div className="p-2 bg-white dark:bg-[#11322f] rounded-lg shadow-sm text-red-500">
-                    <Droplet size={18} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Blood Group</p>
-                    <p className="font-medium">{student.bloodGroup}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+// Modal imported from StudentProfileModal.jsx
 
 const StudentTable = ({ students, inactive }) => {
   const { authUser } = useAuthStore();
@@ -215,7 +81,7 @@ const StudentTable = ({ students, inactive }) => {
 
   return (
     <div className="space-y-6 pt-2">
-      <StudentDetailModal 
+      <StudentProfileModal 
         student={selectedStudent} 
         isOpen={!!selectedStudent} 
         onClose={() => setSelectedStudent(null)} 
