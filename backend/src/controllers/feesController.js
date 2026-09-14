@@ -235,57 +235,80 @@ const structuredData = data.map(item => ({
 
 export const getFeeByStudent = async (req, res) => {
   try {
-    // Destructure both batch_name and cicNumber from the query parameters
     const { batch_name, cicNumber } = req.query;
 
-    // Check if both required parameters are provided
-    if (!batch_name || !cicNumber) {
-      return res.status(400).json({ message: 'Batch name and CIC number are required.' });
+    if (!cicNumber) {
+      return res.status(400).json({ message: 'CIC number is required.' });
     }
-    
-    // Read all student data from the specified batch
-    const allStudents = await db.readAll(batch_name);
 
-    // Find the specific student by their CIC number
-    // We compare them as strings to avoid type issues (e.g., "101" vs 101)
-    const student = allStudents.find(item => String(item["CIC NO"]) === String(cicNumber));
+    const targetCic = String(cicNumber).trim();
+    let student = null;
 
-    // If no student is found with that CIC number, return a 404 error
+    // 1. Try specified batch_name first if provided
+    if (batch_name) {
+      try {
+        const allStudents = await db.readAll(batch_name);
+        if (Array.isArray(allStudents)) {
+          student = allStudents.find(item => item && item["CIC NO"] !== undefined && String(item["CIC NO"]).trim() === targetCic);
+        }
+      } catch (e) {
+        console.warn(`Could not read sheet for batch ${batch_name}:`, e.message);
+      }
+    }
+
+    // 2. If not found in specified batch, search across all known batch sheets
     if (!student) {
-      return res.status(404).json({ message: 'Student not found in this batch.' });
+      const knownBatches = ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14'];
+      for (const bName of knownBatches) {
+        if (bName === batch_name) continue;
+        try {
+          const batchStudents = await db.readAll(bName);
+          if (Array.isArray(batchStudents)) {
+            const found = batchStudents.find(item => item && item["CIC NO"] !== undefined && String(item["CIC NO"]).trim() === targetCic);
+            if (found) {
+              student = found;
+              break;
+            }
+          }
+        } catch (err) {
+          // ignore individual sheet read errors
+        }
+      }
     }
 
-    // If the student is found, structure their data
+    if (!student) {
+      return res.status(404).json({ message: 'Student fee record not found in the system.' });
+    }
+
     const structuredData = {
       cicNumber: student["CIC NO"],
       name: student.NAME,
       contact: student["CONTACT NO"],
       subscription: {
-        perYear: student["ISHTIRAK PER YEAR"],
-        oldBalance: student["OLD BALANCE"],
-        balance: student.BALANCE
+        perYear: Number(student["ISHTIRAK PER YEAR"]) || 0,
+        oldBalance: Number(student["OLD BALANCE"]) || 0,
+        balance: Number(student.BALANCE) || 0
       },
       payments: {
-        SHAW: student.SHAW,
-        DUL_Q: student["DUL Q"],
-        DUL_H: student["DUL H"],
-        MUH: student.MUH,
-        SAF: student.SAF,
-        RA_A: student["RA A"],
-        RA_AK: student["RA AK"],
-        JUM_U: student["JUM U"],
-        JUM_A: student["JUM A"],
-        RAJ: student.RAJ,
-        SHAH: student.SHAH,
-        RAML: student.RAML
+        SHAW: Number(student.SHAW) || 0,
+        DUL_Q: Number(student["DUL Q"]) || 0,
+        DUL_H: Number(student["DUL H"]) || 0,
+        MUH: Number(student.MUH) || 0,
+        SAF: Number(student.SAF) || 0,
+        RA_A: Number(student["RA A"]) || 0,
+        RA_AK: Number(student["RA AK"]) || 0,
+        JUM_U: Number(student["JUM U"]) || 0,
+        JUM_A: Number(student["JUM A"]) || 0,
+        RAJ: Number(student.RAJ) || 0,
+        SHAH: Number(student.SHAH) || 0,
+        RAML: Number(student.RAML) || 0
       }
     };
 
-    // Send the structured data for the single student
     res.status(200).json(structuredData);
 
   } catch (error) {
-    console.error('Error fetching student fee:', error); // Use console.error for better logging
+    console.error('Error fetching student fee:', error);
     res.status(500).json({ message: 'Internal server error while fetching student fee' });
   }
 };
