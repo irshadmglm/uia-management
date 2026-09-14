@@ -1,11 +1,12 @@
 import express from "express";
-import { updateBook, deleteBook, addBook, getBooks, issueBook, returnBook, getUserHistory } from "../controllers/bookController.js";
+import { updateBook, deleteBook, addBook, getBooks, issueBook, returnBook, getUserHistory, bulkImportBooks } from "../controllers/bookController.js";
 
 const router = express.Router();
 
 router.get("/", getBooks)
 
 router.post("/add", addBook);
+router.post("/bulk-import", bulkImportBooks);
 
 router.put("/update/:bookId", updateBook); 
 

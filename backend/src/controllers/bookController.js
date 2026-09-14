@@ -174,3 +174,119 @@ export const getUserHistory = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const bulkImportBooks = async (req, res) => {
+  try {
+    const { books, duplicateAction = "skip" } = req.body;
+
+    if (!Array.isArray(books) || books.length === 0) {
+      return res.status(400).json({ success: false, message: "No books data provided for import" });
+    }
+
+    // Clean and validate incoming books
+    const validBooks = [];
+    const invalidCount = 0;
+
+    for (let i = 0; i < books.length; i++) {
+      const item = books[i];
+      const rawNumber = item.bookNumber ?? item.accNo ?? item.slNo;
+      const parsedNumber = parseInt(rawNumber, 10);
+      const title = item.title?.toString().trim();
+      const author = item.author?.toString().trim() || "Unknown";
+      const category = item.category?.toString().trim() || "General";
+      const callNumber = item.callNumber?.toString().trim() || "";
+      const publisher = item.publisher?.toString().trim() || "";
+      const price = parseFloat(item.price) || 0;
+      const remarks = item.remarks?.toString().trim() || "";
+
+      if (!isNaN(parsedNumber) && title) {
+        validBooks.push({
+          bookNumber: parsedNumber,
+          title,
+          author,
+          category,
+          callNumber,
+          publisher,
+          price,
+          remarks,
+          status: "available"
+        });
+      }
+    }
+
+    if (validBooks.length === 0) {
+      return res.status(400).json({ success: false, message: "No valid books found in the uploaded file" });
+    }
+
+    // Extract all book numbers in this batch
+    const incomingNumbers = validBooks.map(b => b.bookNumber);
+    const existingBooks = await Book.find({ bookNumber: { $in: incomingNumbers } }).select("bookNumber");
+    const existingNumbersSet = new Set(existingBooks.map(b => b.bookNumber));
+
+    let importedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+
+    if (duplicateAction === "update") {
+      // Use bulkWrite for upserts
+      const bulkOps = validBooks.map(b => ({
+        updateOne: {
+          filter: { bookNumber: b.bookNumber },
+          update: {
+            $set: {
+              title: b.title,
+              author: b.author,
+              category: b.category,
+              callNumber: b.callNumber,
+              publisher: b.publisher,
+              price: b.price,
+              remarks: b.remarks
+            },
+            $setOnInsert: {
+              status: "available"
+            }
+          },
+          upsert: true
+        }
+      }));
+
+      const result = await Book.bulkWrite(bulkOps, { ordered: false });
+      importedCount = result.upsertedCount || 0;
+      updatedCount = result.modifiedCount || 0;
+    } else {
+      // Skip duplicates: filter out existingNumbersSet
+      const uniqueNewBooksMap = new Map();
+      for (const book of validBooks) {
+        if (existingNumbersSet.has(book.bookNumber)) {
+          skippedCount++;
+        } else if (uniqueNewBooksMap.has(book.bookNumber)) {
+          skippedCount++; // Duplicate within the file itself
+        } else {
+          uniqueNewBooksMap.set(book.bookNumber, book);
+        }
+      }
+
+      const booksToInsert = Array.from(uniqueNewBooksMap.values());
+      if (booksToInsert.length > 0) {
+        const inserted = await Book.insertMany(booksToInsert, { ordered: false });
+        importedCount = inserted.length;
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Bulk import completed! ${importedCount} imported, ${updatedCount} updated, ${skippedCount} skipped.`,
+      stats: {
+        totalReceived: books.length,
+        validProcessed: validBooks.length,
+        importedCount,
+        updatedCount,
+        skippedCount
+      }
+    });
+  } catch (error) {
+    console.error("Bulk import error:", error);
+    res.status(500).json({ success: false, message: error.message || "Bulk import failed" });
+  }
+};
+
