@@ -3,7 +3,6 @@ import {
   X, UploadCloud, FileSpreadsheet, CheckCircle2, AlertCircle, 
   Download, Layers, Settings2, ArrowRight, RefreshCw, FileText 
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
 
 const DEFAULT_MAPPING = {
   bookNumber: ['ACCESSION NO', 'ACCESSION', 'Sl.No.', 'SL.NO', 'Book Number', 'Book No', 'No.', 'ID'],
@@ -84,7 +83,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     onClose();
   };
 
-  const processWorkbookSheet = (wb, sheetName) => {
+  const processWorkbookSheet = async (wb, sheetName, XLSXModule) => {
+    const XLSX = XLSXModule || (await import('xlsx'));
     const sheet = wb.Sheets[sheetName];
     if (!sheet) return;
     const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
@@ -107,15 +107,16 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     setFile(uploadedFile);
     const reader = new FileReader();
 
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
+        const XLSX = await import('xlsx');
         const data = new Uint8Array(event.target.result);
         const wb = XLSX.read(data, { type: 'array' });
         setWorkbook(wb);
         setSheetNames(wb.SheetNames);
         const firstSheet = wb.SheetNames[0] || '';
         setSelectedSheet(firstSheet);
-        processWorkbookSheet(wb, firstSheet);
+        await processWorkbookSheet(wb, firstSheet, XLSX);
         setStep(2);
       } catch (err) {
         alert('Failed to parse Excel file. Please ensure it is a valid .xlsx or .csv file.');
@@ -125,15 +126,16 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     reader.readAsArrayBuffer(uploadedFile);
   };
 
-  const handleSheetChange = (e) => {
+  const handleSheetChange = async (e) => {
     const sheetName = e.target.value;
     setSelectedSheet(sheetName);
     if (workbook && sheetName) {
-      processWorkbookSheet(workbook, sheetName);
+      await processWorkbookSheet(workbook, sheetName);
     }
   };
 
-  const handleDownloadSample = () => {
+  const handleDownloadSample = async () => {
+    const XLSX = await import('xlsx');
     const sampleData = [
       {
         "ACCESSION NO": 1001,
