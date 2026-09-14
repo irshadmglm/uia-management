@@ -277,7 +277,7 @@ const LibraryBooksTab = () => {
               title="Bulk Import Excel / CSV Catalogue"
             >
               <FileSpreadsheet size={16} />
-              <span className="hidden sm:inline">Bulk Import</span>
+              <span className="hidden sm:inline">Import</span>
             </button>
 
             <button
@@ -285,20 +285,11 @@ const LibraryBooksTab = () => {
               className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/90 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm"
             >
               <PlusCircle size={16} />
-              <span className="hidden sm:inline">Add Book</span>
+              <span className="hidden sm:inline">Add</span>
             </button>
           </div>
         </div>
 
-        {/* Result count */}
-        <div className="mt-3 flex items-center justify-between">
-          <p className="text-xs text-gray-400">
-            Showing <span className="font-bold text-gray-600 dark:text-gray-300">{filteredBooks.length}</span> of {books.length} books
-          </p>
-          <button onClick={() => getBooks()} className="text-xs text-gray-400 hover:text-brand-teal flex items-center gap-1 transition-colors">
-            <RefreshCw size={12} className={booksLoading ? 'animate-spin' : ''} /> Refresh
-          </button>
-        </div>
       </div>
 
       {/* Content */}
