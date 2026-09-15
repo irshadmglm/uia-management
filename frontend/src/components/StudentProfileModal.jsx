@@ -222,7 +222,7 @@ const MarksTab = ({ student }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-[#0d2522]">
-                  {ml.marks.map((m, idx) => (
+                  {ml.marks?.map((m, idx) => (
                     <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-[#11322f]/80">
                       <td className="p-3 pl-5 text-gray-700 dark:text-gray-300 font-medium">{m.subject?.name || m.subjectId?.name || "Unknown"}</td>
                       <td className="p-3 text-center font-bold text-brand-teal dark:text-brand-mint">{m.mark}</td>

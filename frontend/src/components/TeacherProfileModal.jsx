@@ -30,9 +30,9 @@ const TeacherProfileModal = ({ teacher, isOpen, onClose }) => {
         onClick={onClose}
       />
       
-      <div className="relative w-full max-w-2xl bg-white dark:bg-[#11322f] rounded-[24px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-4xl h-[90vh] md:h-auto md:max-h-[85vh] bg-white dark:bg-[#11322f] rounded-[24px] shadow-2xl overflow-hidden flex flex-col">
         {/* Header / Banner */}
-        <div className="h-28 bg-gradient-to-r from-indigo-500 to-purple-600 relative shrink-0">
+        <div className="h-32 bg-gradient-to-r from-brand-teal to-sky-500 relative shrink-0">
           <button 
             onClick={onClose}
             className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 text-white rounded-xl backdrop-blur-sm transition-colors"
@@ -59,7 +59,7 @@ const TeacherProfileModal = ({ teacher, isOpen, onClose }) => {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
                 {teacher.name}
               </h2>
-              <span className="inline-block px-2.5 py-0.5 mt-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold rounded-md uppercase tracking-wider">
+              <span className="inline-block px-2.5 py-0.5 mt-1 bg-brand-mint/20 text-brand-teal dark:text-brand-mint text-xs font-bold rounded-md uppercase tracking-wider">
                 {teacher.role}
               </span>
             </div>
@@ -71,7 +71,7 @@ const TeacherProfileModal = ({ teacher, isOpen, onClose }) => {
               onClick={() => setActiveTab("details")}
               className={`px-5 py-3 text-sm font-bold transition-all border-b-2 ${
                 activeTab === "details"
-                  ? "border-indigo-500 text-indigo-600 dark:text-indigo-400"
+                  ? "border-brand-teal text-brand-teal dark:text-brand-mint"
                   : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               }`}
             >
@@ -81,7 +81,7 @@ const TeacherProfileModal = ({ teacher, isOpen, onClose }) => {
               onClick={() => setActiveTab("academic")}
               className={`px-5 py-3 text-sm font-bold transition-all border-b-2 ${
                 activeTab === "academic"
-                  ? "border-indigo-500 text-indigo-600 dark:text-indigo-400"
+                  ? "border-brand-teal text-brand-teal dark:text-brand-mint"
                   : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               }`}
             >
@@ -119,7 +119,7 @@ const TeacherProfileModal = ({ teacher, isOpen, onClose }) => {
               <div className="space-y-4">
                 {isLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                    <RefreshCw size={24} className="animate-spin mb-3 text-indigo-500" />
+                    <RefreshCw size={24} className="animate-spin mb-3 text-brand-teal" />
                     <p className="text-sm font-medium text-gray-500">Loading academic data...</p>
                   </div>
                 ) : !assignedSubjects || assignedSubjects.length === 0 ? (
@@ -136,21 +136,21 @@ const TeacherProfileModal = ({ teacher, isOpen, onClose }) => {
                       {assignedSubjects.map((subject, index) => (
                         <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white dark:bg-[#0a1f1d] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm">
                           <div className="flex items-start gap-3">
-                            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl shrink-0">
+                            <div className="p-2.5 bg-brand-mint/20 text-brand-teal dark:text-brand-mint rounded-xl shrink-0">
                               <BookOpen size={20} />
                             </div>
                             <div>
-                              <p className="font-bold text-gray-900 dark:text-white text-sm">{subject.subjectName}</p>
+                              <p className="font-bold text-gray-900 dark:text-white text-sm">{subject.subjectName || subject.name || subject.title || "Subject"}</p>
                               <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500">
                                 <LayoutGrid size={12} />
-                                <span>{subject.className}</span>
+                                <span>{subject.batchDetails?.name || "Unknown Class"}</span>
                               </div>
                             </div>
                           </div>
                           
                           {/* If period data was returned, we could show it here */}
                           <div className="mt-3 sm:mt-0 px-3 py-1.5 bg-gray-50 dark:bg-[#11322f] rounded-lg text-[11px] font-semibold text-gray-600 dark:text-gray-300 w-fit">
-                            Class: {subject.className}
+                            Class: {subject.batchDetails?.name || "Unknown Class"}
                           </div>
                         </div>
                       ))}

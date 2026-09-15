@@ -280,36 +280,74 @@ const StudentTable = ({ students, inactive }) => {
             filteredStudents.map((student) => (
               <div
                 key={student._id}
-                className="group relative bg-white dark:bg-[#11322f] rounded-[24px] border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
+                onClick={() => openStudentModal(student)}
+                className="group bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col"
               >
-                {/* Banner Header */}
-                <div className="h-24 bg-gradient-to-r from-brand-teal to-sky-500 relative">
-                  {/* Actions overlay */}
-                  <div className="absolute top-3 right-3 flex gap-1 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-xl p-1">
+                {/* Card Top Color Strip */}
+                <div className="h-1.5 bg-gradient-to-r from-brand-teal to-sky-500"></div>
+
+                <div className="p-4 sm:p-5 flex-1 flex flex-col">
+                  {/* Header Row */}
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-100 dark:bg-[#0d2522] border border-gray-200 dark:border-[#0d2522]">
+                        <img
+                          src={student.profileImage || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO-15oVSs246BVTRobf0Ye3gECp5_E3-OKUGgAD4N8HZgj8xa-PElzug6S6tW0sdlT1cY&usqp=CAU"}
+                          alt={student.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span className="text-xs font-bold text-gray-400 dark:text-gray-500 font-mono">
+                        #{student.cicNumber}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Student Info */}
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug mb-1 group-hover:text-brand-teal transition-colors line-clamp-1" title={student.name}>
+                    {student.name}
+                  </h3>
+                  
+                  <div className="space-y-1.5 mb-4 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                      <Phone size={12} /> {student.phoneNumber || "N/A"}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 truncate" title={student.email}>
+                      <Mail size={12} /> {student.email || "N/A"}
+                    </p>
+                  </div>
+
+                  {student.batchName && (
+                    <div className="mt-auto mb-4">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand-teal dark:text-brand-mint bg-brand-mint/10 px-2 py-0.5 rounded-full border border-brand-mint/20">
+                        <Users size={9} /> {student.batchName}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 pt-3 border-t border-gray-50 dark:border-[#0d2522] mt-auto">
                     {authUser.role === "admin" && (
                       <>
                         {inactive !== true ? (
                           <>
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                useAuthStore.getState().impersonate(student._id);
-                              }}
-                              className="p-1.5 text-white hover:bg-white/20 rounded-lg transition"
-                              title="Impersonate Student"
+                              onClick={(e) => { e.stopPropagation(); useAuthStore.getState().impersonate(student._id); }}
+                              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 rounded-lg transition-all"
+                              title="Impersonate"
                             >
                               <UserCheck size={14} />
                             </button>
                             <Link
                               to={`/dashboard/admin/std-edit/${student._id}`}
                               onClick={(e) => e.stopPropagation()}
-                              className="p-1.5 text-white hover:bg-white/20 rounded-lg transition"
+                              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/10 rounded-lg transition-all"
                             >
                               <Pencil size={14} />
                             </Link>
                             <button
                               onClick={(e) => statusChange(student._id, e)}
-                              className="p-1.5 text-white hover:bg-white/20 rounded-lg transition text-rose-100 hover:text-white"
+                              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all"
                             >
                               <Trash size={14} />
                             </button>
@@ -318,74 +356,21 @@ const StudentTable = ({ students, inactive }) => {
                           <>
                             <button
                               onClick={(e) => statusChange(student._id, e)}
-                              className="p-1.5 text-white hover:bg-white/20 rounded-lg transition"
+                              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/10 rounded-lg transition-all"
                             >
-                              <Undo2 size={14} />
+                              <Undo2 size={13} /> Restore
                             </button>
                             <button
                               onClick={(e) => onDelete(student._id, e)}
-                              className="p-1.5 text-white hover:bg-white/20 rounded-lg transition text-rose-100 hover:text-white"
+                              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all"
                             >
-                              <Trash size={14} />
+                              <Trash size={13} /> Delete
                             </button>
                           </>
                         )}
                       </>
                     )}
                   </div>
-                </div>
-
-                {/* Avatar */}
-                <div className="px-6 relative flex justify-center">
-                  <div className="w-20 h-20 rounded-full border-4 border-white dark:border-[#11322f] shadow-md -mt-10 bg-white overflow-hidden relative z-10">
-                    <img
-                      src={
-                        student.profileImage ||
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO-15oVSs246BVTRobf0Ye3gECp5_E3-OKUGgAD4N8HZgj8xa-PElzug6S6tW0sdlT1cY&usqp=CAU"
-                      }
-                      alt={student.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6 pt-3 text-center flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 line-clamp-1" title={student.name}>
-                    {student.name}
-                  </h3>
-                  <span className="inline-block px-3 py-1 bg-gray-50 dark:bg-[#0d2522] text-brand-teal dark:text-brand-mint text-[11px] font-bold rounded-full mb-4 mx-auto border border-gray-100 dark:border-transparent">
-                    CIC: {student.cicNumber}
-                  </span>
-
-                  <div className="space-y-2.5 mt-auto text-left border-t border-gray-50 dark:border-[#0d2522] pt-4">
-                    <div className="flex items-center gap-3 text-[13px]">
-                      <div className="p-1.5 bg-gray-50 dark:bg-[#0d2522] rounded-lg text-gray-400">
-                        <Users size={14} />
-                      </div>
-                      <span className="text-gray-600 dark:text-gray-300 font-medium truncate">{student.batchName}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-[13px]">
-                      <div className="p-1.5 bg-gray-50 dark:bg-[#0d2522] rounded-lg text-gray-400">
-                        <Phone size={14} />
-                      </div>
-                      <span className="text-gray-600 dark:text-gray-300 truncate">{student.phoneNumber}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-[13px]">
-                      <div className="p-1.5 bg-gray-50 dark:bg-[#0d2522] rounded-lg text-gray-400">
-                        <Mail size={14} />
-                      </div>
-                      <span className="text-gray-600 dark:text-gray-400 truncate" title={student.email}>{student.email}</span>
-                    </div>
-                  </div>
-
-                  {/* Button */}
-                  <button
-                    onClick={() => openStudentModal(student)}
-                    className="mt-5 w-full py-2.5 bg-brand-teal/5 hover:bg-brand-teal hover:text-white dark:bg-brand-teal/10 dark:hover:bg-brand-teal text-brand-teal dark:text-brand-mint rounded-xl text-sm font-bold transition-all border border-brand-teal/10 hover:border-transparent flex items-center justify-center gap-2 group/btn"
-                  >
-                    View Details <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
                 </div>
               </div>
             ))
