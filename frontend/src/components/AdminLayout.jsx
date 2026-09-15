@@ -39,6 +39,7 @@ const AdminLayout = () => {
     { title: "Assign Duties", icon: GraduationCap, route: "/dashboard/admin/assign-duties" },
     { title: "Manage Academic Info", icon: Settings2Icon, route: "/dashboard/admin/management" },
     { title: "Students' Details", icon: Users, route: "/dashboard/admin/users" },
+    { title: "Teachers' Details", icon: UserCheck, route: "/dashboard/admin/teachers" },
     { title: "CE Mark", icon: ClipboardCheck, route: "/dashboard/admin/ce-mark" },
     { title: "Internal Mark", icon: ListTodo, route: "/dashboard/admin/ir-mark" },
     { title: "Semester Exam Results", icon: Award, route: "/dashboard/admin/batches/marklist" },
