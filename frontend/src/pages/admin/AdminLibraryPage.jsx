@@ -8,9 +8,7 @@ const AdminLibraryPage = () => {
   const [activeTab, setActiveTab] = useState('books');
   const { books } = useBooksStore();
 
-  const totalBooks = books.length;
-  const availableBooks = books.filter(b => b.status === 'available').length;
-  const borrowedBooks = books.filter(b => b.status !== 'available').length;
+  const { totalLibraryBooks = 0, totalAvailableBooks = 0, totalBorrowedBooks = 0 } = useBooksStore();
 
   const tabs = [
     { id: 'books', label: 'Book Catalog', icon: BookOpen },
@@ -39,17 +37,17 @@ const AdminLibraryPage = () => {
           {/* Quick Stats */}
           <div className="flex items-center gap-3 sm:gap-5">
             <div className="text-center">
-              <p className="text-2xl font-black text-white">{totalBooks}</p>
+              <p className="text-2xl font-black text-white">{totalLibraryBooks}</p>
               <p className="text-[10px] text-white/50 uppercase tracking-wider">Total</p>
             </div>
             <div className="w-px h-10 bg-white/10"></div>
             <div className="text-center">
-              <p className="text-2xl font-black text-brand-mint">{availableBooks}</p>
+              <p className="text-2xl font-black text-brand-mint">{totalAvailableBooks}</p>
               <p className="text-[10px] text-white/50 uppercase tracking-wider">Available</p>
             </div>
             <div className="w-px h-10 bg-white/10"></div>
             <div className="text-center">
-              <p className="text-2xl font-black text-orange-400">{borrowedBooks}</p>
+              <p className="text-2xl font-black text-orange-400">{totalBorrowedBooks}</p>
               <p className="text-[10px] text-white/50 uppercase tracking-wider">Borrowed</p>
             </div>
           </div>

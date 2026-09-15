@@ -11,6 +11,7 @@ const DEFAULT_MAPPING = {
   category: ['Section', 'SECTION', 'Source Sheet', 'Category', 'Genre', 'Subject'],
   callNumber: ['CALL NO', 'Call No', 'Call Number', 'CallNo'],
   publisher: ['PUBLISHER', 'Publisher', 'Publication'],
+  volume: ['VOLUME', 'Volume', 'Vol', 'VOL'],
   price: ['PRICE', 'Price', 'Cost', 'Amount'],
   remarks: ['Remarks', 'REMARKS', 'Notes', 'Comments']
 };
@@ -23,6 +24,7 @@ const autoDetectMapping = (headers) => {
     category: '',
     callNumber: '',
     publisher: '',
+    volume: '',
     price: '',
     remarks: ''
   };
@@ -144,6 +146,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "Section": "Arabic - Tafseer",
         "CALL NO": "222.3 QUR/K",
         "PUBLISHER": "Dar Al-Kotob Al-Ilmiyah",
+        "VOLUME": "1",
         "PRICE": 450,
         "Remarks": "Hardcover"
       },
@@ -154,6 +157,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "Section": "Arabic - Hadith",
         "CALL NO": "223.1 BUK/S",
         "PUBLISHER": "Darussalam",
+        "VOLUME": "1",
         "PRICE": 600,
         "Remarks": "Volume 1"
       }
@@ -182,6 +186,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     const category = getVal('category');
     const callNumber = getVal('callNumber');
     const publisher = getVal('publisher');
+    const volume = getVal('volume');
     const price = getVal('price');
     const remarks = getVal('remarks');
 
@@ -195,6 +200,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
       category: category || 'General',
       callNumber,
       publisher,
+      volume,
       price: parseFloat(price) || 0,
       remarks,
       isValid
@@ -350,6 +356,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                     { key: 'category', label: 'Section / Category' },
                     { key: 'callNumber', label: 'Call Number' },
                     { key: 'publisher', label: 'Publisher' },
+                    { key: 'volume', label: 'Volume' },
                     { key: 'price', label: 'Price' },
                     { key: 'remarks', label: 'Remarks' }
                   ].map(({ key, label }) => (

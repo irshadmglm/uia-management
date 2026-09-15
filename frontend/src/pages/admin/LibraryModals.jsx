@@ -45,7 +45,7 @@ const ModalHeader = ({ title, subtitle, icon: Icon, onClose, iconBg = 'bg-brand-
 export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({ 
     title: '', author: '', bookNumber: '', category: 'General',
-    callNumber: '', publisher: '', price: '', remarks: ''
+    callNumber: '', publisher: '', volume: '', price: '', remarks: ''
   });
 
   useEffect(() => {
@@ -54,13 +54,14 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
         ...initialData,
         callNumber: initialData.callNumber || '',
         publisher: initialData.publisher || '',
+        volume: initialData.volume || '',
         price: initialData.price || '',
         remarks: initialData.remarks || '',
       });
     } else {
       setFormData({ 
         title: '', author: '', bookNumber: '', category: 'General',
-        callNumber: '', publisher: '', price: '', remarks: ''
+        callNumber: '', publisher: '', volume: '', price: '', remarks: ''
       });
     }
   }, [initialData, isOpen]);
@@ -118,6 +119,13 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             <div className="relative">
               <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="text" className={`${inputCls} pl-9`} value={formData.publisher} onChange={e => set('publisher', e.target.value)} placeholder="Publisher name" />
+            </div>
+          </div>
+          <div>
+            <label className={labelCls}>Volume</label>
+            <div className="relative">
+              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.volume} onChange={e => set('volume', e.target.value)} placeholder="e.g. Vol 1" />
             </div>
           </div>
           <div>

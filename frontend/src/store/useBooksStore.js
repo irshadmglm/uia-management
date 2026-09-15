@@ -19,7 +19,10 @@ export const useBooksStore = create((set, get) => ({
                 books: res.data.books,
                 totalBooks: res.data.total,
                 totalPages: res.data.totalPages,
-                categories: res.data.categories || []
+                categories: res.data.categories || [],
+                totalLibraryBooks: res.data.totalLibraryBooks,
+                totalAvailableBooks: res.data.totalAvailableBooks,
+                totalBorrowedBooks: res.data.totalBorrowedBooks
             });
         } catch (error) {
             console.error(error.response?.data?.message || "An error occurred");
