@@ -181,7 +181,8 @@ const ProfileTab = ({ student }) => {
       )}
 
   </div>
-);
+  );
+};
 
 const FeesTab = ({ student }) => {
   const { fetchFeesByStd, monthNames } = useFeeStore();
