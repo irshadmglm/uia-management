@@ -214,6 +214,17 @@ export const getUserHistory = async (req, res) => {
   }
 };
 
+export const getBookHistory = async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const history = await LibraryTransaction.find({ bookId }).sort({ issueDate: -1 });
+
+    res.status(200).json({ success: true, history });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 export const bulkImportBooks = async (req, res) => {
   try {
     const { books, duplicateAction = "skip" } = req.body;
