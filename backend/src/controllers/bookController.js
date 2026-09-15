@@ -36,10 +36,12 @@ export const getBooks = async (req, res) => {
       const limitVal = parseInt(limit, 10);
       
       // Run queries concurrently
-      const [books, total, rawCategories] = await Promise.all([
+      const [books, total, rawCategories, totalLibraryBooks, totalAvailableBooks] = await Promise.all([
         Book.find(query).sort({ bookNumber: 1 }).skip(skip).limit(limitVal),
         Book.countDocuments(query),
-        Book.distinct('category')
+        Book.distinct('category'),
+        Book.countDocuments(),
+        Book.countDocuments({ status: 'available' })
       ]);
   
       res.status(200).json({ 
@@ -47,7 +49,10 @@ export const getBooks = async (req, res) => {
         books,
         total,
         totalPages: Math.ceil(total / limitVal),
-        categories: rawCategories.filter(Boolean) // Remove null/undefined
+        categories: rawCategories.filter(Boolean), // Remove null/undefined
+        totalLibraryBooks,
+        totalAvailableBooks,
+        totalBorrowedBooks: totalLibraryBooks - totalAvailableBooks
       });
     } catch (error) {
       res.status(500).json({ success: false, error: error.message });

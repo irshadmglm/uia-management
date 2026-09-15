@@ -7,6 +7,7 @@ const BookSchema = new mongoose.Schema({
   category: { type: String, default: "General", index: true },
   callNumber: { type: String, default: "" },
   publisher: { type: String, default: "" },
+  volume: { type: String, default: "" },
   price: { type: Number, default: 0 },
   remarks: { type: String, default: "" },
   status: { type: String, default: "available", index: true },
