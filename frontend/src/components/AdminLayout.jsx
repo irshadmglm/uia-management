@@ -5,7 +5,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { 
   Menu, X, Home, Users, GraduationCap, Settings2Icon, 
   ClipboardList, ClipboardCheck, ListTodo, Award, Medal, 
-  Book, HandCoins, DownloadCloud, File, BookOpen, LogOut, Moon, Sun, User, ChevronLeft
+  Book, HandCoins, DownloadCloud, File, BookOpen, LogOut, Moon, Sun, User, ChevronLeft, UserCheck
 } from 'lucide-react';
 
 const AdminLayout = () => {
