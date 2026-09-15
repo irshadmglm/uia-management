@@ -50,7 +50,7 @@ export default function CustomSelect({ value, onChange, children, className, dis
     .trim();
 
   return (
-    <div className="relative w-full" ref={containerRef}>
+    <div className="relative" ref={containerRef}>
       <button
         type="button"
         id={id}
@@ -68,7 +68,7 @@ export default function CustomSelect({ value, onChange, children, className, dis
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1.5 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] max-h-60 overflow-auto py-1 backdrop-blur-xl">
+        <div className="absolute z-50 left-0 min-w-full w-max max-w-xs mt-1.5 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] max-h-60 overflow-auto py-1 backdrop-blur-xl">
           <ul className="flex flex-col gap-0.5 px-1.5">
             {options.map((option, idx) => (
               <li

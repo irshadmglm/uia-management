@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { 
   PlusCircle, Search, Edit2, Trash2, ArrowRightLeft, 
   BookOpenCheck, Clock, BookOpen, Filter, RefreshCw,
-  Hash, User, Tag, LayoutGrid, List, FileSpreadsheet
+  Hash, User, Tag, LayoutGrid, List, FileSpreadsheet,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useBooksStore } from '../../store/useBooksStore';
 import ConfirmPopup from '../../components/ConfirmPopup';
@@ -155,8 +156,12 @@ const LibraryBooksTab = () => {
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [bookToIssue, setBookToIssue] = useState(null);
   const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => { getBooks(); }, [getBooks]);
+
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, selectedCategory, statusFilter]);
 
   const categories = ['All', ...new Set(books.map(b => b.category).filter(Boolean))];
 
@@ -170,6 +175,11 @@ const LibraryBooksTab = () => {
                           (statusFilter === 'Borrowed' && book.status !== 'available');
     return matchesSearch && matchesCategory && matchesStatus;
   });
+
+  const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
+  const paginatedBooks = filteredBooks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const startItem = filteredBooks.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, filteredBooks.length);
 
   const handleDeleteClick = (book) => { setBookToDelete(book); setIsDeleteModalOpen(true); };
   const confirmDelete = async () => {
@@ -292,6 +302,25 @@ const LibraryBooksTab = () => {
 
       </div>
 
+      {/* Category Chips */}
+      {categories.length > 2 && (
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border whitespace-nowrap ${
+                selectedCategory === cat
+                  ? 'bg-brand-teal text-white border-brand-teal shadow-md'
+                  : 'bg-white dark:bg-[#11322f] text-gray-600 dark:text-gray-300 border-gray-100 dark:border-[#0d2522] hover:border-brand-teal/40 hover:text-brand-teal dark:hover:text-brand-mint'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Content */}
       {booksLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -307,7 +336,7 @@ const LibraryBooksTab = () => {
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filteredBooks.map(book => (
+          {paginatedBooks.map(book => (
             <BookCard
               key={book._id}
               book={book}
@@ -332,7 +361,7 @@ const LibraryBooksTab = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-[#0d2522]">
-                {filteredBooks.map(book => (
+                {paginatedBooks.map(book => (
                   <BookRow
                     key={book._id}
                     book={book}
@@ -344,6 +373,55 @@ const LibraryBooksTab = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!booksLoading && filteredBooks.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#11322f] px-5 py-3 rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Showing <span className="font-bold text-gray-900 dark:text-white">{startItem}–{endItem}</span> of <span className="font-bold text-gray-900 dark:text-white">{filteredBooks.length}</span> books
+          </p>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl border border-gray-100 dark:border-[#0d2522] text-gray-500 hover:bg-gray-50 dark:hover:bg-[#0a1f1d] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            {[...Array(totalPages)].map((_, idx) => {
+              const page = idx + 1;
+              if (totalPages <= 7 || page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1) {
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-9 h-9 rounded-xl text-sm font-bold transition-all ${
+                      currentPage === page
+                        ? 'bg-brand-teal text-white shadow-md'
+                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#0a1f1d] border border-gray-100 dark:border-[#0d2522]'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              }
+              if (page === currentPage - 2 || page === currentPage + 2) {
+                return <span key={page} className="text-gray-400 px-1">…</span>;
+              }
+              return null;
+            })}
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl border border-gray-100 dark:border-[#0d2522] text-gray-500 hover:bg-gray-50 dark:hover:bg-[#0a1f1d] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         </div>
       )}
