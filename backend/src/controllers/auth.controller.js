@@ -146,53 +146,62 @@ export const logout = (req, res) => {
 
 
 export const impersonate = async (req, res) => {
-  try {
-    // Only allow admin to impersonate
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden: Only admin can impersonate students" });
+    try {
+      // Only allow admin to impersonate
+      if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "Forbidden: Only admin can impersonate users" });
+      }
+  
+      const { studentId } = req.params; // Keeping param name as studentId for route compatibility
+      let user = await Student.findById(studentId);
+  
+      if (!user) {
+        user = await Staff.findById(studentId);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Save the current admin token into a separate cookie
+      const adminToken = req.cookies.jwt;
+      res.cookie("admin_token", adminToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", 
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+  
+      // Generate a new JWT token for the user, overwriting the main session
+      generateToken(user._id, res);
+  
+      const responseData = {
+        _id: user._id,
+        name: user.name,
+        email: user.email || null,
+        phoneNumber: user.phoneNumber || null,
+        role: user.role,
+        profileImage: user.profileImage || null,
+        isImpersonating: true,
+      };
+
+      if (user.role === "student") {
+        responseData.batchName = user.batchName || null;
+        responseData.batchId = user.batchId || null;
+        responseData.address = user.address || null;
+        responseData.cicNumber = user.cicNumber || null;
+        responseData.whatsupNumber = user.whatsupNumber || null;
+        responseData.parentNumber = user.parentNumber || null;
+      } else if (user.role === "teacher") {
+        responseData.userName = user.userName || null;
+      }
+  
+      res.status(200).json(responseData);
+    } catch (error) {
+      console.error("Error in impersonate controller:", error.message);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-
-    const { studentId } = req.params;
-    const student = await Student.findById(studentId);
-
-    if (!student) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    // Save the current admin token into a separate cookie
-    const adminToken = req.cookies.jwt;
-    res.cookie("admin_token", adminToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", 
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", 
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    // Generate a new JWT token for the student, overwriting the main session
-    generateToken(student._id, res);
-
-    const responseData = {
-      _id: student._id,
-      name: student.name,
-      batchName: student.batchName || null,
-      batchId: student.batchId || null,
-      email: student.email || null,
-      address: student.address || null,
-      cicNumber: student.cicNumber || null,
-      phoneNumber: student.phoneNumber || null,
-      whatsupNumber: student.whatsupNumber || null,
-      parentNumber: student.parentNumber || null,
-      role: student.role || "student",
-      profileImage: student.profileImage || null,
-      isImpersonating: true,
-    };
-
-    res.status(200).json(responseData);
-  } catch (error) {
-    console.error("Error in impersonate controller:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
+  };
 
 export const stopImpersonate = async (req, res) => {
   try {
