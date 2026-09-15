@@ -3,13 +3,52 @@ import LibraryTransaction from "../models/libraryTransaction.model.js";
 
 export const getBooks = async (req, res) => {
     try {
-      const books = await Book.find().sort({ bookNumber: 1 });
-  
-      if (!books || books.length === 0) {
-        return res.status(200).json({ success: true, books: [] });
+      const { page = 1, limit = 20, search = '', category = 'All', status = 'All' } = req.query;
+      
+      const query = {};
+      
+      // Search
+      if (search) {
+        const searchRegex = new RegExp(search, 'i');
+        query.$or = [
+          { title: searchRegex },
+          { author: searchRegex },
+        ];
+        // If search is a valid number, also search by bookNumber
+        if (!isNaN(search) && search.trim() !== '') {
+          query.$or.push({ bookNumber: parseInt(search, 10) });
+        }
       }
+      
+      // Filter by category
+      if (category && category !== 'All') {
+        query.category = category;
+      }
+      
+      // Filter by status
+      if (status === 'Available') {
+        query.status = 'available';
+      } else if (status === 'Borrowed') {
+        query.status = { $ne: 'available' };
+      }
+      
+      const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+      const limitVal = parseInt(limit, 10);
+      
+      // Run queries concurrently
+      const [books, total, rawCategories] = await Promise.all([
+        Book.find(query).sort({ bookNumber: 1 }).skip(skip).limit(limitVal),
+        Book.countDocuments(query),
+        Book.distinct('category')
+      ]);
   
-      res.status(200).json({ success: true, books });
+      res.status(200).json({ 
+        success: true, 
+        books,
+        total,
+        totalPages: Math.ceil(total / limitVal),
+        categories: rawCategories.filter(Boolean) // Remove null/undefined
+      });
     } catch (error) {
       res.status(500).json({ success: false, error: error.message });
     }
