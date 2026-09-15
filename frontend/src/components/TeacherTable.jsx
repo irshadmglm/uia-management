@@ -171,6 +171,16 @@ const TeacherTable = ({ teachers }) => {
                     {authUser.role === "admin" && (
                       <td className="p-4 text-right">
                         <div className="flex justify-end gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              useAuthStore.getState().impersonate(teacher._id);
+                            }}
+                            className="text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 p-2 rounded-lg transition"
+                            title="Impersonate Teacher"
+                          >
+                            <UserCheck size={18} />
+                          </button>
                           <Link
                             to={`/dashboard/admin/staff-edit/${teacher._id}`}
                             onClick={(e) => e.stopPropagation()}
@@ -249,6 +259,13 @@ const TeacherTable = ({ teachers }) => {
                   <div className="flex items-center gap-2 pt-3 border-t border-gray-50 dark:border-[#0d2522] mt-auto">
                     {authUser.role === "admin" && (
                       <>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); useAuthStore.getState().impersonate(teacher._id); }}
+                          className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 rounded-lg transition-all"
+                          title="Impersonate"
+                        >
+                          <UserCheck size={13} />
+                        </button>
                         <Link
                           to={`/dashboard/admin/staff-edit/${teacher._id}`}
                           onClick={(e) => e.stopPropagation()}

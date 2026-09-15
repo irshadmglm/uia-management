@@ -13,17 +13,45 @@ import {
   FileText,
   Wallet,
   CheckCircle,
-  Clock
+  Clock,
+  Lock
 } from "lucide-react";
 
 import { useFeeStore } from "../store/feesSrore";
 import { useMarksStore } from "../store/useMarksStore";
 import { useAchievement } from "../store/achivemnetStore";
 import { useBooksStore } from "../store/useBooksStore";
+import { useStudentStore } from "../store/studentStore";
+import { useAuthStore } from "../store/useAuthStore";
+import toast from "react-hot-toast";
 
 // --- Tab Components ---
 
-const ProfileTab = ({ student }) => (
+const ProfileTab = ({ student }) => {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChanging, setIsChanging] = useState(false);
+  const { editStudent } = useStudentStore();
+  const { authUser } = useAuthStore();
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setIsChanging(true);
+    await editStudent({ password: newPassword }, student._id);
+    setIsChanging(false);
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  return (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 animate-fadeIn">
     <div className="space-y-4">
       <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Contact Info</h3>
@@ -114,6 +142,44 @@ const ProfileTab = ({ student }) => (
         </div>
       )}
     </div>
+
+      {authUser?.role === "admin" && (
+        <div className="md:col-span-2 space-y-4 pt-4 border-t border-gray-100 dark:border-[#0d2522]">
+          <h3 className="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider flex items-center gap-2">
+            <Lock size={16} /> Security
+          </h3>
+          <form onSubmit={handlePasswordChange} className="bg-gray-50 dark:bg-[#0d2522] p-4 rounded-xl border border-gray-100 dark:border-transparent flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+            <div className="flex-1 w-full">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">New Password</label>
+              <input 
+                type="password" 
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full px-3 py-2 bg-white dark:bg-[#11322f] border border-gray-200 dark:border-transparent rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white"
+                placeholder="Enter new password"
+              />
+            </div>
+            <div className="flex-1 w-full">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Confirm Password</label>
+              <input 
+                type="password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 bg-white dark:bg-[#11322f] border border-gray-200 dark:border-transparent rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white"
+                placeholder="Confirm new password"
+              />
+            </div>
+            <button 
+              type="submit"
+              disabled={isChanging || !newPassword || !confirmPassword}
+              className="w-full sm:w-auto px-5 py-2 bg-brand-teal hover:bg-brand-teal/90 text-white rounded-lg text-sm font-bold transition-all disabled:opacity-50 mt-2 sm:mt-0"
+            >
+              {isChanging ? "Updating..." : "Change Password"}
+            </button>
+          </form>
+        </div>
+      )}
+
   </div>
 );
 
