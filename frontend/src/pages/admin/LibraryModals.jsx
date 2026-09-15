@@ -6,15 +6,15 @@ import { useDebounce } from '../../hooks/useDebounce';
 const inputCls = "w-full px-4 py-2.5 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal transition-all";
 const labelCls = "block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5";
 
-const ModalWrapper = ({ isOpen, onClose, children, wide = false }) => {
+const ModalWrapper = ({ isOpen, onClose, children, wide = false, maxWidth = '' }) => {
   if (!isOpen) return null;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
-        className={`bg-white dark:bg-[#11322f] rounded-2xl shadow-2xl w-full ${wide ? 'max-w-lg' : 'max-w-md'} overflow-hidden border border-gray-100 dark:border-[#0d2522] animate-in zoom-in-95 fade-in duration-200`}
+        className={`bg-white dark:bg-[#11322f] rounded-2xl shadow-2xl w-full ${maxWidth ? maxWidth : (wide ? 'max-w-lg' : 'max-w-md')} max-h-[90vh] overflow-y-auto overflow-x-hidden border border-gray-100 dark:border-[#0d2522] animate-in zoom-in-95 fade-in duration-200`}
         onClick={e => e.stopPropagation()}
       >
         {children}
@@ -43,13 +43,25 @@ const ModalHeader = ({ title, subtitle, icon: Icon, onClose, iconBg = 'bg-brand-
 
 // --- BOOK FORM MODAL (Add / Edit) ---
 export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
-  const [formData, setFormData] = useState({ title: '', author: '', bookNumber: '', category: 'General' });
+  const [formData, setFormData] = useState({ 
+    title: '', author: '', bookNumber: '', category: 'General',
+    callNumber: '', publisher: '', price: '', remarks: ''
+  });
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        callNumber: initialData.callNumber || '',
+        publisher: initialData.publisher || '',
+        price: initialData.price || '',
+        remarks: initialData.remarks || '',
+      });
     } else {
-      setFormData({ title: '', author: '', bookNumber: '', category: 'General' });
+      setFormData({ 
+        title: '', author: '', bookNumber: '', category: 'General',
+        callNumber: '', publisher: '', price: '', remarks: ''
+      });
     }
   }, [initialData, isOpen]);
 
@@ -57,48 +69,81 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   const set = (key, val) => setFormData(prev => ({ ...prev, [key]: val }));
 
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose}>
+    <ModalWrapper isOpen={isOpen} onClose={onClose} maxWidth="max-w-2xl">
       <ModalHeader
         title={initialData ? 'Edit Book' : 'Add New Book'}
         subtitle={initialData ? `Editing: ${initialData.title}` : 'Fill in the details to add a new book'}
         icon={BookOpen}
         onClose={onClose}
       />
-      <form onSubmit={handleSubmit} className="p-5 space-y-4">
-        <div>
-          <label className={labelCls}>Book Number (ID)</label>
-          <div className="relative">
-            <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input required type="number" className={`${inputCls} pl-9`} value={formData.bookNumber} onChange={e => set('bookNumber', e.target.value)} placeholder="e.g. 123" />
+      <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label className={labelCls}>Book Number (ID) <span className="text-red-500">*</span></label>
+            <div className="relative">
+              <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input required type="number" className={`${inputCls} pl-9`} value={formData.bookNumber} onChange={e => set('bookNumber', e.target.value)} placeholder="e.g. 123" />
+            </div>
           </div>
-        </div>
-        <div>
-          <label className={labelCls}>Book Title</label>
-          <div className="relative">
-            <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input required type="text" className={`${inputCls} pl-9`} value={formData.title} onChange={e => set('title', e.target.value)} placeholder="Enter book title" />
+          <div>
+            <label className={labelCls}>Call Number</label>
+            <div className="relative">
+              <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.callNumber} onChange={e => set('callNumber', e.target.value)} placeholder="e.g. QA76.73.J38" />
+            </div>
           </div>
-        </div>
-        <div>
-          <label className={labelCls}>Author</label>
-          <div className="relative">
-            <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input required type="text" className={`${inputCls} pl-9`} value={formData.author} onChange={e => set('author', e.target.value)} placeholder="Author name" />
+          <div className="md:col-span-2">
+            <label className={labelCls}>Book Title <span className="text-red-500">*</span></label>
+            <div className="relative">
+              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input required type="text" className={`${inputCls} pl-9`} value={formData.title} onChange={e => set('title', e.target.value)} placeholder="Enter book title" />
+            </div>
           </div>
-        </div>
-        <div>
-          <label className={labelCls}>Category</label>
-          <div className="relative">
-            <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input required type="text" className={`${inputCls} pl-9`} value={formData.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Science, Fiction" />
+          <div>
+            <label className={labelCls}>Author <span className="text-red-500">*</span></label>
+            <div className="relative">
+              <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input required type="text" className={`${inputCls} pl-9`} value={formData.author} onChange={e => set('author', e.target.value)} placeholder="Author name" />
+            </div>
+          </div>
+          <div>
+            <label className={labelCls}>Category</label>
+            <div className="relative">
+              <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input required type="text" className={`${inputCls} pl-9`} value={formData.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Science, Fiction" />
+            </div>
+          </div>
+          <div>
+            <label className={labelCls}>Publisher</label>
+            <div className="relative">
+              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.publisher} onChange={e => set('publisher', e.target.value)} placeholder="Publisher name" />
+            </div>
+          </div>
+          <div>
+            <label className={labelCls}>Price</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
+              <input type="number" min="0" step="0.01" className={`${inputCls} pl-8`} value={formData.price} onChange={e => set('price', e.target.value)} placeholder="0.00" />
+            </div>
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelCls}>Remarks</label>
+            <textarea
+              className={`${inputCls} resize-none`}
+              rows={2}
+              value={formData.remarks}
+              onChange={e => set('remarks', e.target.value)}
+              placeholder="Any additional notes or remarks about this book..."
+            />
           </div>
         </div>
 
-        <div className="flex gap-2 pt-2">
-          <button type="button" onClick={onClose} className="flex-1 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-[#0d2522] hover:bg-gray-200 dark:hover:bg-[#0a1a18] rounded-xl transition-colors">
+        <div className="flex gap-3 pt-4 border-t border-gray-50 dark:border-[#0d2522]">
+          <button type="button" onClick={onClose} className="flex-1 py-3 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-[#0d2522] hover:bg-gray-200 dark:hover:bg-[#0a1a18] rounded-xl transition-colors">
             Cancel
           </button>
-          <button type="submit" className="flex-1 py-2.5 text-sm font-bold text-white bg-brand-teal hover:bg-brand-teal/90 rounded-xl transition-colors shadow-sm">
+          <button type="submit" className="flex-1 py-3 text-sm font-bold text-white bg-brand-teal hover:bg-brand-teal/90 rounded-xl transition-colors shadow-sm">
             {initialData ? 'Update Book' : 'Add Book'}
           </button>
         </div>
