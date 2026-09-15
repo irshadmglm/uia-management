@@ -4,15 +4,23 @@ import { toast } from "react-hot-toast";
 
 export const useBooksStore = create((set, get) => ({
     books: [],
+    categories: [],
+    totalBooks: 0,
+    totalPages: 0,
     history: [],
     booksLoading: false,
     isRegistering: false,
 
-    getBooks: async () => {
+    getBooks: async (params = {}) => {
         set({ booksLoading: true });
         try {
-            const res = await axiosInstance.get('/books');
-            set({ books: res.data.books });
+            const res = await axiosInstance.get('/books', { params });
+            set({ 
+                books: res.data.books,
+                totalBooks: res.data.total,
+                totalPages: res.data.totalPages,
+                categories: res.data.categories || []
+            });
         } catch (error) {
             console.error(error.response?.data?.message || "An error occurred");
             toast.error(error.response?.data?.message || "Failed to fetch books");

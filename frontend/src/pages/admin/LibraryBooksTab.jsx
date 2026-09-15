@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { 
   PlusCircle, Search, Edit2, Trash2, ArrowRightLeft, 
   BookOpenCheck, Clock, BookOpen, Filter, RefreshCw,
@@ -10,6 +10,7 @@ import ConfirmPopup from '../../components/ConfirmPopup';
 import { BookFormModal, IssueBookModal } from './LibraryModals';
 import LibraryBulkImportModal from './LibraryBulkImportModal';
 import CustomSelect from '../../components/CustomSelect';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const StatusBadge = ({ status, studentName, issueDate }) => {
   const days = issueDate
@@ -144,7 +145,11 @@ const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn }) => (
 );
 
 const LibraryBooksTab = () => {
-  const { books, getBooks, booksLoading, deleteBook, addBook, updateBook, issueBook, returnBook, bulkImportBooks, isRegistering } = useBooksStore();
+  const { 
+    books, categories, totalBooks, totalPages, getBooks, 
+    booksLoading, deleteBook, addBook, updateBook, issueBook, 
+    returnBook, bulkImportBooks, isRegistering 
+  } = useBooksStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [viewMode, setViewMode] = useState('grid');
@@ -157,29 +162,25 @@ const LibraryBooksTab = () => {
   const [bookToIssue, setBookToIssue] = useState(null);
   const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
-  useEffect(() => { getBooks(); }, [getBooks]);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  useEffect(() => { setCurrentPage(1); }, [searchTerm, selectedCategory, statusFilter]);
+  useEffect(() => {
+    getBooks({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: debouncedSearchTerm,
+      category: selectedCategory,
+      status: statusFilter
+    });
+  }, [currentPage, debouncedSearchTerm, selectedCategory, statusFilter, getBooks]);
 
-  const categories = ['All', ...new Set(books.map(b => b.category).filter(Boolean))];
+  // Reset to page 1 when filters change
+  useEffect(() => { setCurrentPage(1); }, [debouncedSearchTerm, selectedCategory, statusFilter]);
 
-  const filteredBooks = books.filter(book => {
-    const matchesSearch = (book.title?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                          (book.author?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                          (book.bookNumber?.toString().includes(searchTerm));
-    const matchesCategory = selectedCategory === 'All' || book.category === selectedCategory;
-    const matchesStatus = statusFilter === 'All' ||
-                          (statusFilter === 'Available' && book.status === 'available') ||
-                          (statusFilter === 'Borrowed' && book.status !== 'available');
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-
-  const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
-  const paginatedBooks = filteredBooks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const startItem = filteredBooks.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, filteredBooks.length);
+  const startItem = totalBooks === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalBooks);
 
   const handleDeleteClick = (book) => { setBookToDelete(book); setIsDeleteModalOpen(true); };
   const confirmDelete = async () => {
@@ -303,8 +304,18 @@ const LibraryBooksTab = () => {
       </div>
 
       {/* Category Chips */}
-      {categories.length > 2 && (
+      {categories && categories.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <button
+            onClick={() => setSelectedCategory('All')}
+            className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border whitespace-nowrap ${
+              selectedCategory === 'All'
+                ? 'bg-brand-teal text-white border-brand-teal shadow-md'
+                : 'bg-white dark:bg-[#11322f] text-gray-600 dark:text-gray-300 border-gray-100 dark:border-[#0d2522] hover:border-brand-teal/40 hover:text-brand-teal dark:hover:text-brand-mint'
+            }`}
+          >
+            All
+          </button>
           {categories.map(cat => (
             <button
               key={cat}
@@ -335,8 +346,8 @@ const LibraryBooksTab = () => {
           <p className="text-sm text-gray-400 mt-1">Try adjusting your search or filters</p>
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {paginatedBooks.map(book => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+          {books.map(book => (
             <BookCard
               key={book._id}
               book={book}
@@ -361,7 +372,7 @@ const LibraryBooksTab = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-[#0d2522]">
-                {paginatedBooks.map(book => (
+                {books.map(book => (
                   <BookRow
                     key={book._id}
                     book={book}
@@ -378,10 +389,10 @@ const LibraryBooksTab = () => {
       )}
 
       {/* Pagination */}
-      {!booksLoading && filteredBooks.length > 0 && (
+      {!booksLoading && totalBooks > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#11322f] px-5 py-3 rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Showing <span className="font-bold text-gray-900 dark:text-white">{startItem}–{endItem}</span> of <span className="font-bold text-gray-900 dark:text-white">{filteredBooks.length}</span> books
+            Showing <span className="font-bold text-gray-900 dark:text-white">{startItem}–{endItem}</span> of <span className="font-bold text-gray-900 dark:text-white">{totalBooks}</span> books
           </p>
           <div className="flex items-center gap-1.5">
             <button

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { X, BookOpen, Search, User, Hash, Tag, Check, ArrowRightLeft, Users } from 'lucide-react';
 import { useStudentStore } from '../../store/studentStore';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const inputCls = "w-full px-4 py-2.5 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal transition-all";
 const labelCls = "block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5";
@@ -122,10 +123,16 @@ export const IssueBookModal = ({ isOpen, onClose, onSubmit, book }) => {
     onSubmit({ userId: user._id, userName: user.name, userRole: 'student' });
   };
 
-  const filteredStudents = students.filter(s =>
-    s.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.cicNumber?.toString().includes(searchQuery)
-  );
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  const filteredStudents = useMemo(() => {
+    if (!debouncedSearchQuery) return students;
+    const lowerQuery = debouncedSearchQuery.toLowerCase();
+    return students.filter(s =>
+      s.name?.toLowerCase().includes(lowerQuery) ||
+      s.cicNumber?.toString().includes(lowerQuery)
+    );
+  }, [students, debouncedSearchQuery]);
 
   const selectedStudentObj = students.find(s => s._id === selectedUser);
 
