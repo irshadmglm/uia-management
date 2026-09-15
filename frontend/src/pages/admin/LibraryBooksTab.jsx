@@ -7,7 +7,9 @@ import {
 } from 'lucide-react';
 import { useBooksStore } from '../../store/useBooksStore';
 import ConfirmPopup from '../../components/ConfirmPopup';
-import { BookFormModal, IssueBookModal } from './LibraryModals';
+import ConfirmPopup from '../../components/ConfirmPopup';
+import BookFormModal from './BookFormModal';
+import { IssueBookModal, ReturnBookModal, BookDetailsModal } from './LibraryModals';
 import LibraryBulkImportModal from './LibraryBulkImportModal';
 import CustomSelect from '../../components/CustomSelect';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -38,8 +40,8 @@ const StatusBadge = ({ status, studentName, issueDate }) => {
   );
 };
 
-const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn }) => (
-  <div className="group bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick }) => (
+  <div onClick={onClick} className="group bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden cursor-pointer">
     {/* Card Top Color Strip */}
     <div className={`h-1.5 ${book.status === 'available' ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-gradient-to-r from-orange-400 to-amber-500'}`}></div>
 
@@ -72,27 +74,27 @@ const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn }) => (
       {/* Actions */}
       <div className="flex items-center gap-2 pt-3 border-t border-gray-50 dark:border-[#0d2522]">
         <button
-          onClick={() => onEdit(book)}
+          onClick={(e) => { e.stopPropagation(); onEdit(book); }}
           className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-lg transition-all"
         >
           <Edit2 size={13} /> Edit
         </button>
         <button
-          onClick={() => onDelete(book)}
+          onClick={(e) => { e.stopPropagation(); onDelete(book); }}
           className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all"
         >
           <Trash2 size={13} /> Delete
         </button>
         {book.status === 'available' ? (
           <button
-            onClick={() => onIssue(book)}
+            onClick={(e) => { e.stopPropagation(); onIssue(book); }}
             className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-bold text-brand-teal dark:text-brand-mint bg-brand-mint/10 hover:bg-brand-mint/20 rounded-lg transition-all"
           >
             <ArrowRightLeft size={13} /> Issue
           </button>
         ) : (
           <button
-            onClick={() => onReturn(book)}
+            onClick={(e) => { e.stopPropagation(); onReturn(book); }}
             className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 rounded-lg transition-all"
           >
             <ArrowRightLeft size={13} /> Return
@@ -103,8 +105,8 @@ const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn }) => (
   </div>
 );
 
-const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn }) => (
-  <tr className="group hover:bg-gray-50 dark:hover:bg-[#11322f]/80 transition-colors">
+const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn, onClick }) => (
+  <tr onClick={onClick} className="group hover:bg-gray-50 dark:hover:bg-[#11322f]/80 transition-colors cursor-pointer">
     <td className="px-4 py-3">
       <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#0d2522] px-2 py-1 rounded-lg">#{book.bookNumber}</span>
     </td>
@@ -124,18 +126,18 @@ const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn }) => (
     </td>
     <td className="px-4 py-3">
       <div className="flex items-center justify-end gap-1">
-        <button onClick={() => onEdit(book)} className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-lg transition-all" title="Edit">
+        <button onClick={(e) => { e.stopPropagation(); onEdit(book); }} className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-lg transition-all" title="Edit">
           <Edit2 size={15} />
         </button>
-        <button onClick={() => onDelete(book)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all" title="Delete">
+        <button onClick={(e) => { e.stopPropagation(); onDelete(book); }} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all" title="Delete">
           <Trash2 size={15} />
         </button>
         {book.status === 'available' ? (
-          <button onClick={() => onIssue(book)} className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-brand-teal bg-brand-mint/10 hover:bg-brand-mint/20 rounded-lg transition-all ml-1">
+          <button onClick={(e) => { e.stopPropagation(); onIssue(book); }} className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-brand-teal bg-brand-mint/10 hover:bg-brand-mint/20 rounded-lg transition-all ml-1">
             <ArrowRightLeft size={12} /> Issue
           </button>
         ) : (
-          <button onClick={() => onReturn(book)} className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 rounded-lg transition-all ml-1">
+          <button onClick={(e) => { e.stopPropagation(); onReturn(book); }} className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 rounded-lg transition-all ml-1">
             <ArrowRightLeft size={12} /> Return
           </button>
         )}
@@ -160,7 +162,11 @@ const LibraryBooksTab = () => {
   const [bookToEdit, setBookToEdit] = useState(null);
   const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
   const [bookToIssue, setBookToIssue] = useState(null);
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [bookToReturn, setBookToReturn] = useState(null);
   const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -196,8 +202,18 @@ const LibraryBooksTab = () => {
       if (success) { setIsIssueModalOpen(false); setBookToIssue(null); }
     }
   };
-  const handleReturnClick = async (book) => {
-    if (window.confirm(`Return "${book.title}"?`)) await returnBook(book._id);
+  const handleReturnClick = (book) => {
+    setBookToReturn(book);
+    setIsReturnModalOpen(true);
+  };
+  const handleReturnSubmit = async (data) => {
+    if (bookToReturn) {
+      const success = await returnBook(bookToReturn._id, data);
+      if (success) {
+        setIsReturnModalOpen(false);
+        setBookToReturn(null);
+      }
+    }
   };
   const handleBulkImport = async (booksData, duplicateAction) => {
     const result = await bulkImportBooks(booksData, duplicateAction);
@@ -224,6 +240,18 @@ const LibraryBooksTab = () => {
         onClose={() => { setIsIssueModalOpen(false); setBookToIssue(null); }}
         onSubmit={handleIssueSubmit}
         book={bookToIssue}
+      />
+      <ReturnBookModal
+        isOpen={isReturnModalOpen}
+        onClose={() => { setIsReturnModalOpen(false); setBookToReturn(null); }}
+        onSubmit={handleReturnSubmit}
+        book={bookToReturn}
+      />
+      <BookDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => { setIsDetailsModalOpen(false); setSelectedBook(null); }}
+        book={selectedBook}
+        getBookHistory={useBooksStore.getState().getBookHistory}
       />
       <LibraryBulkImportModal
         isOpen={isBulkImportModalOpen}
@@ -351,6 +379,7 @@ const LibraryBooksTab = () => {
             <BookCard
               key={book._id}
               book={book}
+              onClick={() => { setSelectedBook(book); setIsDetailsModalOpen(true); }}
               onEdit={b => { setBookToEdit(b); setIsAddEditModalOpen(true); }}
               onDelete={handleDeleteClick}
               onIssue={b => { setBookToIssue(b); setIsIssueModalOpen(true); }}
@@ -376,6 +405,7 @@ const LibraryBooksTab = () => {
                   <BookRow
                     key={book._id}
                     book={book}
+                    onClick={() => { setSelectedBook(book); setIsDetailsModalOpen(true); }}
                     onEdit={b => { setBookToEdit(b); setIsAddEditModalOpen(true); }}
                     onDelete={handleDeleteClick}
                     onIssue={b => { setBookToIssue(b); setIsIssueModalOpen(true); }}

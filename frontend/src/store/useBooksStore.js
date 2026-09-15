@@ -120,5 +120,15 @@ export const useBooksStore = create((set, get) => ({
             console.error(error);
             return [];
         }
+    },
+
+    getBookHistory: async (bookId) => {
+        try {
+            const res = await axiosInstance.get(`/books/book-history/${bookId}`);
+            return res.data.history || [];
+        } catch (error) {
+            console.error("Failed to fetch book history", error);
+            return [];
+        }
     }
 }));

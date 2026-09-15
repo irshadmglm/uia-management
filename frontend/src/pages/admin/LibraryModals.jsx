@@ -263,3 +263,228 @@ export const IssueBookModal = ({ isOpen, onClose, onSubmit, book }) => {
     </ModalWrapper>
   );
 };
+
+export const ReturnBookModal = ({ isOpen, onClose, onSubmit, book }) => {
+  const [remarks, setRemarks] = useState('');
+
+  // Calculate days borrowed
+  const daysBorrowed = book?.issueDate 
+    ? Math.floor((new Date() - new Date(book.issueDate)) / (1000 * 60 * 60 * 24))
+    : 0;
+
+  useEffect(() => {
+    if (isOpen) setRemarks('');
+  }, [isOpen]);
+
+  const handleSubmit = () => {
+    onSubmit({ remarks });
+  };
+
+  return (
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title="Return Book">
+      {book && (
+        <div className="p-5 space-y-5">
+          {/* Book Info */}
+          <div className="p-4 bg-gray-50 dark:bg-[#0a1f1d] rounded-2xl border border-gray-100 dark:border-[#11322f] flex gap-4 items-start">
+            <div className="w-12 h-14 bg-white dark:bg-[#11322f] rounded-lg shadow-sm border border-gray-100 dark:border-[#0d2522] flex items-center justify-center shrink-0">
+              <BookOpen size={20} className="text-brand-teal" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-gray-400 mb-0.5">#{book.bookNumber}</p>
+              <h4 className="font-bold text-gray-900 dark:text-white leading-tight">{book.title}</h4>
+              <p className="text-sm text-gray-500 mt-1">{book.author}</p>
+            </div>
+          </div>
+
+          {/* Borrow Info */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Borrowed By</h4>
+            <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
+              <div className="w-10 h-10 rounded-full bg-brand-teal/10 flex items-center justify-center">
+                <User size={18} className="text-brand-teal" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">{book.studentName || 'Unknown Student'}</p>
+                <p className="text-xs text-gray-500">Borrowed {daysBorrowed} day{daysBorrowed !== 1 ? 's' : ''} ago</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Remarks Field */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider pl-1">
+              Remarks (Optional)
+            </label>
+            <textarea
+              placeholder="E.g., Returned in good condition, damaged pages, etc."
+              rows={2}
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-[#0a1f1d] border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white placeholder-gray-400 resize-none"
+              value={remarks}
+              onChange={e => setRemarks(e.target.value)}
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-3 text-sm font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-[#0d2522] hover:bg-gray-200 dark:hover:bg-[#0a1a18] rounded-xl transition-colors">
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="flex-1 py-3 text-sm font-bold text-white bg-brand-teal hover:bg-brand-teal/90 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+            >
+              <ArrowRightLeft size={16} /> Confirm Return
+            </button>
+          </div>
+        </div>
+      )}
+    </ModalWrapper>
+  );
+};
+
+export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
+  const [activeTab, setActiveTab] = useState('details'); // 'details' | 'history'
+  const [history, setHistory] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab('details');
+      setHistory([]);
+    }
+  }, [isOpen, book]);
+
+  useEffect(() => {
+    if (activeTab === 'history' && book && history.length === 0) {
+      const fetchHistory = async () => {
+        setIsLoadingHistory(true);
+        const data = await getBookHistory(book._id);
+        setHistory(data);
+        setIsLoadingHistory(false);
+      };
+      fetchHistory();
+    }
+  }, [activeTab, book, getBookHistory, history.length]);
+
+  if (!book) return null;
+
+  return (
+    <ModalWrapper isOpen={isOpen} onClose={onClose} title={`Book #${book.bookNumber}`}>
+      <div className="flex flex-col h-[500px] max-h-[80vh]">
+        {/* Tabs Header */}
+        <div className="flex border-b border-gray-100 dark:border-[#11322f] px-5">
+          <button
+            onClick={() => setActiveTab('details')}
+            className={`py-3 px-4 text-sm font-bold border-b-2 transition-all ${
+              activeTab === 'details' 
+                ? 'border-brand-teal text-brand-teal dark:text-brand-mint' 
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
+          >
+            Details
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`py-3 px-4 text-sm font-bold border-b-2 transition-all ${
+              activeTab === 'history' 
+                ? 'border-brand-teal text-brand-teal dark:text-brand-mint' 
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
+          >
+            History
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="flex-1 overflow-y-auto p-5">
+          {activeTab === 'details' ? (
+            <div className="space-y-4">
+              <div className="bg-gray-50 dark:bg-[#0a1f1d] p-4 rounded-xl border border-gray-100 dark:border-[#11322f]">
+                <div className="w-16 h-16 bg-white dark:bg-[#11322f] rounded-lg shadow-sm border border-gray-100 dark:border-[#0d2522] flex items-center justify-center mb-3">
+                  <BookOpen size={28} className="text-brand-teal" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">{book.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">{book.author}</p>
+                {book.category && (
+                  <span className="inline-block mt-3 px-2.5 py-1 text-xs font-semibold text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg">
+                    {book.category}
+                  </span>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Status</p>
+                  <p className={`text-sm font-bold ${book.status === 'available' ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                    {book.status === 'available' ? 'Available' : 'Borrowed'}
+                  </p>
+                </div>
+                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Price</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{book.price ? `₹${book.price}` : 'N/A'}</p>
+                </div>
+                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Publisher</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{book.publisher || 'N/A'}</p>
+                </div>
+                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Call Number</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{book.callNumber || 'N/A'}</p>
+                </div>
+              </div>
+              
+              {book.remarks && (
+                <div className="p-3 bg-gray-50 dark:bg-[#0a1f1d] rounded-xl border border-gray-100 dark:border-[#11322f]">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Remarks</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{book.remarks}</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {isLoadingHistory ? (
+                <div className="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
+                  <RefreshCw size={20} className="animate-spin" />
+                  <p className="text-sm font-semibold">Loading history...</p>
+                </div>
+              ) : history.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
+                  <Clock size={24} className="opacity-50" />
+                  <p className="text-sm font-semibold">No borrowing history found.</p>
+                </div>
+              ) : (
+                <div className="relative border-l-2 border-brand-teal/20 ml-3 pl-4 space-y-4">
+                  {history.map((tx, idx) => {
+                    const days = tx.returnDate
+                      ? Math.floor((new Date(tx.returnDate) - new Date(tx.issueDate)) / (1000 * 86400))
+                      : Math.floor((new Date() - new Date(tx.issueDate)) / (1000 * 86400));
+                    
+                    return (
+                      <div key={tx._id} className="relative">
+                        <div className={`absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full ${tx.status === 'active' ? 'bg-orange-500' : 'bg-brand-teal'}`}></div>
+                        <div className="bg-white dark:bg-[#11322f] p-3 rounded-xl border border-gray-100 dark:border-[#0d2522] shadow-sm">
+                          <div className="flex justify-between items-start mb-1">
+                            <p className="font-bold text-gray-900 dark:text-white text-sm">{tx.userName}</p>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${tx.status === 'active' ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400' : 'bg-gray-100 text-gray-500 dark:bg-[#0a1f1d] dark:text-gray-400'}`}>
+                              {tx.status === 'active' ? 'Currently Borrowed' : 'Returned'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-1">
+                            {new Date(tx.issueDate).toLocaleDateString()} {tx.returnDate && ` - ${new Date(tx.returnDate).toLocaleDateString()}`}
+                          </p>
+                          <p className="text-xs font-semibold text-brand-teal dark:text-brand-mint">
+                            {days} day{days !== 1 ? 's' : ''} total
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </ModalWrapper>
+  );
+};
