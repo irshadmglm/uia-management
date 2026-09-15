@@ -339,7 +339,7 @@ const LibraryBooksTab = () => {
             <div key={i} className="bg-white dark:bg-[#11322f] rounded-2xl h-48 animate-pulse border border-gray-100 dark:border-[#0d2522]" />
           ))}
         </div>
-      ) : filteredBooks.length === 0 ? (
+      ) : totalBooks === 0 ? (
         <div className="bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] p-16 text-center">
           <BookOpen size={48} className="mx-auto mb-4 text-gray-200 dark:text-gray-700" />
           <p className="font-semibold text-gray-500 dark:text-gray-400">No books found</p>
