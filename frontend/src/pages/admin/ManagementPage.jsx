@@ -40,6 +40,7 @@ const ManagementPage = () => {
   const [showAddCard, setShowAddCard] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+const [confirmActionType, setConfirmActionType] = useState("delete");
 const [deleteAction, setDeleteAction] = useState(() => () => {});
   const navigate = useNavigate();
 
@@ -106,6 +107,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
           await deleteTeacher(itemId);
         }
       });
+      setConfirmActionType("delete");
       setShowConfirm(true);
       setItems(prevItems => prevItems.filter((_, i) => i !== index));
   
@@ -123,6 +125,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
           await deactivateTeacher(itemId);
         }
       });
+      setConfirmActionType("deactivate");
       setShowConfirm(true);
     } catch (error) {
       console.error("Error deactivating item:", error);
@@ -358,16 +361,6 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
             >
               <Trash className="w-5 h-5" />
             </Button>
-            <ConfirmPopup
-                isOpen={showConfirm}
-                onClose={() => setShowConfirm(false)}
-                onConfirm={deleteAction}
-                message={`Are you sure you want to perform this action on this ${
-                  selectedTab === "alumni" ? "batch" : 
-                  selectedTab === "old teachers" ? "teacher" : 
-                  selectedTab
-                }?`}
-              />
           </div>
         </div>
       </div>
@@ -378,6 +371,19 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
         }
       
      </div>
+     <ConfirmPopup
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={deleteAction}
+        variant={confirmActionType === "deactivate" ? "warning" : "danger"}
+        title={confirmActionType === "deactivate" ? "Confirm Deactivation" : "Confirm Action"}
+        confirmText={confirmActionType === "deactivate" ? "Deactivate" : "Delete"}
+        message={`Are you sure you want to ${confirmActionType === "deactivate" ? "deactivate" : "delete"} this ${
+          selectedTab === "batches" || selectedTab === "alumni" ? "batch" : 
+          selectedTab === "teachers" || selectedTab === "old teachers" ? "teacher" : 
+          selectedTab.endsWith('s') ? selectedTab.slice(0, -1) : selectedTab
+        }?`}
+      />
     </div>
   );
 };
