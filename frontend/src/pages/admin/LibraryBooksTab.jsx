@@ -327,11 +327,47 @@ const LibraryBooksTab = () => {
         isImporting={isRegistering}
       />
 
-      {/* Toolbar */}
-      <div className="bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] p-4 shadow-sm">
-        <div className="flex flex-col sm:flex-row gap-3">
+      {/* Toolbar & Bulk Actions */}
+      <div className="bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] p-3 sm:p-4 shadow-sm flex flex-col gap-3">
+        <div className="flex flex-col xl:flex-row items-center gap-3">
+          
+          {/* Custom Select All & Bulk Delete */}
+          <div className="flex items-center gap-2 w-full xl:w-auto">
+            <label className="relative flex items-center justify-center cursor-pointer group p-2 bg-gray-50 dark:bg-[#0d2522] border border-gray-200 dark:border-[#0d2522] rounded-xl hover:bg-brand-mint/10 hover:border-brand-teal/40 transition-all">
+               <input 
+                 type="checkbox" 
+                 className="peer sr-only" 
+                 checked={selectAll} 
+                 onChange={e => handleSelectAll(e.target.checked)} 
+               />
+               <div className="w-5 h-5 rounded-[6px] border-2 border-gray-300 dark:border-gray-500 peer-checked:bg-brand-teal peer-checked:border-brand-teal flex items-center justify-center transition-all duration-300 shadow-sm peer-checked:shadow-brand-teal/30">
+                  <svg className="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 scale-50 peer-checked:scale-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+               </div>
+               <span className="ml-2.5 text-xs font-bold text-gray-600 dark:text-gray-300 group-hover:text-brand-teal transition-colors select-none whitespace-nowrap">
+                 Select All
+               </span>
+            </label>
+            
+            {getSelectedCount() > 0 && (
+              <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl p-1 animate-fadeIn shrink-0">
+                <span className="text-xs font-black text-red-600 dark:text-red-400 px-2">
+                  {getSelectedCount()}
+                </span>
+                <button
+                  onClick={() => setIsBulkDeleteModalOpen(true)}
+                  className="p-1.5 bg-white dark:bg-[#11322f] text-red-500 hover:text-white hover:bg-red-500 rounded-lg transition-colors shadow-sm"
+                  title="Delete Selected"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* Search */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 w-full xl:w-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
             <input
               type="text"
@@ -342,17 +378,17 @@ const LibraryBooksTab = () => {
             />
           </div>
 
-          {/* Filters */}
-          <div className="flex gap-2">
+          {/* Filters & Actions */}
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full xl:w-auto overflow-x-auto no-scrollbar">
             <CustomSelect
-              className="py-2.5 px-3 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white"
+              className="py-2.5 px-3 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white shrink-0"
               value={selectedCategory}
               onChange={e => setSelectedCategory(e.target.value)}
             >
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
             </CustomSelect>
             <CustomSelect
-              className="py-2.5 px-3 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white"
+              className="py-2.5 px-3 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white shrink-0"
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
             >
@@ -362,7 +398,7 @@ const LibraryBooksTab = () => {
             </CustomSelect>
 
             {/* View Toggle */}
-            <div className="flex bg-gray-50 dark:bg-[#0d2522] rounded-xl p-1 gap-0.5">
+            <div className="flex bg-gray-50 dark:bg-[#0d2522] rounded-xl p-1 gap-0.5 shrink-0">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-[#11322f] text-brand-teal shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
@@ -379,7 +415,7 @@ const LibraryBooksTab = () => {
 
             <button
               onClick={() => setIsBulkImportModalOpen(true)}
-              className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white px-3.5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm"
+              className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white px-3.5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm shrink-0"
               title="Bulk Import Excel / CSV Catalogue"
             >
               <FileSpreadsheet size={16} />
@@ -388,36 +424,13 @@ const LibraryBooksTab = () => {
 
             <button
               onClick={() => { setIsAddEditModalOpen(true); setBookToEdit(null); }}
-              className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/90 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm"
+              className="flex items-center gap-2 bg-brand-teal hover:bg-brand-teal/90 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm shrink-0"
             >
               <PlusCircle size={16} />
               <span className="hidden sm:inline">Add</span>
             </button>
           </div>
         </div>
-
-      </div>
-
-      {/* Bulk Action Bar */}
-      <div className="flex items-center gap-4 bg-gray-50 dark:bg-[#0d2522] rounded-xl border border-gray-100 dark:border-[#11322f] p-3 shadow-sm">
-        <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700 dark:text-gray-300 select-none">
-          <input type="checkbox" checked={selectAll} onChange={e => handleSelectAll(e.target.checked)} className="w-4 h-4 rounded text-brand-teal focus:ring-brand-teal bg-white border-gray-300 cursor-pointer" />
-          Select All Matching Filters
-        </label>
-        
-        {getSelectedCount() > 0 && (
-          <div className="flex items-center gap-4 ml-auto">
-            <span className="text-xs font-bold text-brand-teal bg-brand-teal/10 px-2 py-1 rounded-lg">
-              {getSelectedCount()} Selected
-            </span>
-            <button
-              onClick={() => setIsBulkDeleteModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm"
-            >
-              <Trash2 size={14} /> Delete Selected
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Category Chips */}
