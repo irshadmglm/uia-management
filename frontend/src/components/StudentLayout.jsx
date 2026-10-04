@@ -51,6 +51,7 @@ const StudentLayout = () => {
     { title: "Achievement", icon: Award, route: `${baseRoute}/achievement` },
     { title: "Reading Progress", icon: BookUserIcon, route: `${baseRoute}/reading-progress` },
     { title: "Library Catalog", icon: BookOpen, route: `${baseRoute}/library` },
+    { title: "My Library Profile", icon: BookUserIcon, route: `${baseRoute}/my-library` },
     { title: "Mark List", icon: ListChecks, route: `${baseRoute}/semester-list` },
     { title: "Ishthiraq", icon: LucideHandCoins, route: `${baseRoute}/ishthiraq` },
     ...(batch?.IRmarkList ? [{ title: "Internal Mark", icon: BookMarked, url: batch.IRmarkList }] : []),

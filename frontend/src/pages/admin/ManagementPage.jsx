@@ -22,14 +22,14 @@ import {
 import { useStaffStore } from "../../store/useStaffStore";
 import ConfirmPopup from "../../components/ConfirmPopup";
 import { axiosInstance } from "../../lib/axios";
-import { Trash } from "lucide-react";
+import { Trash, Archive } from "lucide-react";
 
 const ManagementPage = () => {
   const { getBatches, getSemesters, getTeachers, getArtSems,
           batches, semesters, teachers, artSems, 
           updateSemester,  updateBatch, updateSelectedTab, updateArtSem,
-          deleteBatch, deleteSemester,  deleteArtSems,} = useAdminStore();
-  const {deleteTeacher} = useStaffStore();
+          deleteBatch, deleteSemester,  deleteArtSems, deactivateBatch} = useAdminStore();
+  const {deleteTeacher, deactivateTeacher} = useStaffStore();
     const [selectedTab, setSelectedTab] = useState(() => {
     return localStorage.getItem("selectedTab") || "current Semester";
   });
@@ -55,9 +55,13 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
     } else if (selectedTab === "arts Subjects") {
       setItems(artSems);
     } else if (selectedTab === "batches") {
-      setItems(batches);
+      setItems(batches.filter(b => b.isActive !== false));
+    } else if (selectedTab === "alumni") {
+      setItems(batches.filter(b => b.isActive === false));
     } else if (selectedTab === "teachers") {
-      setItems(teachers);
+      setItems(teachers.filter(t => t.isActive !== false));
+    } else if (selectedTab === "old teachers") {
+      setItems(teachers.filter(t => t.isActive === false));
     }
   }, [selectedTab, batches, semesters, teachers, artSems]);
 
@@ -109,6 +113,21 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
       console.error("Error deleting item:", error);
     }
   };
+
+  const handleDeactivate = async (itemId) => {
+    try {
+      setDeleteAction(() => async () => {
+        if (selectedTab === "batches") {
+          await deactivateBatch(itemId);
+        } else if (selectedTab === "teachers") {
+          await deactivateTeacher(itemId);
+        }
+      });
+      setShowConfirm(true);
+    } catch (error) {
+      console.error("Error deactivating item:", error);
+    }
+  };
   
   const handleUpdateItem = async (itemId, index) => {
     const updatedValue = newItemValue.trim();
@@ -144,7 +163,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
       <header className="sticky top-0 z-30 bg-[#f3f7f6]/95 dark:bg-[#0d2522]/95 backdrop-blur-md py-3 -mx-3 px-3 sm:-mx-5 sm:px-5 lg:-mx-10 lg:px-10 mb-6 border-b border-gray-200/50 dark:border-[#0d2522] shadow-sm dark:shadow-none">
         <div className="relative overflow-x-auto scrollbar-hide">
           <div className="flex w-max min-w-full p-1.5 bg-white dark:bg-[#11322f] rounded-xl shadow-sm border border-gray-100 dark:border-transparent gap-1">
-            {["current Semester", "current Art Sems", "semester Subjects", "arts Subjects", "batches", "teachers"].map((tab) => (
+            {["current Semester", "current Art Sems", "semester Subjects", "arts Subjects", "batches", "alumni", "teachers", "old teachers"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => {
@@ -190,6 +209,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
         : selectedTab === "current Art Sems" ? ( <SemesterAssignment batches={batches} semesters={artSems} tab={selectedTab}  art={true} />) 
         : (<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {/* Add New Card */}
+          {(selectedTab !== "alumni" && selectedTab !== "old teachers") && (
           <div
             className={`group bg-white dark:bg-[#11322f] p-4 rounded-2xl shadow-sm border-2 border-dashed ${
               showAddCard
@@ -236,6 +256,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
               )}
   
           </div>
+          )}
   
           {/* Existing Items */}
           {items
@@ -311,6 +332,26 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
               </Button>
             )}
 
+            {selectedTab === "batches" && !isEditing && (
+              <Button
+                onClick={() => handleDeactivate(item._id)}
+                className="text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 p-2 rounded-lg transition-colors"
+                title="Deactivate Batch to Alumni"
+              >
+                <Archive className="w-5 h-5" />
+              </Button>
+            )}
+
+            {selectedTab === "teachers" && !isEditing && (
+              <Button
+                onClick={() => handleDeactivate(item._id)}
+                className="text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 p-2 rounded-lg transition-colors"
+                title="Deactivate Teacher (Move to Old Teachers)"
+              >
+                <Archive className="w-5 h-5" />
+              </Button>
+            )}
+
             <Button
               onClick={() => handleDeleteItem(item._id, index)}
               className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg transition-colors"
@@ -321,7 +362,11 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
                 isOpen={showConfirm}
                 onClose={() => setShowConfirm(false)}
                 onConfirm={deleteAction}
-                message={`Are you sure you want to delete this ${selectedTab}?`}
+                message={`Are you sure you want to perform this action on this ${
+                  selectedTab === "alumni" ? "batch" : 
+                  selectedTab === "old teachers" ? "teacher" : 
+                  selectedTab
+                }?`}
               />
           </div>
         </div>

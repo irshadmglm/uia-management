@@ -61,12 +61,30 @@ export const useStaffStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       await axiosInstance.delete(`/users/teacher/delete/${teacherId}`); 
-      toast.success("Teacher Details updated successfully");
+      toast.success("Teacher deleted successfully");
       set((state) => ({
         teachers: state.teachers.filter((teacher) => teacher._id !== teacherId),
       }));
     } catch (error) {
       console.log("Error in deleteTeacher:", error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  deactivateTeacher: async (teacherId) => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.patch(`/users/teacher/deactivate/${teacherId}`);
+      toast.success(res.data.message || "Teacher deactivated successfully");
+      set((state) => ({
+        teachers: state.teachers.map((teacher) =>
+          teacher._id === teacherId ? res.data.teacher : teacher
+        ),
+      }));
+    } catch (error) {
+      console.log("Error in deactivateTeacher:", error);
+      toast.error(error.response?.data?.message || "Failed to deactivate teacher");
     } finally {
       set({ isLoading: false });
     }

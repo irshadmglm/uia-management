@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Info, AlertCircle, X, Trash2 } from 'lucide-react';
 
@@ -10,8 +10,17 @@ const ConfirmPopup = ({
   message = "Are you sure you want to proceed?",
   variant = "danger",
   confirmText,
-  cancelText = "Cancel"
+  cancelText = "Cancel",
+  requireType = null
 }) => {
+  const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setInputValue('');
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   // Variant Configuration
@@ -71,9 +80,24 @@ const ConfirmPopup = ({
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               {title}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-2">
               {message}
             </p>
+
+            {requireType && (
+              <div className="w-full mt-3 text-left">
+                <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                  Type <span className="text-gray-900 dark:text-white font-mono select-all">"{requireType}"</span> to confirm
+                </label>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder={requireType}
+                  className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#0a1f1d] border border-gray-200 dark:border-[#0d2522] rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent text-gray-900 dark:text-white transition-all"
+                />
+              </div>
+            )}
           </div>
 
           {/* Actions */}
@@ -89,7 +113,8 @@ const ConfirmPopup = ({
                 onConfirm();
                 onClose();
               }}
-              className={`flex-1 py-3 text-sm font-bold rounded-2xl transition-all active:scale-[0.98] ${config.btnClass}`}
+              disabled={requireType ? inputValue !== requireType : false}
+              className={`flex-1 py-3 text-sm font-bold rounded-2xl transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${config.btnClass}`}
             >
               {finalConfirmText}
             </button>

@@ -13,6 +13,7 @@ import StudentFeePortal from "../pages/student/StudentFees";
 import StudentLayout from "../components/StudentLayout";
 
 import UserLibraryCatalog from "../pages/UserLibraryCatalog";
+import StudentMyLibrary from "../pages/student/StudentMyLibrary";
 
 const StudentRoutes = () => {
   return (
@@ -28,6 +29,7 @@ const StudentRoutes = () => {
         <Route path="ishthiraq" element={<StudentFeePortal />} />
         <Route path="profile" element={<StudentProfile />} />
         <Route path="library" element={<UserLibraryCatalog />} />
+        <Route path="my-library" element={<StudentMyLibrary />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

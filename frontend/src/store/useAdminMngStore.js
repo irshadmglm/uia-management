@@ -154,6 +154,25 @@ export const useAdminStore = create((set, get) => ({
       return false;
     }
   },
+
+  deactivateBatch: async (batchId) => {
+    try {
+      const res = await axiosInstance.patch(`/mng/batch/deactivate/${batchId}`);
+      if (res.status === 200) {
+        toast.success(res.data.message || "Batch deactivated successfully");
+        set((state) => ({
+          batches: state.batches.map(batch => batch._id === batchId ? res.data.batch : batch)
+        }));
+      } else {
+        toast.error("Failed to deactivate the Batch");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "An error occurred while deactivating the Batch");
+      return false;
+    }
+  },
   
   updateBatch: async (batchId, name) => {
     try {

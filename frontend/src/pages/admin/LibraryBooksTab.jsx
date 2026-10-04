@@ -295,6 +295,7 @@ const LibraryBooksTab = () => {
         onClose={() => setIsBulkDeleteModalOpen(false)}
         onConfirm={confirmBulkDelete}
         message={`Are you sure you want to delete ${getSelectedCount()} selected book(s)? This action cannot be undone.`}
+        requireType="DELETE"
       />
       <BookFormModal
         isOpen={isAddEditModalOpen}
