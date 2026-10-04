@@ -1,5 +1,5 @@
 import express from "express";
-import { updateBook, deleteBook, addBook, getBooks, issueBook, returnBook, getUserHistory, getBookHistory, bulkImportBooks } from "../controllers/bookController.js";
+import { updateBook, deleteBook, addBook, getBooks, issueBook, returnBook, getUserHistory, getBookHistory, bulkImportBooks, bulkDeleteBooks } from "../controllers/bookController.js";
 
 const router = express.Router();
 
@@ -11,6 +11,7 @@ router.post("/bulk-import", bulkImportBooks);
 router.put("/update/:bookId", updateBook); 
 
 router.delete("/delete/:bookId", deleteBook); 
+router.post("/bulk-delete", bulkDeleteBooks);
 
 router.put("/issue/:bookId", issueBook);
 router.put("/return/:bookId", returnBook);

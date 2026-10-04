@@ -22,7 +22,7 @@ const staffSchema = new mongoose.Schema(
         },  
         role: {
             type: String,
-            enum: ["teacher", "admin"],
+            enum: ["teacher", "admin", "library"],
         },
         profileImage: {
             type: String,

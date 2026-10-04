@@ -10,6 +10,8 @@ const BookSchema = new mongoose.Schema({
   volume: { type: String, default: "" },
   price: { type: Number, default: 0 },
   remarks: { type: String, default: "" },
+  bookType: { type: String, default: "Book" }, // e.g. Book, Magazine, Journal
+  language: { type: String, default: "English" }, // e.g. English, Arabic, Malayalam
   status: { type: String, default: "available", index: true },
   borrowedBy: { type: String, default: null },
   studentName: { type: String, default: null },

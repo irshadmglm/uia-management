@@ -61,7 +61,7 @@ export const getBooks = async (req, res) => {
 
 export const addBook = async (req, res) => {
     try {
-    let { title, bookNumber, author, category } = req.body;
+    let { title, bookNumber, author, category, bookType, language } = req.body;
 
     if (!title || !bookNumber || !author) {
       return res.status(400).json({ success: false, message: "Missing required fields: title, author, or bookNumber" });
@@ -79,6 +79,8 @@ export const addBook = async (req, res) => {
       bookNumber,
       author,
       category: category || "General",
+      bookType: bookType || "Book",
+      language: language || "English",
       status: "available"
     });
   
@@ -249,6 +251,8 @@ export const bulkImportBooks = async (req, res) => {
       const title = item.title?.toString().trim();
       const author = item.author?.toString().trim() || "Unknown";
       const category = item.category?.toString().trim() || "General";
+      const bookType = item.bookType?.toString().trim() || "Book";
+      const language = item.language?.toString().trim() || "English";
       const callNumber = item.callNumber?.toString().trim() || "";
       const publisher = item.publisher?.toString().trim() || "";
       const price = parseFloat(item.price) || 0;
@@ -260,6 +264,8 @@ export const bulkImportBooks = async (req, res) => {
           title,
           author,
           category,
+          bookType,
+          language,
           callNumber,
           publisher,
           price,
@@ -292,6 +298,8 @@ export const bulkImportBooks = async (req, res) => {
               title: b.title,
               author: b.author,
               category: b.category,
+              bookType: b.bookType,
+              language: b.language,
               callNumber: b.callNumber,
               publisher: b.publisher,
               price: b.price,
@@ -342,6 +350,42 @@ export const bulkImportBooks = async (req, res) => {
   } catch (error) {
     console.error("Bulk import error:", error);
     res.status(500).json({ success: false, message: error.message || "Bulk import failed" });
+  }
+};
+
+export const bulkDeleteBooks = async (req, res) => {
+  try {
+    const { selectAll, selectedIds = [], deselectedIds = [], filters = {} } = req.body;
+
+    if (selectAll) {
+      const { search = '', category = 'All', status = 'All' } = filters;
+      const query = {};
+      if (search) {
+        const searchRegex = new RegExp(search, 'i');
+        query.$or = [{ title: searchRegex }, { author: searchRegex }];
+        if (!isNaN(search) && search.trim() !== '') {
+          query.$or.push({ bookNumber: parseInt(search, 10) });
+        }
+      }
+      if (category && category !== 'All') query.category = category;
+      if (status === 'Available') query.status = 'available';
+      else if (status === 'Borrowed') query.status = { $ne: 'available' };
+
+      if (deselectedIds.length > 0) {
+        query._id = { $nin: deselectedIds };
+      }
+
+      await Book.deleteMany(query);
+    } else {
+      if (selectedIds.length === 0) {
+        return res.status(400).json({ success: false, message: "No books selected to delete" });
+      }
+      await Book.deleteMany({ _id: { $in: selectedIds } });
+    }
+
+    res.status(200).json({ success: true, message: "Selected books deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
