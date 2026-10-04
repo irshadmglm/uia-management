@@ -10,14 +10,18 @@ const createLibraryUser = async () => {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to DB');
 
-    const libraryUserExists = await Staff.findOne({ userName: 'library' });
-    if (libraryUserExists) {
-      console.log('Library user already exists.');
-      process.exit(0);
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash('library123', salt);
+
+    const libraryUserExists = await Staff.findOne({ userName: 'library' });
+    if (libraryUserExists) {
+      console.log('Library user already exists. Updating password to library123...');
+      libraryUserExists.password = hashedPassword;
+      libraryUserExists.role = 'library';
+      await libraryUserExists.save();
+      console.log('Library user updated successfully! Username: library, Password: library123');
+      process.exit(0);
+    }
 
     const newLibraryUser = new Staff({
       name: 'Library Admin',
