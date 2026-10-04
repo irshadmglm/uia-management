@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import Staff from "../models/staff.model.js";
 import Student from "../models/student.model.js";
 import Batch from "../models/batch.model.js";
+import Book from "../models/book.model.js";
+import LibraryTransaction from "../models/libraryTransaction.model.js";
 
 export const addUser = async (req, res) => {
   try {
@@ -160,6 +162,17 @@ export const editStudent = async (req, res) => {
       return res.status(404).json({ success: false, message: "Student not found" });
     }
 
+    if (updateData.name) {
+      await Book.updateMany(
+        { borrowedBy: student._id.toString() },
+        { $set: { studentName: updateData.name } }
+      );
+      await LibraryTransaction.updateMany(
+        { userId: student._id.toString() },
+        { $set: { userName: updateData.name } }
+      );
+    }
+
     res.status(200).json({ success: true, student });
   } catch (error) {
     console.error("Error updating student:", error);
@@ -229,6 +242,17 @@ export const updateUser = async (req, res) => {
 
     if (!updatedUser) {
       return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    if (updateData.name) {
+      await Book.updateMany(
+        { borrowedBy: updatedUser._id.toString() },
+        { $set: { studentName: updateData.name } }
+      );
+      await LibraryTransaction.updateMany(
+        { userId: updatedUser._id.toString() },
+        { $set: { userName: updateData.name } }
+      );
     }
 
     return res.status(200).json({ success: true, message: "Student updated successfully", user: updatedUser });
