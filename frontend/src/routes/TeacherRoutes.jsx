@@ -16,6 +16,8 @@ import AcademicRegister from "../pages/staff/StaffAcademicRegister";
 import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
 import TeacherLayout from "../components/TeacherLayout";
 
+import UserLibraryCatalog from "../pages/UserLibraryCatalog";
+
 const TeacherRoutes = () => {
   return (
     <Routes>
@@ -28,6 +30,7 @@ const TeacherRoutes = () => {
         <Route path="assigned-subjects" element={<AssignedSubjects />} />
         <Route path="ishthiraq/:batchId" element={<FeesTeacher />} />
         <Route path="profile" element={<StaffProfile />} />
+        <Route path="library" element={<UserLibraryCatalog />} />
       
         <Route path="batches/:item/:batchId" element={<BatchStudents />} />
         <Route path="marklist/:studentId" element={<AdminsideMarkListes />} />

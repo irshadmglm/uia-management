@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import AdminHome from "../pages/admin/AdminHome";
-import AdminLibraryPage from "../pages/admin/AdminLibraryPage";
 import StudentList from "../pages/admin/StudentList";
 import TeacherList from "../pages/admin/TeacherList";
 import StudentForm from "../pages/admin/StudentForm";
@@ -33,8 +32,8 @@ import FeesDashboardAnalytics from "../pages/admin/FeesDashboardAnalytics";
 import FeesRegister from "../pages/admin/FeesRegister";
 import LeaveStatusPage from "../pages/admin/LeaveStatusPage";
 
-
 import AdminLayout from "../components/AdminLayout";
+import UserLibraryCatalog from "../pages/UserLibraryCatalog";
 
 const AdminRoutes = () => {
   return (
@@ -83,9 +82,8 @@ const AdminRoutes = () => {
         <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
         <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
         <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
-        <Route path="library" element={<AdminLibraryPage />} />
+        <Route path="library" element={<UserLibraryCatalog />} />
         
-
         <Route path="*" element={<AdminHome />} />
       </Route>
     </Routes>

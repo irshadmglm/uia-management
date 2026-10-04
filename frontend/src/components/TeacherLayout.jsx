@@ -5,7 +5,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { 
   Menu, X, Home, ClipboardList, BookCopyIcon, Award, 
   BookUserIcon, ListChecks, LucideHandCoins, BookMarked, 
-  DownloadCloud, LogOut, Moon, Sun, User, ChevronLeft, GraduationCap, Settings2Icon
+  DownloadCloud, LogOut, Moon, Sun, User, ChevronLeft, GraduationCap, Settings2Icon, BookOpen
 } from 'lucide-react';
 
 const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link";
@@ -46,6 +46,7 @@ const TeacherLayout = () => {
     { title: "Staff Attendance", icon: ClipboardList, route: `${baseRoute}/staff-attendance-register` },
     { title: "Subject Status", icon: BookUserIcon, route: `${baseRoute}/subject-status` },
     { title: "CE Status", icon: ListChecks, route: `${baseRoute}/ce-status` },
+    { title: "Library Catalog", icon: BookOpen, route: `${baseRoute}/library` },
     { title: "Downloads", icon: DownloadCloud, url: downloadsUrl },
   ];
 

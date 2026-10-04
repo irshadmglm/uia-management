@@ -48,7 +48,7 @@ const AdminLayout = () => {
     { title: "Ishthiraq", icon: HandCoins, route: "/dashboard/admin/ishthiraq" },
     { title: "Downloads", icon: DownloadCloud, url: "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link" },
     { title: "Academic Records", icon: File, route: "/dashboard/admin/academic-records" },
-    { title: "Library Management", icon: BookOpen, route: "/dashboard/admin/library" },
+    { title: "Library Catalog", icon: BookOpen, route: "/dashboard/admin/library" },
   ];
 
   return (

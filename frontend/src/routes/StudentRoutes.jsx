@@ -12,6 +12,8 @@ import AcademicRegister from "../pages/student/StdAcademicRegister";
 import StudentFeePortal from "../pages/student/StudentFees";
 import StudentLayout from "../components/StudentLayout";
 
+import UserLibraryCatalog from "../pages/UserLibraryCatalog";
+
 const StudentRoutes = () => {
   return (
     <Routes>
@@ -25,6 +27,7 @@ const StudentRoutes = () => {
         <Route path="subjects" element={<CurruntSemSubjects />} />
         <Route path="ishthiraq" element={<StudentFeePortal />} />
         <Route path="profile" element={<StudentProfile />} />
+        <Route path="library" element={<UserLibraryCatalog />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

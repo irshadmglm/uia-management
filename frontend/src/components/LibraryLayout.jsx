@@ -30,7 +30,10 @@ const LibraryLayout = () => {
   }, []);
 
   const navItems = [
-    { title: "Library Dashboard", icon: BookOpen, route: "/dashboard/library" },
+    { title: "Dashboard", icon: BookOpen, route: "/dashboard/library" },
+    { title: "Books", icon: BookOpen, route: "/dashboard/library/books" },
+    { title: "Students", icon: User, route: "/dashboard/library/students" },
+    { title: "Borrowed Books", icon: BookOpen, route: "/dashboard/library/borrowed" },
   ];
 
   return (

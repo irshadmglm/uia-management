@@ -6,7 +6,7 @@ import { useStaffStore } from '../store/useStaffStore';
 import { 
   Menu, X, Home, ClipboardList, BookCopyIcon, Award, 
   BookUserIcon, ListChecks, LucideHandCoins, BookMarked, 
-  DownloadCloud, LogOut, Moon, Sun, User, ChevronLeft
+  DownloadCloud, LogOut, Moon, Sun, User, ChevronLeft, BookOpen
 } from 'lucide-react';
 
 const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link";
@@ -50,6 +50,7 @@ const StudentLayout = () => {
     { title: "Subjects", icon: BookCopyIcon, route: `${baseRoute}/subjects` },
     { title: "Achievement", icon: Award, route: `${baseRoute}/achievement` },
     { title: "Reading Progress", icon: BookUserIcon, route: `${baseRoute}/reading-progress` },
+    { title: "Library Catalog", icon: BookOpen, route: `${baseRoute}/library` },
     { title: "Mark List", icon: ListChecks, route: `${baseRoute}/semester-list` },
     { title: "Ishthiraq", icon: LucideHandCoins, route: `${baseRoute}/ishthiraq` },
     ...(batch?.IRmarkList ? [{ title: "Internal Mark", icon: BookMarked, url: batch.IRmarkList }] : []),
