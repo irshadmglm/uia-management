@@ -9,6 +9,8 @@ const DEFAULT_MAPPING = {
   title: ['TITLE', 'Title', 'Book Title', 'Name', 'Book Name'],
   author: ['AUTHOR', 'Author', 'Writer', 'Author Name'],
   category: ['Section', 'SECTION', 'Source Sheet', 'Category', 'Genre', 'Subject'],
+  bookType: ['Book Type', 'Type', 'Format', 'Item Type'],
+  language: ['Language', 'Lang'],
   callNumber: ['CALL NO', 'Call No', 'Call Number', 'CallNo'],
   publisher: ['PUBLISHER', 'Publisher', 'Publication'],
   volume: ['VOLUME', 'Volume', 'Vol', 'VOL'],
@@ -22,6 +24,8 @@ const autoDetectMapping = (headers) => {
     title: '',
     author: '',
     category: '',
+    bookType: '',
+    language: '',
     callNumber: '',
     publisher: '',
     volume: '',
@@ -144,6 +148,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "TITLE": "Tafsir Al-Qurtubi Vol 1",
         "AUTHOR": "Imam Al-Qurtubi",
         "Section": "Arabic - Tafseer",
+        "Book Type": "Book",
+        "Language": "Arabic",
         "CALL NO": "222.3 QUR/K",
         "PUBLISHER": "Dar Al-Kotob Al-Ilmiyah",
         "VOLUME": "1",
@@ -155,6 +161,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "TITLE": "Sahih Al-Bukhari",
         "AUTHOR": "Imam Al-Bukhari",
         "Section": "Arabic - Hadith",
+        "Book Type": "Book",
+        "Language": "Arabic",
         "CALL NO": "223.1 BUK/S",
         "PUBLISHER": "Darussalam",
         "VOLUME": "1",
@@ -184,6 +192,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     const title = getVal('title');
     const author = getVal('author');
     const category = getVal('category');
+    const bookType = getVal('bookType');
+    const language = getVal('language');
     const callNumber = getVal('callNumber');
     const publisher = getVal('publisher');
     const volume = getVal('volume');
@@ -198,6 +208,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
       title,
       author: author || 'Unknown',
       category: category || 'General',
+      bookType: bookType || 'Book',
+      language: language || 'English',
       callNumber,
       publisher,
       volume,
@@ -354,6 +366,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                     { key: 'title', label: 'Book Title *' },
                     { key: 'author', label: 'Author' },
                     { key: 'category', label: 'Section / Category' },
+                    { key: 'bookType', label: 'Book Type' },
+                    { key: 'language', label: 'Language' },
                     { key: 'callNumber', label: 'Call Number' },
                     { key: 'publisher', label: 'Publisher' },
                     { key: 'volume', label: 'Volume' },
@@ -380,34 +394,11 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
               </div>
 
               {/* Duplicate Resolution Options */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/20 text-xs">
+              <div className="flex items-center gap-3 p-3.5 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/20 text-xs">
+                <AlertCircle size={16} className="text-amber-600 dark:text-amber-400" />
                 <span className="font-bold text-amber-900 dark:text-amber-300">
-                  Duplicate Book Numbers Handling:
+                  Duplicate Protection: <span className="font-medium">Any books in the Excel file that already exist in the database (by Book No.) will be automatically skipped.</span>
                 </span>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-1.5 cursor-pointer text-amber-900 dark:text-amber-300 font-medium">
-                    <input 
-                      type="radio" 
-                      name="duplicateAction" 
-                      value="skip"
-                      checked={duplicateAction === 'skip'}
-                      onChange={() => setDuplicateAction('skip')}
-                      className="text-brand-teal focus:ring-brand-teal"
-                    />
-                    Skip existing book numbers
-                  </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer text-amber-900 dark:text-amber-300 font-medium">
-                    <input 
-                      type="radio" 
-                      name="duplicateAction" 
-                      value="update"
-                      checked={duplicateAction === 'update'}
-                      onChange={() => setDuplicateAction('update')}
-                      className="text-brand-teal focus:ring-brand-teal"
-                    />
-                    Update existing books
-                  </label>
-                </div>
               </div>
 
               {/* Preview Stats & Table */}

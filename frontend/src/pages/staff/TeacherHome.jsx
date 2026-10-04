@@ -108,7 +108,7 @@ const TeacherHome = () => {
       <div>
         <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Users2 size={18} className="text-brand-teal" />
-          My Classes
+          {batches?.length === 1 ? 'My Class' : 'My Classes'}
         </h3>
         {batches?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">

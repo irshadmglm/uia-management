@@ -38,7 +38,7 @@ const StatusBadge = ({ status, studentName, issueDate }) => {
   );
 };
 
-const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick }) => (
+const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick, isSelected, onToggleSelect }) => (
   <div onClick={onClick} className="group bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden cursor-pointer">
     {/* Card Top Color Strip */}
     <div className={`h-1.5 ${book.status === 'available' ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-gradient-to-r from-orange-400 to-amber-500'}`}></div>
@@ -47,6 +47,7 @@ const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick }) => (
       {/* Header Row */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
+          <input type="checkbox" checked={isSelected} onChange={(e) => onToggleSelect(book._id, e.target.checked)} onClick={e => e.stopPropagation()} className="w-4 h-4 rounded text-brand-teal focus:ring-brand-teal bg-gray-50 border-gray-200 cursor-pointer" />
           <div className="p-2 bg-[#0d2522] dark:bg-[#0a1f1d] rounded-xl">
             <BookOpen size={16} className="text-brand-mint" />
           </div>
@@ -103,8 +104,11 @@ const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick }) => (
   </div>
 );
 
-const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn, onClick }) => (
+const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn, onClick, isSelected, onToggleSelect }) => (
   <tr onClick={onClick} className="group hover:bg-gray-50 dark:hover:bg-[#11322f]/80 transition-colors cursor-pointer">
+    <td className="px-4 py-3 w-12 text-center">
+      <input type="checkbox" checked={isSelected} onChange={(e) => onToggleSelect(book._id, e.target.checked)} onClick={e => e.stopPropagation()} className="w-4 h-4 rounded text-brand-teal focus:ring-brand-teal bg-gray-50 border-gray-200 cursor-pointer" />
+    </td>
     <td className="px-4 py-3">
       <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#0d2522] px-2 py-1 rounded-lg">#{book.bookNumber}</span>
     </td>
@@ -165,6 +169,13 @@ const LibraryBooksTab = () => {
   const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
+  
+  // Bulk Selection State
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [deselectedIds, setDeselectedIds] = useState(new Set());
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -180,11 +191,63 @@ const LibraryBooksTab = () => {
     });
   }, [currentPage, debouncedSearchTerm, selectedCategory, statusFilter, getBooks]);
 
-  // Reset to page 1 when filters change
-  useEffect(() => { setCurrentPage(1); }, [debouncedSearchTerm, selectedCategory, statusFilter]);
+  // Reset to page 1 and clear selection when filters change
+  useEffect(() => { 
+    setCurrentPage(1); 
+    setSelectAll(false);
+    setSelectedIds(new Set());
+    setDeselectedIds(new Set());
+  }, [debouncedSearchTerm, selectedCategory, statusFilter]);
 
   const startItem = totalBooks === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalBooks);
+
+  // Selection Handlers
+  const handleSelectAll = (checked) => {
+    setSelectAll(checked);
+    setSelectedIds(new Set());
+    setDeselectedIds(new Set());
+  };
+
+  const handleToggleSelect = (bookId, checked) => {
+    if (selectAll) {
+      const newDeselected = new Set(deselectedIds);
+      checked ? newDeselected.delete(bookId) : newDeselected.add(bookId);
+      setDeselectedIds(newDeselected);
+    } else {
+      const newSelected = new Set(selectedIds);
+      checked ? newSelected.add(bookId) : newSelected.delete(bookId);
+      setSelectedIds(newSelected);
+    }
+  };
+
+  const isBookSelected = (bookId) => {
+    return selectAll ? !deselectedIds.has(bookId) : selectedIds.has(bookId);
+  };
+  
+  const getSelectedCount = () => {
+    return selectAll ? totalBooks - deselectedIds.size : selectedIds.size;
+  };
+
+  const confirmBulkDelete = async () => {
+    const payload = {
+      selectAll,
+      selectedIds: Array.from(selectedIds),
+      deselectedIds: Array.from(deselectedIds),
+      filters: {
+        search: debouncedSearchTerm,
+        category: selectedCategory,
+        status: statusFilter
+      }
+    };
+    const success = await useBooksStore.getState().bulkDeleteBooks(payload);
+    if (success) {
+      setIsBulkDeleteModalOpen(false);
+      setSelectAll(false);
+      setSelectedIds(new Set());
+      setDeselectedIds(new Set());
+    }
+  };
 
   const handleDeleteClick = (book) => { setBookToDelete(book); setIsDeleteModalOpen(true); };
   const confirmDelete = async () => {
@@ -226,6 +289,12 @@ const LibraryBooksTab = () => {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={confirmDelete}
         message={`Are you sure you want to delete "${bookToDelete?.title}"?`}
+      />
+      <ConfirmPopup
+        isOpen={isBulkDeleteModalOpen}
+        onClose={() => setIsBulkDeleteModalOpen(false)}
+        onConfirm={confirmBulkDelete}
+        message={`Are you sure you want to delete ${getSelectedCount()} selected book(s)? This action cannot be undone.`}
       />
       <BookFormModal
         isOpen={isAddEditModalOpen}
@@ -329,6 +398,28 @@ const LibraryBooksTab = () => {
 
       </div>
 
+      {/* Bulk Action Bar */}
+      <div className="flex items-center gap-4 bg-gray-50 dark:bg-[#0d2522] rounded-xl border border-gray-100 dark:border-[#11322f] p-3 shadow-sm">
+        <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700 dark:text-gray-300 select-none">
+          <input type="checkbox" checked={selectAll} onChange={e => handleSelectAll(e.target.checked)} className="w-4 h-4 rounded text-brand-teal focus:ring-brand-teal bg-white border-gray-300 cursor-pointer" />
+          Select All Matching Filters
+        </label>
+        
+        {getSelectedCount() > 0 && (
+          <div className="flex items-center gap-4 ml-auto">
+            <span className="text-xs font-bold text-brand-teal bg-brand-teal/10 px-2 py-1 rounded-lg">
+              {getSelectedCount()} Selected
+            </span>
+            <button
+              onClick={() => setIsBulkDeleteModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm"
+            >
+              <Trash2 size={14} /> Delete Selected
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Category Chips */}
       {categories && categories.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
@@ -377,6 +468,8 @@ const LibraryBooksTab = () => {
             <BookCard
               key={book._id}
               book={book}
+              isSelected={isBookSelected(book._id)}
+              onToggleSelect={handleToggleSelect}
               onClick={() => { setSelectedBook(book); setIsDetailsModalOpen(true); }}
               onEdit={b => { setBookToEdit(b); setIsAddEditModalOpen(true); }}
               onDelete={handleDeleteClick}
@@ -391,6 +484,9 @@ const LibraryBooksTab = () => {
             <table className="w-full text-left">
               <thead className="bg-gray-50 dark:bg-[#0d2522] border-b border-gray-100 dark:border-[#11322f]">
                 <tr>
+                  <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider text-center w-12">
+                    <input type="checkbox" checked={selectAll} onChange={e => handleSelectAll(e.target.checked)} className="w-4 h-4 rounded text-brand-teal focus:ring-brand-teal bg-white border-gray-300 cursor-pointer" />
+                  </th>
                   <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">No.</th>
                   <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Book</th>
                   <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:table-cell">Category</th>
@@ -403,6 +499,8 @@ const LibraryBooksTab = () => {
                   <BookRow
                     key={book._id}
                     book={book}
+                    isSelected={isBookSelected(book._id)}
+                    onToggleSelect={handleToggleSelect}
                     onClick={() => { setSelectedBook(book); setIsDetailsModalOpen(true); }}
                     onEdit={b => { setBookToEdit(b); setIsAddEditModalOpen(true); }}
                     onDelete={handleDeleteClick}

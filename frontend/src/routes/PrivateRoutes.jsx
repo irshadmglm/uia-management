@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import StudentRoutes from "./StudentRoutes";
 import TeacherRoutes from "./TeacherRoutes";
 import AdminRoutes from "./AdminRoutes";
+import LibraryRoutes from "./LibraryRoutes";
 
 const PrivateRoutes = () => {
   const { authUser } = useAuthStore();
@@ -22,6 +23,9 @@ const PrivateRoutes = () => {
       )}
       {authUser.role === "admin" && (
         <Route path="admin/*" element={<AdminRoutes />} />
+      )}
+      {authUser.role === "library" && (
+        <Route path="library/*" element={<LibraryRoutes />} />
       )}
       <Route
         path="*"

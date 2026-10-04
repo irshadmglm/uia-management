@@ -45,7 +45,8 @@ const ModalHeader = ({ title, subtitle, icon: Icon, onClose, iconBg = 'bg-brand-
 export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({ 
     title: '', author: '', bookNumber: '', category: 'General',
-    callNumber: '', publisher: '', volume: '', price: '', remarks: ''
+    callNumber: '', publisher: '', volume: '', price: '', remarks: '',
+    bookType: 'Book', language: 'English'
   });
 
   useEffect(() => {
@@ -57,11 +58,14 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
         volume: initialData.volume || '',
         price: initialData.price || '',
         remarks: initialData.remarks || '',
+        bookType: initialData.bookType || 'Book',
+        language: initialData.language || 'English',
       });
     } else {
       setFormData({ 
         title: '', author: '', bookNumber: '', category: 'General',
-        callNumber: '', publisher: '', volume: '', price: '', remarks: ''
+        callNumber: '', publisher: '', volume: '', price: '', remarks: '',
+        bookType: 'Book', language: 'English'
       });
     }
   }, [initialData, isOpen]);
@@ -126,6 +130,20 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             <div className="relative">
               <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="text" className={`${inputCls} pl-9`} value={formData.volume} onChange={e => set('volume', e.target.value)} placeholder="e.g. Vol 1" />
+            </div>
+          </div>
+          <div>
+            <label className={labelCls}>Book Type</label>
+            <div className="relative">
+              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.bookType} onChange={e => set('bookType', e.target.value)} placeholder="e.g. Book, Magazine" />
+            </div>
+          </div>
+          <div>
+            <label className={labelCls}>Language</label>
+            <div className="relative">
+              <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.language} onChange={e => set('language', e.target.value)} placeholder="e.g. English, Arabic" />
             </div>
           </div>
           <div>
@@ -471,6 +489,14 @@ export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
                   <p className={`text-sm font-bold ${book.status === 'available' ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
                     {book.status === 'available' ? 'Available' : 'Borrowed'}
                   </p>
+                </div>
+                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Language</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{book.language || 'English'}</p>
+                </div>
+                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
+                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Book Type</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{book.bookType || 'Book'}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
                   <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Price</p>

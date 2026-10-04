@@ -90,6 +90,21 @@ export const useBooksStore = create((set, get) => ({
         }
     },
 
+    bulkDeleteBooks: async (payload) => {
+        set({ isRegistering: true });
+        try {
+            const res = await axiosInstance.post(`/books/bulk-delete`, payload);
+            toast.success(res.data.message || "Selected books deleted");
+            get().getBooks();
+            return true;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to delete books");
+            return false;
+        } finally {
+            set({ isRegistering: false });
+        }
+    },
+
     issueBook: async (bookId, data) => {
         try {
             const response = await axiosInstance.put(`/books/issue/${bookId}`, data);
