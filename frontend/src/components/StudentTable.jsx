@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Pencil,
   Trash,
@@ -23,6 +23,7 @@ import {
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useStudentStore } from "../store/studentStore";
+import { useAdminStore } from "../store/useAdminMngStore";
 import CustomSelect from "./CustomSelect";
 import StudentProfileModal from "./StudentProfileModal";
 
@@ -31,6 +32,13 @@ import StudentProfileModal from "./StudentProfileModal";
 const StudentTable = ({ students, inactive }) => {
   const { authUser } = useAuthStore();
   const { deleteStudent, stdStatusChange } = useStudentStore();
+  const { batches, getBatches } = useAdminStore();
+
+  useEffect(() => {
+    if (batches.length === 0) {
+      getBatches();
+    }
+  }, [batches, getBatches]);
 
   const [expandedRow, setExpandedRow] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,16 +74,29 @@ const StudentTable = ({ students, inactive }) => {
     }
   };
 
+  const activeBatches = useMemo(() => batches.filter(b => b.isActive !== false).map(b => b.name), [batches]);
+  const inactiveBatches = useMemo(() => batches.filter(b => b.isActive === false).map(b => b.name), [batches]);
+
   const uniqueBatches = useMemo(() => {
-    const batches = students.map((s) => s.batchName).filter(Boolean);
-    return [...new Set(batches)];
-  }, [students]);
+    const batchNames = students.map((s) => s.batchName).filter(Boolean);
+    // Only return active batch names that exist in students
+    return [...new Set(batchNames)].filter(name => activeBatches.includes(name));
+  }, [students, activeBatches]);
 
   const filteredStudents = students.filter((student) => {
     const matchesSearch = [student.name, student.batchName, String(student.cicNumber)].some((field) =>
       field?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    const matchesBatch = batchFilter === "all" || student.batchName === batchFilter;
+    let matchesBatch = false;
+    if (batchFilter === "all") {
+      // Exclude alumni (inactive batches) from "All Batches"
+      matchesBatch = activeBatches.includes(student.batchName) || !student.batchName;
+    } else if (batchFilter === "alumni") {
+      matchesBatch = inactiveBatches.includes(student.batchName);
+    } else {
+      matchesBatch = student.batchName === batchFilter;
+    }
+    
     return matchesSearch && matchesBatch;
   });
 
@@ -143,6 +164,7 @@ const StudentTable = ({ students, inactive }) => {
                   {batch}
                 </option>
               ))}
+              <option value="alumni">Alumni</option>
             </CustomSelect>
           </div>
           <div className="relative w-full md:max-w-md lg:max-w-lg xl:flex-1">
