@@ -260,6 +260,7 @@ export const updateBatch = async (req, res) => {
       return res.status(404).json({ message: "Batch not found" });
     }
 
+    await Student.updateMany({ batchId }, { $set: { batchName: name } });
     res.status(200).json({ message: "Batch updated successfully", updatedBatch });
   } catch (error) {
     console.error("Error updating Batch:", error);
