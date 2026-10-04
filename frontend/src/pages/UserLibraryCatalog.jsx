@@ -147,7 +147,7 @@ const UserLibraryCatalog = () => {
           </div>
 
           {/* Filters & Actions */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto overflow-x-auto no-scrollbar">
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
             <CustomSelect
               className="py-3 px-4 bg-gray-50 dark:bg-[#0a1f1d] border-0 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white shrink-0 shadow-sm"
               value={selectedCategory}
