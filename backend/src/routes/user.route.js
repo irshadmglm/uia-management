@@ -1,5 +1,5 @@
 import express from "express";
-import { updateUser, addUser, getTeachers, getStudents, getStudent, editStudent, deleteStudent, editTeacher, deleteTeacher, getTeacher, changeStdStatus, getStudentsInactive, updatePassword } from "../controllers/userController.js";
+import { updateUser, addUser, getTeachers, getStudents, getStudent, editStudent, deleteStudent, editTeacher, deleteTeacher, deactivateTeacher, getTeacher, changeStdStatus, getStudentsInactive, updatePassword } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -13,6 +13,8 @@ router.get("/teachers", getTeachers);
 router.put("/teacher/update/:teacherId", editTeacher)
 
 router.delete("/teacher/delete/:teacherId", deleteTeacher)
+
+router.patch("/teacher/deactivate/:teacherId", deactivateTeacher)
 
 router.get("/teacher/:teacherId", getTeacher);
 

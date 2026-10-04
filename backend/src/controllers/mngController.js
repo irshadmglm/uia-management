@@ -223,6 +223,27 @@ export const deleteBatch = async (req, res) => {
   }
 };
 
+export const deactivateBatch = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+
+    const deactivatedBatch = await Batch.findByIdAndUpdate(
+      batchId,
+      { isActive: false },
+      { new: true }
+    );
+    
+    if (!deactivatedBatch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    res.status(200).json({ message: "Batch deactivated successfully", batch: deactivatedBatch });
+  } catch (error) {
+    console.error("Error deactivating Batch:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const updateBatch = async (req, res) => {
   try {
     const { batchId } = req.params;

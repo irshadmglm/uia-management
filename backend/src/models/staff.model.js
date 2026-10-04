@@ -19,7 +19,7 @@ const staffSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
-        },  
+        },
         role: {
             type: String,
             enum: ["teacher", "admin", "library"],
@@ -27,15 +27,19 @@ const staffSchema = new mongoose.Schema(
         profileImage: {
             type: String,
             default: '',
-          },
+        },
         subjects: [
             {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "Subject",
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Subject",
             },
-          ],
+        ],
+        isActive: {
+            type: Boolean,
+            default: true,
+        },
     },
-    { timestamps: true } 
+    { timestamps: true }
 );
 
 export default mongoose.model("Staff", staffSchema);

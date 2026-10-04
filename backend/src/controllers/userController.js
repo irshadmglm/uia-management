@@ -319,3 +319,23 @@ export const deleteTeacher = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const deactivateTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    const deactivatedTeacher = await Staff.findByIdAndUpdate(
+      teacherId,
+      { isActive: false },
+      { new: true }
+    );
+
+    if (!deactivatedTeacher) {
+      return res.status(404).json({ success: false, message: "Teacher not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Teacher deactivated successfully", teacher: deactivatedTeacher });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
