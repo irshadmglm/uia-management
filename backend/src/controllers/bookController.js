@@ -3,35 +3,56 @@ import LibraryTransaction from "../models/libraryTransaction.model.js";
 
 export const getBooks = async (req, res) => {
     try {
-      const { page = 1, limit = 20, search = '', category = 'All', status = 'All' } = req.query;
+      const { page = 1, limit = 20, search = '', category = 'All', status = 'All', bookType = 'All' } = req.query;
       
-      const query = {};
+      const conditions = [];
       
       // Search
       if (search) {
         const searchRegex = new RegExp(search, 'i');
-        query.$or = [
+        const searchOr = [
           { title: searchRegex },
           { author: searchRegex },
         ];
         // If search is a valid number, also search by bookNumber
         if (!isNaN(search) && search.trim() !== '') {
-          query.$or.push({ bookNumber: parseInt(search, 10) });
+          searchOr.push({ bookNumber: parseInt(search, 10) });
         }
+        conditions.push({ $or: searchOr });
       }
       
       // Filter by category
       if (category && category !== 'All') {
-        query.category = category;
+        conditions.push({ category });
+      }
+
+      // Filter by bookType (Reference or General)
+      if (bookType && bookType !== 'All') {
+        if (bookType === 'Reference') {
+          conditions.push({ bookType: { $regex: new RegExp('^reference', 'i') } });
+        } else if (bookType === 'General') {
+          conditions.push({
+            $or: [
+              { bookType: { $regex: new RegExp('^general', 'i') } },
+              { bookType: 'Book' },
+              { bookType: null },
+              { bookType: { $exists: false } }
+            ]
+          });
+        } else {
+          conditions.push({ bookType });
+        }
       }
       
       // Filter by status
       if (status === 'Available') {
-        query.status = 'available';
+        conditions.push({ status: 'available' });
       } else if (status === 'Borrowed') {
-        query.status = { $ne: 'available' };
+        conditions.push({ status: { $ne: 'available' } });
       }
       
+      const query = conditions.length > 0 ? { $and: conditions } : {};
+
       const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
       const limitVal = parseInt(limit, 10);
       
@@ -61,7 +82,10 @@ export const getBooks = async (req, res) => {
 
 export const addBook = async (req, res) => {
     try {
-    let { title, bookNumber, author, category, bookType, language } = req.body;
+    let { 
+      title, bookNumber, author, category, section, bookType, 
+      language, callNumber, publisher, volume, price, remarks 
+    } = req.body;
 
     if (!title || !bookNumber || !author) {
       return res.status(400).json({ success: false, message: "Missing required fields: title, author, or bookNumber" });
@@ -79,7 +103,13 @@ export const addBook = async (req, res) => {
       bookNumber,
       author,
       category: category || "General",
-      bookType: bookType || "Book",
+      section: section || "",
+      callNumber: callNumber || "",
+      publisher: publisher || "",
+      volume: volume || "",
+      price: price ? parseFloat(price) : 0,
+      remarks: remarks || "",
+      bookType: bookType || "General",
       language: language || "English",
       status: "available"
     });
@@ -258,10 +288,12 @@ export const bulkImportBooks = async (req, res) => {
       const title = item.title?.toString().trim();
       const author = item.author?.toString().trim() || "Unknown";
       const category = item.category?.toString().trim() || "General";
-      const bookType = item.bookType?.toString().trim() || "Book";
+      const section = (item.section ?? item.Section ?? "")?.toString().trim();
+      const bookType = item.bookType?.toString().trim() || "General";
       const language = item.language?.toString().trim() || "English";
       const callNumber = item.callNumber?.toString().trim() || "";
       const publisher = item.publisher?.toString().trim() || "";
+      const volume = item.volume?.toString().trim() || "";
       const price = parseFloat(item.price) || 0;
       const remarks = item.remarks?.toString().trim() || "";
 
@@ -271,10 +303,12 @@ export const bulkImportBooks = async (req, res) => {
           title,
           author,
           category,
+          section,
           bookType,
           language,
           callNumber,
           publisher,
+          volume,
           price,
           remarks,
           status: "available"
@@ -305,10 +339,12 @@ export const bulkImportBooks = async (req, res) => {
               title: b.title,
               author: b.author,
               category: b.category,
+              section: b.section,
               bookType: b.bookType,
               language: b.language,
               callNumber: b.callNumber,
               publisher: b.publisher,
+              volume: b.volume,
               price: b.price,
               remarks: b.remarks
             },

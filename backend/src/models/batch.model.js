@@ -25,7 +25,7 @@ const batchSchema = new mongoose.Schema(
     },
     currentArtSemester: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ArtSemester",
+      ref: "Semester",  // unified — art semesters now live in Semester collection
     },
     students: [
       {

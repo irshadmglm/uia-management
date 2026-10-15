@@ -45,11 +45,19 @@ export const getMarkList = async (req, res) => {
         const { studentId, semesterId, batchId } = req.query;
         let markList;
         if(studentId && semesterId){
-         markList = await Marklist.findOne({ studentId, semesterId});
+         markList = await Marklist.findOne({ studentId, semesterId})
+           .populate("semesterId", "name semesterNumber type")
+           .populate("batchId", "name");
         }else if(studentId){
-         markList = await Marklist.find({ studentId });
+         markList = await Marklist.find({ studentId })
+           .populate("semesterId", "name semesterNumber type")
+           .populate("batchId", "name")
+           .sort({ createdAt: -1 });
         }else if(batchId){
-         markList = await Marklist.find({ batchId });
+         markList = await Marklist.find({ batchId })
+           .populate("semesterId", "name semesterNumber type")
+           .populate("batchId", "name")
+           .sort({ createdAt: -1 });
         }
         
         if (markList) {

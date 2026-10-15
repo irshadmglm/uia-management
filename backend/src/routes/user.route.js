@@ -1,5 +1,5 @@
 import express from "express";
-import { updateUser, addUser, getTeachers, getStudents, getStudent, editStudent, deleteStudent, editTeacher, deleteTeacher, deactivateTeacher, getTeacher, changeStdStatus, getStudentsInactive, updatePassword } from "../controllers/userController.js";
+import { updateUser, addUser, getTeachers, getStudents, getStudent, editStudent, deleteStudent, editTeacher, deleteTeacher, deactivateTeacher, activateTeacher, getTeacher, changeStdStatus, getStudentsInactive, updatePassword } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -15,6 +15,7 @@ router.put("/teacher/update/:teacherId", editTeacher)
 router.delete("/teacher/delete/:teacherId", deleteTeacher)
 
 router.patch("/teacher/deactivate/:teacherId", deactivateTeacher)
+router.patch("/teacher/activate/:teacherId", activateTeacher)
 
 router.get("/teacher/:teacherId", getTeacher);
 

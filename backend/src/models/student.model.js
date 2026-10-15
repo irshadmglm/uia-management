@@ -23,15 +23,15 @@ const UserSchema = new mongoose.Schema(
     trim: true,
   },
   phoneNumber: {
-    type: Number,
+    type: mongoose.Schema.Types.Mixed,
     trim: true,
   },
   whatsupNumber: {
-    type: Number,
+    type: mongoose.Schema.Types.Mixed,
     trim: true,
   },
   parentNumber: {
-    type: Number,
+    type: mongoose.Schema.Types.Mixed,
     trim: true,
   },
   dateOfBirth: {
@@ -48,6 +48,10 @@ const UserSchema = new mongoose.Schema(
   password: {
     type: String,
     required: true,
+  },
+  parentPassword: {
+    type: String,
+    default: null,
   },
   profileImage: {
     type: String,

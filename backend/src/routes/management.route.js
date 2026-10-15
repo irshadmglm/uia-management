@@ -1,5 +1,5 @@
 import express from "express";
-import { getDashboardMetrics, academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteArtSem,  deleteArtSubject,  deleteBatch, deactivateBatch, deleteSemester,  deleteSubject,  getArtSems,  getArtSubjects,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postArtSem, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateArtSem, updateArtSubject, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
+import { getDashboardMetrics, academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteArtSem,  deleteArtSubject,  deleteBatch, deactivateBatch, activateBatch, deleteSemester,  deleteSubject,  getArtSems,  getArtSubjects,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postArtSem, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateArtSem, updateArtSubject, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
 
 const router = express.Router();
 
@@ -30,6 +30,7 @@ router.get('/batches', getBatches);
 router.delete('/batch/delete/:batchId', deleteBatch);
 
 router.patch('/batch/deactivate/:batchId', deactivateBatch);
+router.patch('/batch/activate/:batchId', activateBatch);
 
 router.put('/batch/update/:batchId', updateBatch);
 

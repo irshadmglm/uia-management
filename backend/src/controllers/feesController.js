@@ -41,42 +41,71 @@ export const assignFeesToBatch = async (req, res) => {
 
 export const getDashboardAnalytics = async (req, res) => {
   try {
-    const batchNames = ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14'];
-    
-    // An array of the keys for monthly payments to make summing them up easier.
+    let batchNames = ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14', 'BATCH 15'];
+    try {
+      const titles = await db.getSheetTitles();
+      const detected = titles.filter(t => /^BATCH\s+\d+$/i.test(t));
+      if (detected.length > 0) {
+        batchNames = detected.sort();
+      }
+    } catch (_) {}
+
+    // An array of default monthly payment keys
     const paymentKeys = ['SHAW', 'DUL_Q', 'DUL_H', 'MUH', 'SAF', 'RA_A', 'RA_AK', 'JUM_U', 'JUM_A', 'RAJ', 'SHAH', 'RAML'];
 
     // --- Step 1: Fetch and Structure Data for All Batches ---
-    // We use Promise.all to fetch data from all sheets concurrently for better performance.
-    const allBatchPromises = batchNames.map(name => db.readAll(name));
+    const allBatchPromises = batchNames.map(name => db.readAll(name).catch(e => {
+      console.warn(`Failed to read sheet for ${name}:`, e.message);
+      return [];
+    }));
     const results = await Promise.all(allBatchPromises);
 
     let allStudents = [];
     results.forEach((batchData, index) => {
       const currentBatchName = batchNames[index];
-      const structuredData = batchData.map(item => ({
-        batchName: currentBatchName,
-        cicNumber: item["CIC NO"],
-        name: item.NAME,
-        subscription: {
-          perYear: Number(item["ISHTIRAK PER YEAR"]) || 0,
-          balance: Number(item.BALANCE) || 0,
-        },
-        payments: {
-          SHAW: Number(item.SHAW) || 0,
-          DUL_Q: Number(item["DUL Q"]) || 0,
-          DUL_H: Number(item["DUL H"]) || 0,
-          MUH: Number(item.MUH) || 0,
-          SAF: Number(item.SAF) || 0,
-          RA_A: Number(item["RA A"]) || 0,
-          RA_AK: Number(item["RA AK"]) || 0,
-          JUM_U: Number(item["JUM U"]) || 0,
-          JUM_A: Number(item["JUM A"]) || 0,
-          RAJ: Number(item.RAJ) || 0,
-          SHAH: Number(item.SHAH) || 0,
-          RAML: Number(item.RAML) || 0,
-        },
-      }));
+      const structuredData = batchData.map(item => {
+        const isGregorian = "JUN" in item || "JUL" in item;
+        const payments = isGregorian
+          ? {
+              JUN: Number(item.JUN) || 0,
+              JUL: Number(item.JUL) || 0,
+              AUG: Number(item.AUG) || 0,
+              SEP: Number(item.SEP) || 0,
+              OCT: Number(item.OCT) || 0,
+              NOV: Number(item.NOV) || 0,
+              DEC: Number(item.DEC) || 0,
+              JAN: Number(item.JAN) || 0,
+              FEB: Number(item.FEB) || 0,
+              MAR: Number(item.MAR) || 0,
+              APR: Number(item.APR) || 0,
+              MAY: Number(item.MAY) || 0,
+            }
+          : {
+              SHAW: Number(item.SHAW) || 0,
+              DUL_Q: Number(item["DUL Q"]) || 0,
+              DUL_H: Number(item["DUL H"]) || 0,
+              MUH: Number(item.MUH) || 0,
+              SAF: Number(item.SAF) || 0,
+              RA_A: Number(item["RA A"]) || 0,
+              RA_AK: Number(item["RA AK"]) || 0,
+              JUM_U: Number(item["JUM U"]) || 0,
+              JUM_A: Number(item["JUM A"]) || 0,
+              RAJ: Number(item.RAJ) || 0,
+              SHAH: Number(item.SHAH) || 0,
+              RAML: Number(item.RAML) || 0,
+            };
+
+        return {
+          batchName: currentBatchName,
+          cicNumber: item["CIC NO"] || item.rowIndex,
+          name: item.NAME,
+          subscription: {
+            perYear: Number(item["ISHTIRAK PER YEAR"]) || 0,
+            balance: Number(item.BALANCE) || 0,
+          },
+          payments,
+        };
+      });
       allStudents.push(...structuredData);
     });
 
@@ -96,7 +125,7 @@ export const getDashboardAnalytics = async (req, res) => {
 
     const monthlyCollection = {};
     paymentKeys.forEach(key => { monthlyCollection[key] = 0; });
-    
+
     let defaultersList = [];
 
     // --- Step 3: Process All Students in a Single Loop ---
@@ -128,10 +157,10 @@ export const getDashboardAnalytics = async (req, res) => {
           batchSummary[student.batchName].defaulterCount++;
         }
       }
-      
+
       // Aggregate Monthly collection data
-      for (const key of paymentKeys) {
-        monthlyCollection[key] += student.payments[key] || 0;
+      for (const [key, val] of Object.entries(student.payments)) {
+        monthlyCollection[key] = (monthlyCollection[key] || 0) + (val || 0);
       }
     }
 
@@ -194,37 +223,57 @@ export const getDashboardAnalytics = async (req, res) => {
 
 export const getFeesByBatch = async (req, res) => {
   try {
-    const {batch_name} = req.query;
-    const fees = await Fee.find({ batchId: req.query.batchId });
-    
-  const data = await db.readAll(batch_name);
+    const { batch_name } = req.query;
+    if (!batch_name) {
+      return res.status(400).json({ message: 'batch_name is required' });
+    }
 
-const structuredData = data.map(item => ({
-  cicNumber: item["CIC NO"],
-  name: item.NAME,
-  contact: item["CONTACT NO"],
-  subscription: {
-    perYear: item["ISHTIRAK PER YEAR"],
-    oldBalance: item["OLD BALANCE"],
-    balance: item.BALANCE
-  },
-  payments: {
-    SHAW: item.SHAW,
-    DUL_Q: item["DUL Q"],
-    DUL_H: item["DUL H"],
-    MUH: item.MUH,
-    SAF: item.SAF,
-    RA_A: item["RA A"],
-    RA_AK: item["RA AK"],
-    JUM_U: item["JUM U"],
-    JUM_A: item["JUM A"],
-    RAJ: item.RAJ,
-    SHAH: item.SHAH,
-    RAML: item.RAML
-  }
-}));
+    const data = await db.readAll(batch_name);
 
+    const structuredData = data.map(item => {
+      const isGregorian = "JUN" in item || "JUL" in item;
+      const payments = isGregorian
+        ? {
+            JUN: item.JUN || 0,
+            JUL: item.JUL || 0,
+            AUG: item.AUG || 0,
+            SEP: item.SEP || 0,
+            OCT: item.OCT || 0,
+            NOV: item.NOV || 0,
+            DEC: item.DEC || 0,
+            JAN: item.JAN || 0,
+            FEB: item.FEB || 0,
+            MAR: item.MAR || 0,
+            APR: item.APR || 0,
+            MAY: item.MAY || 0,
+          }
+        : {
+            SHAW: item.SHAW || 0,
+            DUL_Q: item["DUL Q"] || 0,
+            DUL_H: item["DUL H"] || 0,
+            MUH: item.MUH || 0,
+            SAF: item.SAF || 0,
+            RA_A: item["RA A"] || 0,
+            RA_AK: item["RA AK"] || 0,
+            JUM_U: item["JUM U"] || 0,
+            JUM_A: item["JUM A"] || 0,
+            RAJ: item.RAJ || 0,
+            SHAH: item.SHAH || 0,
+            RAML: item.RAML || 0,
+          };
 
+      return {
+        cicNumber: item["CIC NO"],
+        name: item.NAME,
+        contact: item["CONTACT NO"],
+        subscription: {
+          perYear: item["ISHTIRAK PER YEAR"],
+          oldBalance: item["OLD BALANCE"],
+          balance: item.BALANCE,
+        },
+        payments,
+      };
+    });
 
     res.status(200).json(structuredData);
   } catch (error) {
@@ -259,7 +308,7 @@ export const getFeeByStudent = async (req, res) => {
 
     // 2. If not found in specified batch, search across all known batch sheets
     if (!student) {
-      const knownBatches = ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14'];
+      const knownBatches = ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14', 'BATCH 15'];
       for (const bName of knownBatches) {
         if (bName === batch_name) continue;
         try {
@@ -385,6 +434,7 @@ export const updateFeeStatus = async (req, res) => {
         // --- 5. Persist Changes to the Database ---
         // Your db.updateRow function will use the sheet name, row index, and the updated data.
        await db.updateRow(batch_name, sheetRowIndex, updatedRowForSheet);
+       db.invalidateCache(batch_name);
 
         // --- 6. Send Success Response ---
         res.status(200).json({

@@ -91,7 +91,13 @@ export const login = async (req, res) => {
       if (isNaN(parentNum)) {
         return res.status(400).json({ message: "Invalid Parent Phone Number. Please enter a valid number." });
       }
-      user = await User.findOne({ parentNumber: parentNum, isActive: true });
+      user = await User.findOne({
+        $or: [
+          { parentNumber: parentNum },
+          { parentNumber: cleanUsername }
+        ],
+        isActive: true
+      });
     } else {
       user = await Staff.findOne({ userName: { $regex: new RegExp(`^${cleanUsername}$`, "i") } });
     }
@@ -100,7 +106,18 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    let isPasswordCorrect = false;
+    if (role === "parent") {
+      if (user.parentPassword) {
+        isPasswordCorrect = await bcrypt.compare(password, user.parentPassword);
+      } else {
+        // Fallback to student password if separate parent password is not yet configured
+        isPasswordCorrect = await bcrypt.compare(password, user.password);
+      }
+    } else {
+      isPasswordCorrect = await bcrypt.compare(password, user.password);
+    }
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid password" });
     }
@@ -120,6 +137,7 @@ export const login = async (req, res) => {
       parentNumber: user.parentNumber || null,
       role: role === "parent" ? "parent" : (user.role || null),
       profileImage: user.profileImage || null,
+      hasParentPassword: !!user.parentPassword,
     };
 
     res.status(200).json(responseData);

@@ -95,7 +95,7 @@ export const getStudent = async (req, res) => {
 
 export const updatePassword = async (req, res) => {
   try {
-    const { studentId, teacherId, currentPassword, newPassword } = req.body;
+    const { studentId, teacherId, isParent, currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ message: "Please provide current and new password." });
@@ -115,18 +115,29 @@ export const updatePassword = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Current password is incorrect." });
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    user.password = hashedPassword;
-    await user.save();
-
-    return res.status(200).json({ message: "Password updated successfully." });
+    if (isParent) {
+      // Parent changing parent password
+      const activeParentHash = user.parentPassword || user.password;
+      const isPasswordCorrect = await bcrypt.compare(currentPassword, activeParentHash);
+      if (!isPasswordCorrect) {
+        return res.status(400).json({ message: "Current parent password is incorrect." });
+      }
+      user.parentPassword = hashedPassword;
+      await user.save();
+      return res.status(200).json({ message: "Parent password updated successfully." });
+    } else {
+      // Student or staff password change
+      const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordCorrect) {
+        return res.status(400).json({ message: "Current password is incorrect." });
+      }
+      user.password = hashedPassword;
+      await user.save();
+      return res.status(200).json({ message: "Password updated successfully." });
+    }
 
   } catch (error) {
     console.error("Error updating password:", error);
@@ -142,15 +153,27 @@ export const editStudent = async (req, res) => {
 
   if(updateData.password){
     const salt = await bcrypt.genSalt(10);
-     hashedPassword = await bcrypt.hash(updateData.password, salt);
-     updateData.password = hashedPassword;
+    hashedPassword = await bcrypt.hash(updateData.password, salt);
+    updateData.password = hashedPassword;
   }else{
     delete updateData.password;
   }
 
-  if(updateData.batchName){
-    const batchId = await  Batch.findOne({ batchName :updateData.batchName}).batchId;
-    updateData.batchId = batchId;
+  if(updateData.parentPassword){
+    const salt = await bcrypt.genSalt(10);
+    updateData.parentPassword = await bcrypt.hash(updateData.parentPassword, salt);
+  }else{
+    delete updateData.parentPassword;
+  }
+
+  if (updateData.batchName) {
+    // Find the batch by name and use its ObjectId — don't store the string
+    const batch = await Batch.findOne({ name: updateData.batchName });
+    if (batch) {
+      updateData.batchId = batch._id;
+    }
+    // Keep batchName for now (backward compat) but derive from batch
+    updateData.batchName = batch ? batch.name : updateData.batchName;
   }
 
     const student = await Student.findByIdAndUpdate(studentId, updateData, {
@@ -359,6 +382,26 @@ export const deactivateTeacher = async (req, res) => {
     }
 
     res.status(200).json({ success: true, message: "Teacher deactivated successfully", teacher: deactivatedTeacher });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const activateTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    const activatedTeacher = await Staff.findByIdAndUpdate(
+      teacherId,
+      { isActive: true },
+      { new: true }
+    );
+
+    if (!activatedTeacher) {
+      return res.status(404).json({ success: false, message: "Teacher not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Teacher activated successfully", teacher: activatedTeacher });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

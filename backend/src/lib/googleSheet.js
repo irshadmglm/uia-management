@@ -38,13 +38,42 @@ async function getAuth() {
   }
 }
 
+// Fast in-memory cache to prevent repetitive, slow Google Sheets API roundtrips
+const sheetCache = new Map();
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds TTL
+
 /**
  * A class to interact with a Google Sheet as a simple database.
  * Provides methods for Create, Read, Update, and Delete (CRUD) operations.
  */
 class SheetsDB {
-  async readAll(sheetName) {
+  invalidateCache(sheetName) {
+    if (sheetName) {
+      sheetCache.delete(sheetName);
+    } else {
+      sheetCache.clear();
+    }
+  }
+
+  async getSheetTitles() {
     try {
+      const auth = await getAuth();
+      const sheets = google.sheets({ version: "v4", auth });
+      const meta = await sheets.spreadsheets.get({ spreadsheetId });
+      return meta.data.sheets.map((s) => s.properties.title);
+    } catch (error) {
+      console.error("Error getting sheet titles:", error.message);
+      return [];
+    }
+  }
+
+  async readAll(sheetName, forceRefresh = false) {
+    try {
+      const cached = sheetCache.get(sheetName);
+      if (!forceRefresh && cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+        return cached.data;
+      }
+
       console.log(`Reading all rows from sheet: ${sheetName}`);
       const auth = await getAuth();
       const sheets = google.sheets({ version: "v4", auth });
@@ -82,6 +111,7 @@ class SheetsDB {
         })
         .filter((row) => row !== null);
 
+      sheetCache.set(sheetName, { data, timestamp: Date.now() });
       return data;
     } catch (error) {
       console.error(`Error reading data from sheet "${sheetName}":`, error.message);
@@ -91,6 +121,7 @@ class SheetsDB {
 
   async updateRow(sheetName, rowIndex, dataToUpdate) {
     try {
+      sheetCache.delete(sheetName);
       console.log(`Updating row index ${rowIndex} in sheet: ${sheetName}`);
       const auth = await getAuth();
       const sheets = google.sheets({ version: "v4", auth });

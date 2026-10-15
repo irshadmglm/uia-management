@@ -5,6 +5,7 @@ const BookSchema = new mongoose.Schema({
   bookNumber: { type: Number, required: true, unique: true },
   author: { type: String, required: true, index: true },
   category: { type: String, default: "General", index: true },
+  section: { type: String, default: "", index: true },
   callNumber: { type: String, default: "" },
   publisher: { type: String, default: "" },
   volume: { type: String, default: "" },
