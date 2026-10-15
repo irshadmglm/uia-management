@@ -90,6 +90,24 @@ export const useStaffStore = create((set, get) => ({
     }
   },
 
+  activateTeacher: async (teacherId) => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.patch(`/users/teacher/activate/${teacherId}`);
+      toast.success(res.data.message || "Teacher activated successfully");
+      set((state) => ({
+        teachers: state.teachers.map((teacher) =>
+          teacher._id === teacherId ? res.data.teacher : teacher
+        ),
+      }));
+    } catch (error) {
+      console.log("Error in activateTeacher:", error);
+      toast.error(error.response?.data?.message || "Failed to activate teacher");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   getBatch: async () => {
     try {
     const authUser = useAuthStore.getState().authUser

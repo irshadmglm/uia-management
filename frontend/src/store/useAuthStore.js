@@ -99,6 +99,7 @@ export const useAuthStore = create((set, get) => ({
 
     const data = {
       ...(user.role === "student" && { studentId: user._id }),
+      ...(user.role === "parent" && { studentId: user._id, isParent: true }),
       ...(user.role === "teacher" && { teacherId: user._id }),
       currentPassword,
       newPassword,

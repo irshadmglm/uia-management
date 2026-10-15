@@ -13,9 +13,11 @@ import { useStudentStore } from "../../store/studentStore";
 
 const AdmissionForm = () => {
   const { studentId } = useParams();
-  const {newAdmission, isLoading} = useRegisterdStudentStore()
+  const isEditMode = Boolean(studentId);
+  const {newAdmission, isLoading: isAdmissionLoading} = useRegisterdStudentStore()
   const {batches, getBatches} = useAdminStore();
-  const {student, getStudent, editStudent } = useStudentStore()
+  const {student, getStudent, editStudent, isLoading: isEditLoading } = useStudentStore()
+  const isLoading = isEditMode ? isEditLoading : isAdmissionLoading;
   const buttonRef = useRef(null);
   const popoverRef = useRef(null);
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
@@ -37,12 +39,22 @@ const AdmissionForm = () => {
   }, [])
 
   useEffect(() => {
-    if(studentId){
-      getStudent(studentId)
+    if (studentId) {
+      // Clear stale student data before fetching so the form doesn't
+      // briefly show another student's data or trigger a false prefill.
+      useStudentStore.setState({ student: {} });
+      getStudent(studentId);
     }
-  }, [studentId])
+    // Clear student on unmount to prevent stale data on the next form open
+    return () => {
+      useStudentStore.setState({ student: {} });
+    };
+  }, [studentId]);
+
   useEffect(() => {
-    if (student) {
+    // Only prefill if we are in edit mode AND the fetched student matches
+    // the current studentId to avoid using stale store data.
+    if (isEditMode && student && student._id === studentId) {
       setFormData((prev) => ({
         ...prev,
         name: student.name || "",
@@ -57,7 +69,7 @@ const AdmissionForm = () => {
         profileImage: student.profileImage || null,
       }));
     }
-  }, [student]);
+  }, [student, studentId, isEditMode]);
   
   
   
@@ -107,6 +119,14 @@ const AdmissionForm = () => {
     }
   };
 
+  // Safely get the image preview URL regardless of whether profileImage is
+  // a File object (new upload) or a URL string (existing student image).
+  const profileImagePreview = formData.profileImage
+    ? (typeof formData.profileImage === "string"
+        ? formData.profileImage
+        : URL.createObjectURL(formData.profileImage))
+    : null;
+
   return (
     <div className="text-gray-900 dark:text-white flex flex-col">
       
@@ -121,9 +141,9 @@ const AdmissionForm = () => {
             {/* Profile Image Upload - Positioned at Top */}
             <div className="md:col-span-2 flex justify-center mb-6">
               <label htmlFor="profileImage" className="cursor-pointer">
-                {formData.profileImage ? (
+                {profileImagePreview ? (
                   <img
-                    src={URL.createObjectURL(formData.profileImage)}
+                    src={profileImagePreview}
                     alt="Profile Preview"
                     className="w-32 h-32 object-cover rounded-full border-4 border-blue-500"
                   />
@@ -235,7 +255,9 @@ const AdmissionForm = () => {
                 className="btn btn-primary w-full mt-4"
                 disabled={isLoading}
               >
-                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Register"}
+                {isLoading
+                  ? <Loader2 className="w-5 h-5 animate-spin" />
+                  : isEditMode ? "Update Student" : "Register"}
               </button>
             </div>
           </form>

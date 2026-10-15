@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { X, BookOpen, Search, User, Hash, Tag, Check, ArrowRightLeft, Users, RefreshCw, Clock } from 'lucide-react';
+import { 
+  X, BookOpen, Search, User, Hash, Tag, Check, ArrowRightLeft, Users, RefreshCw, 
+  Clock, ChevronDown, Calendar, Layers, Globe, DollarSign, Bookmark, FileText, AlertCircle 
+} from 'lucide-react';
 import { useStudentStore } from '../../store/studentStore';
+import { useBooksStore } from '../../store/useBooksStore';
 import { useDebounce } from '../../hooks/useDebounce';
 
 const inputCls = "w-full px-4 py-2.5 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-teal transition-all";
@@ -44,28 +48,29 @@ const ModalHeader = ({ title, subtitle, icon: Icon, onClose, iconBg = 'bg-brand-
 // --- BOOK FORM MODAL (Add / Edit) ---
 export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({ 
-    title: '', author: '', bookNumber: '', category: 'General',
+    title: '', author: '', bookNumber: '', category: 'General', section: '',
     callNumber: '', publisher: '', volume: '', price: '', remarks: '',
-    bookType: 'Book', language: 'English'
+    bookType: 'General', language: 'English'
   });
 
   useEffect(() => {
     if (initialData) {
       setFormData({
         ...initialData,
+        section: initialData.section || '',
         callNumber: initialData.callNumber || '',
         publisher: initialData.publisher || '',
         volume: initialData.volume || '',
         price: initialData.price || '',
         remarks: initialData.remarks || '',
-        bookType: initialData.bookType || 'Book',
+        bookType: initialData.bookType || 'General',
         language: initialData.language || 'English',
       });
     } else {
       setFormData({ 
-        title: '', author: '', bookNumber: '', category: 'General',
+        title: '', author: '', bookNumber: '', category: 'General', section: '',
         callNumber: '', publisher: '', volume: '', price: '', remarks: '',
-        bookType: 'Book', language: 'English'
+        bookType: 'General', language: 'English'
       });
     }
   }, [initialData, isOpen]);
@@ -119,6 +124,13 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             </div>
           </div>
           <div>
+            <label className={labelCls}>Section <span className="text-gray-400 font-normal lowercase">(optional)</span></label>
+            <div className="relative">
+              <Layers size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.section} onChange={e => set('section', e.target.value)} placeholder="e.g. Arabic, General, Shelf A" />
+            </div>
+          </div>
+          <div>
             <label className={labelCls}>Publisher</label>
             <div className="relative">
               <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -135,8 +147,21 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
           <div>
             <label className={labelCls}>Book Type</label>
             <div className="relative">
-              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.bookType} onChange={e => set('bookType', e.target.value)} placeholder="e.g. Book, Magazine" />
+              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <select
+                className={`${inputCls} pl-9 pr-9 cursor-pointer appearance-none bg-gray-50 dark:bg-[#0d2522] text-gray-900 dark:text-white`}
+                value={formData.bookType || 'General'}
+                onChange={e => set('bookType', e.target.value)}
+              >
+                <option value="General">General</option>
+                <option value="Reference">Reference</option>
+                {formData.bookType && formData.bookType !== "General" && formData.bookType !== "Reference" && (
+                  <option value={formData.bookType}>{formData.bookType}</option>
+                )}
+              </select>
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <ChevronDown size={14} />
+              </div>
             </div>
           </div>
           <div>
@@ -419,121 +444,365 @@ export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && book?._id) {
       setActiveTab('details');
-      setHistory([]);
-    }
-  }, [isOpen, book]);
-
-  useEffect(() => {
-    if (activeTab === 'history' && book && history.length === 0) {
       const fetchHistory = async () => {
         setIsLoadingHistory(true);
-        const data = await getBookHistory(book._id);
-        setHistory(data);
-        setIsLoadingHistory(false);
+        try {
+          const fetcher = getBookHistory || useBooksStore.getState().getBookHistory;
+          const data = await fetcher(book._id);
+          setHistory(data || []);
+        } catch (err) {
+          console.error("Failed to load history", err);
+          setHistory([]);
+        } finally {
+          setIsLoadingHistory(false);
+        }
       };
       fetchHistory();
+    } else if (!isOpen) {
+      setHistory([]);
     }
-  }, [activeTab, book, getBookHistory, history.length]);
+  }, [isOpen, book?._id, getBookHistory]);
 
   if (!book) return null;
 
+  // Resolve active loan / borrower info
+  const activeTx = history.find(t => t.status === 'active');
+  const isBorrowed = book.status !== 'available' || !!book.studentName || !!activeTx;
+  const borrowerName = book.studentName || activeTx?.userName || (book.status !== 'available' ? (book.borrowedBy || 'Unknown Student') : null);
+  const borrowerId = book.borrowedBy || activeTx?.userId;
+  const issueDate = book.issueDate || activeTx?.issueDate;
+  const dueDate = book.dueDate || activeTx?.dueDate;
+  const loanDays = issueDate
+    ? Math.floor((new Date() - new Date(issueDate)) / (1000 * 86400))
+    : 0;
+  const isOverdue = dueDate && new Date(dueDate) < new Date();
+
   return (
-    <ModalWrapper isOpen={isOpen} onClose={onClose} title={`Book #${book.bookNumber}`}>
-      <div className="flex flex-col h-[500px] max-h-[80vh]">
+    <ModalWrapper isOpen={isOpen} onClose={onClose} maxWidth="max-w-2xl">
+      <ModalHeader
+        title={`Book #${book.bookNumber}`}
+        subtitle={book.title}
+        icon={BookOpen}
+        onClose={onClose}
+      />
+      <div className="flex flex-col max-h-[78vh]">
         {/* Tabs Header */}
-        <div className="flex border-b border-gray-100 dark:border-[#11322f] px-5">
+        <div className="flex border-b border-gray-100 dark:border-[#11322f] px-5 bg-gray-50/50 dark:bg-[#0d2522]/50">
           <button
             onClick={() => setActiveTab('details')}
-            className={`py-3 px-4 text-sm font-bold border-b-2 transition-all ${
+            className={`py-3 px-4 text-xs font-bold border-b-2 uppercase tracking-wider transition-all ${
               activeTab === 'details' 
                 ? 'border-brand-teal text-brand-teal dark:text-brand-mint' 
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
             }`}
           >
-            Details
+            All Book Details
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`py-3 px-4 text-sm font-bold border-b-2 transition-all ${
+            className={`py-3 px-4 text-xs font-bold border-b-2 uppercase tracking-wider transition-all flex items-center gap-1.5 ${
               activeTab === 'history' 
                 ? 'border-brand-teal text-brand-teal dark:text-brand-mint' 
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
             }`}
           >
-            History
+            <span>Borrowing History</span>
+            {history.length > 0 && (
+              <span className="px-2 py-0.5 bg-brand-teal/10 text-brand-teal dark:text-brand-mint text-[11px] rounded-full font-bold">
+                {history.length}
+              </span>
+            )}
           </button>
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {activeTab === 'details' ? (
-            <div className="space-y-4">
-              <div className="bg-gray-50 dark:bg-[#0a1f1d] p-4 rounded-xl border border-gray-100 dark:border-[#11322f]">
-                <div className="w-16 h-16 bg-white dark:bg-[#11322f] rounded-lg shadow-sm border border-gray-100 dark:border-[#0d2522] flex items-center justify-center mb-3">
-                  <BookOpen size={28} className="text-brand-teal" />
+            <>
+              {/* Hero Banner */}
+              <div className="bg-gradient-to-br from-brand-teal/5 to-transparent dark:from-[#0a1f1d] p-4 sm:p-5 rounded-2xl border border-brand-teal/10 dark:border-[#11322f]">
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-teal/10 dark:bg-brand-teal/20 flex items-center justify-center shrink-0 border border-brand-teal/20">
+                    <BookOpen size={28} className="text-brand-teal dark:text-brand-mint" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                      <span className="font-mono text-xs font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-[#11322f] px-2.5 py-0.5 rounded-lg border border-gray-200 dark:border-[#0d2522] shadow-xs">
+                        #{book.bookNumber}
+                      </span>
+                      {book.category && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-bold text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 rounded-lg border border-blue-100 dark:border-blue-800/40">
+                          <Tag size={10} /> {book.category}
+                        </span>
+                      )}
+                      {book.section && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-bold text-teal-800 bg-teal-50 dark:bg-teal-900/30 dark:text-teal-300 rounded-lg border border-teal-200 dark:border-teal-800/40">
+                          <Layers size={10} /> {book.section}
+                        </span>
+                      )}
+                      {book.bookType && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-bold text-amber-800 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-300 rounded-lg border border-amber-200 dark:border-amber-800/40">
+                          <Bookmark size={10} /> {book.bookType}
+                        </span>
+                      )}
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-bold rounded-lg border ${
+                        !isBorrowed
+                          ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40' 
+                          : 'bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800/40'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${!isBorrowed ? 'bg-emerald-500 animate-pulse' : 'bg-orange-500'}`}></span>
+                        {!isBorrowed ? 'Available' : 'Borrowed'}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white leading-snug">
+                      {book.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-1.5 font-medium">
+                      <User size={13} className="text-gray-400" /> By {book.author}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">{book.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{book.author}</p>
-                {book.category && (
-                  <span className="inline-block mt-3 px-2.5 py-1 text-xs font-semibold text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg">
-                    {book.category}
+              </div>
+
+              {/* Borrower or Availability Status Card */}
+              {isBorrowed ? (
+                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-500/5 border border-orange-200 dark:border-orange-500/30 shadow-xs">
+                  <div className="flex items-center justify-between mb-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 flex items-center justify-center shadow-xs">
+                        <User size={20} />
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-black tracking-wider text-orange-600 dark:text-orange-400 block">
+                          Currently Borrowed By
+                        </span>
+                        <h4 className="text-base font-black text-gray-900 dark:text-white leading-tight">
+                          {borrowerName || 'Student'}
+                        </h4>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/40">
+                      <Clock size={12} /> Active Loan
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-orange-200/60 dark:border-orange-900/50 text-xs">
+                    {borrowerId && (
+                      <div>
+                        <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500">Student ID / Reg</p>
+                        <p className="font-mono font-bold text-gray-800 dark:text-gray-200 mt-0.5">#{borrowerId}</p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500">Issued On</p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-200 mt-0.5">
+                        {issueDate ? new Date(issueDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500">Days on Loan</p>
+                      <p className="font-bold text-orange-600 dark:text-orange-400 mt-0.5">
+                        {loanDays} day{loanDays !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500">Due Date</p>
+                      <p className={`font-semibold mt-0.5 ${isOverdue ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-800 dark:text-gray-200'}`}>
+                        {dueDate ? new Date(dueDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'No due date'}
+                        {isOverdue && ' (Overdue)'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-200/80 dark:border-emerald-500/30 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                      <Check size={20} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Available in Library</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">This book is on the library shelf and ready to be issued</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40">
+                    On Shelf
                   </span>
-                )}
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Status</p>
-                  <p className={`text-sm font-bold ${book.status === 'available' ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                    {book.status === 'available' ? 'Available' : 'Borrowed'}
-                  </p>
-                </div>
-                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Language</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{book.language || 'English'}</p>
-                </div>
-                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Book Type</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{book.bookType || 'Book'}</p>
-                </div>
-                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Price</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{book.price ? `₹${book.price}` : 'N/A'}</p>
-                </div>
-                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Publisher</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{book.publisher || 'N/A'}</p>
-                </div>
-                <div className="p-3 bg-white dark:bg-[#11322f] border border-gray-100 dark:border-[#0d2522] rounded-xl shadow-sm">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Call Number</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{book.callNumber || 'N/A'}</p>
-                </div>
-              </div>
-              
-              {book.remarks && (
-                <div className="p-3 bg-gray-50 dark:bg-[#0a1f1d] rounded-xl border border-gray-100 dark:border-[#11322f]">
-                  <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Remarks</p>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">{book.remarks}</p>
                 </div>
               )}
-            </div>
+
+              {/* Complete Specifications Grid */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2.5">
+                  Book Specifications & Metadata
+                </h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  
+                  {/* Category - Prominently Displayed */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Tag size={13} className="text-brand-teal" />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Category</p>
+                    </div>
+                    <p className="text-xs font-black text-brand-teal dark:text-brand-mint">
+                      {book.category || 'General'}
+                    </p>
+                  </div>
+
+                  {/* Section (Optional) */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Layers size={13} className="text-brand-teal" />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Section</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white">
+                      {book.section || 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Call Number */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Hash size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Call Number</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white font-mono break-words">
+                      {book.callNumber || 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Book Type */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Bookmark size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Book Type</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white">
+                      {book.bookType || 'General'}
+                    </p>
+                  </div>
+
+                  {/* Language */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Globe size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Language</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white">
+                      {book.language || 'English'}
+                    </p>
+                  </div>
+
+                  {/* Publisher */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs col-span-2 sm:col-span-1">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <BookOpen size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Publisher</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white break-words">
+                      {book.publisher || 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Volume / Edition */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Layers size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Volume / Ed.</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white">
+                      {book.volume || 'Standard'}
+                    </p>
+                  </div>
+
+                  {/* Price */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <DollarSign size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Price / Value</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white">
+                      {book.price ? `₹${book.price}` : 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Date Added */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Calendar size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Date Added</p>
+                    </div>
+                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      {book.createdAt ? new Date(book.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Last Modified */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Clock size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Last Updated</p>
+                    </div>
+                    <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      {book.updatedAt ? new Date(book.updatedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Remarks if present */}
+              {book.remarks && (
+                <div className="p-3.5 bg-gray-50 dark:bg-[#0a1f1d] rounded-xl border border-gray-100 dark:border-[#11322f]">
+                  <div className="flex items-center gap-1.5 text-gray-400 mb-1">
+                    <FileText size={13} />
+                    <p className="text-[10px] uppercase font-bold tracking-wider">Remarks / Notes</p>
+                  </div>
+                  <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">{book.remarks}</p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="space-y-3">
               {isLoadingHistory ? (
-                <div className="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
-                  <RefreshCw size={20} className="animate-spin" />
-                  <p className="text-sm font-semibold">Loading history...</p>
+                <div className="flex flex-col items-center justify-center py-12 gap-2 text-gray-400">
+                  <RefreshCw size={22} className="animate-spin text-brand-teal" />
+                  <p className="text-xs font-semibold">Loading borrowing history...</p>
                 </div>
               ) : history.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
-                  <Clock size={24} className="opacity-50" />
-                  <p className="text-sm font-semibold">No borrowing history found.</p>
-                </div>
+                isBorrowed && borrowerName ? (
+                  <div className="space-y-3">
+                    <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200/70 dark:border-orange-900/40">
+                      <div className="flex justify-between items-start mb-1">
+                        <p className="font-bold text-gray-900 dark:text-white text-sm">{borrowerName}</p>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300">
+                          Currently Borrowed
+                        </span>
+                      </div>
+                      {borrowerId && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 font-mono mb-1">ID: #{borrowerId}</p>
+                      )}
+                      {issueDate && (
+                        <p className="text-xs text-gray-500 mb-1">
+                          Issued on: {new Date(issueDate).toLocaleDateString()}
+                        </p>
+                      )}
+                      <p className="text-xs font-semibold text-orange-600 dark:text-orange-400">
+                        {loanDays} day{loanDays !== 1 ? 's' : ''} on loan
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 gap-2 text-gray-400">
+                    <Clock size={28} className="opacity-40" />
+                    <p className="text-xs font-semibold">No borrowing history recorded for this book.</p>
+                  </div>
+                )
               ) : (
-                <div className="relative border-l-2 border-brand-teal/20 ml-3 pl-4 space-y-4">
-                  {history.map((tx, idx) => {
+                <div className="relative border-l-2 border-brand-teal/30 ml-3 pl-4 space-y-4">
+                  {history.map((tx) => {
                     const days = tx.returnDate
                       ? Math.floor((new Date(tx.returnDate) - new Date(tx.issueDate)) / (1000 * 86400))
                       : Math.floor((new Date() - new Date(tx.issueDate)) / (1000 * 86400));
@@ -541,15 +810,20 @@ export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
                     return (
                       <div key={tx._id} className="relative">
                         <div className={`absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full ${tx.status === 'active' ? 'bg-orange-500' : 'bg-brand-teal'}`}></div>
-                        <div className="bg-white dark:bg-[#11322f] p-3 rounded-xl border border-gray-100 dark:border-[#0d2522] shadow-sm">
+                        <div className="bg-white dark:bg-[#0d2522] p-3.5 rounded-xl border border-gray-100 dark:border-[#11322f] shadow-xs">
                           <div className="flex justify-between items-start mb-1">
-                            <p className="font-bold text-gray-900 dark:text-white text-sm">{tx.userName}</p>
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${tx.status === 'active' ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400' : 'bg-gray-100 text-gray-500 dark:bg-[#0a1f1d] dark:text-gray-400'}`}>
-                              {tx.status === 'active' ? 'Currently Borrowed' : 'Returned'}
+                            <div>
+                              <p className="font-bold text-gray-900 dark:text-white text-sm">{tx.userName}</p>
+                              {tx.userId && (
+                                <p className="text-[11px] text-gray-400 dark:text-gray-500 font-mono">ID: #{tx.userId}</p>
+                              )}
+                            </div>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${tx.status === 'active' ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400' : 'bg-gray-100 text-gray-500 dark:bg-[#0a1f1d] dark:text-gray-400'}`}>
+                              {tx.status === 'active' ? 'Active Loan' : 'Returned'}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-500 mb-1">
-                            {new Date(tx.issueDate).toLocaleDateString()} {tx.returnDate && ` - ${new Date(tx.returnDate).toLocaleDateString()}`}
+                          <p className="text-xs text-gray-500 my-1">
+                            {new Date(tx.issueDate).toLocaleDateString()} {tx.returnDate && ` → ${new Date(tx.returnDate).toLocaleDateString()}`}
                           </p>
                           <p className="text-xs font-semibold text-brand-teal dark:text-brand-mint">
                             {days} day{days !== 1 ? 's' : ''} total

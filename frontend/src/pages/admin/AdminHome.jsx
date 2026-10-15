@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useDashboardStore } from '../../store/useDashboardStore';
 
-const MetricCard = ({ title, value, icon: Icon, colorClass, gradientClass, loading }) => (
+const MetricCard = ({ title, value, subtitle, icon: Icon, colorClass, gradientClass, loading }) => (
   <div className={`relative overflow-hidden bg-white dark:bg-[#11322f] p-4 sm:p-6 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 dark:border-[#0d2522] group hover:-translate-y-1 transition-all duration-300`}>
     <div className={`absolute -right-10 -bottom-10 w-32 h-32 rounded-full blur-2xl opacity-20 ${gradientClass} group-hover:scale-150 transition-transform duration-700`}></div>
     
@@ -17,9 +17,14 @@ const MetricCard = ({ title, value, icon: Icon, colorClass, gradientClass, loadi
         {loading ? (
           <div className="h-8 w-14 bg-gray-200 dark:bg-[#0d2522] rounded animate-pulse"></div>
         ) : (
-          <h2 className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white font-oswald tracking-tight">
-            {value}
-          </h2>
+          <div>
+            <h2 className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white font-oswald tracking-tight">
+              {value}
+            </h2>
+            {subtitle && (
+              <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-400 mt-1">{subtitle}</p>
+            )}
+          </div>
         )}
       </div>
       <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl ${colorClass}`}>
@@ -96,8 +101,9 @@ const AdminHome = () => {
       {/* KPI Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <MetricCard 
-          title="Total Students" 
+          title="Active Students" 
           value={metrics?.totalStudents || 0} 
+          subtitle={metrics?.totalAlumni ? `+${metrics.totalAlumni} alumni` : undefined}
           icon={Users} 
           colorClass="bg-blue-500 shadow-blue-500/30"
           gradientClass="bg-blue-500"
@@ -114,6 +120,7 @@ const AdminHome = () => {
         <MetricCard 
           title="Active Batches" 
           value={metrics?.totalBatches || 0} 
+          subtitle={metrics?.allBatchesCount && metrics.allBatchesCount > metrics.totalBatches ? `${metrics.allBatchesCount - metrics.totalBatches} alumni batches` : undefined}
           icon={GraduationCap} 
           colorClass="bg-amber-500 shadow-amber-500/30"
           gradientClass="bg-amber-500"

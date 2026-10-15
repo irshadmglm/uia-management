@@ -149,11 +149,27 @@ export const useAdminStore = create((set, get) => ({
         return false;
       }
     } catch (error) {
-      console.error(error);
-      toast.error("An error occurred while deleting the Batch");
+      // Show the specific message from backend (e.g. "cannot delete — has students")
+      const serverMessage = error.response?.data?.message;
+      const cannotDelete = error.response?.data?.cannotDelete;
+      if (cannotDelete) {
+        // Give a short, actionable message — full detail is in the server message
+        const counts = error.response?.data?.relatedCounts || {};
+        const parts = [];
+        if (counts.studentCount) parts.push(`${counts.studentCount} student(s)`);
+        if (counts.feeCount) parts.push(`${counts.feeCount} fee record(s)`);
+        if (counts.markCount) parts.push(`${counts.markCount} mark list(s)`);
+        toast.error(
+          `Cannot delete — batch has ${parts.join(", ")}. Use the Archive (📦) button instead.`,
+          { duration: 6000 }
+        );
+      } else {
+        toast.error(serverMessage || "An error occurred while deleting the Batch");
+      }
       return false;
     }
   },
+
 
   deactivateBatch: async (batchId) => {
     try {
@@ -170,6 +186,26 @@ export const useAdminStore = create((set, get) => ({
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "An error occurred while deactivating the Batch");
+      return false;
+    }
+  },
+
+  activateBatch: async (batchId) => {
+    try {
+      const res = await axiosInstance.patch(`/mng/batch/activate/${batchId}`);
+      if (res.status === 200) {
+        toast.success(res.data.message || "Batch activated successfully");
+        set((state) => ({
+          batches: state.batches.map(batch => batch._id === batchId ? res.data.batch : batch)
+        }));
+        return true;
+      } else {
+        toast.error("Failed to activate the Batch");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "An error occurred while activating the Batch");
       return false;
     }
   },

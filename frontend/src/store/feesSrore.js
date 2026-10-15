@@ -15,9 +15,12 @@ export const useFeeStore = create((set, get) => ({
         'SHAW': 'Shawwal', 'DUL Q': "Dhu al-Qi'dah", 'DUL H': 'Dhu al-Hijjah', 
         'MUH': 'Muharram', 'SAF': 'Safar', 'RA A': "Rabi' al-Awwal", 
         'RA AK': "Rabi' al-Akhir", 'JUM U': 'Jumada al-Ula', 'JUM A': 'Jumada al-Akhirah', 
-        'RAJ': 'Rajab', 'SHAH': "Sha'ban", 'RAML': 'Ramadan'
+        'RAJ': 'Rajab', 'SHAH': "Sha'ban", 'RAML': 'Ramadan',
+        'JUN': 'June', 'JUL': 'July', 'AUG': 'August', 'SEP': 'September',
+        'OCT': 'October', 'NOV': 'November', 'DEC': 'December', 'JAN': 'January',
+        'FEB': 'February', 'MAR': 'March', 'APR': 'April', 'MAY': 'May'
     },
-    batchNames: ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14'],
+    batchNames: ['BATCH 09', 'BATCH 10', 'BATCH 11', 'BATCH 12', 'BATCH 13', 'BATCH 14', 'BATCH 15'],
   batches : {
   '09': 'BATCH 09',
   '10': 'BATCH 10',
@@ -25,6 +28,7 @@ export const useFeeStore = create((set, get) => ({
   '12': 'BATCH 12',
   '13': 'BATCH 13',
   '14': 'BATCH 14',
+  '15': 'BATCH 15',
 },
 
     // --- Actions ---

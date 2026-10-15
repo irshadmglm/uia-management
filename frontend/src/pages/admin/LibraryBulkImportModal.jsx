@@ -8,7 +8,8 @@ const DEFAULT_MAPPING = {
   bookNumber: ['ACCESSION NO', 'ACCESSION', 'Sl.No.', 'SL.NO', 'Book Number', 'Book No', 'No.', 'ID'],
   title: ['TITLE', 'Title', 'Book Title', 'Name', 'Book Name'],
   author: ['AUTHOR', 'Author', 'Writer', 'Author Name'],
-  category: ['Section', 'SECTION', 'Source Sheet', 'Category', 'Genre', 'Subject'],
+  category: ['Category', 'CATEGORY', 'Genre', 'Subject', 'Source Sheet'],
+  section: ['Section', 'SECTION', 'Library Section', 'Sec', 'Shelf'],
   bookType: ['Book Type', 'Type', 'Format', 'Item Type'],
   language: ['Language', 'Lang'],
   callNumber: ['CALL NO', 'Call No', 'Call Number', 'CallNo'],
@@ -24,6 +25,7 @@ const autoDetectMapping = (headers) => {
     title: '',
     author: '',
     category: '',
+    section: '',
     bookType: '',
     language: '',
     callNumber: '',
@@ -147,7 +149,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "ACCESSION NO": 1001,
         "TITLE": "Tafsir Al-Qurtubi Vol 1",
         "AUTHOR": "Imam Al-Qurtubi",
-        "Section": "Arabic - Tafseer",
+        "Category": "Tafseer",
+        "Section": "Arabic",
         "Book Type": "Book",
         "Language": "Arabic",
         "CALL NO": "222.3 QUR/K",
@@ -160,7 +163,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "ACCESSION NO": 1002,
         "TITLE": "Sahih Al-Bukhari",
         "AUTHOR": "Imam Al-Bukhari",
-        "Section": "Arabic - Hadith",
+        "Category": "Hadith",
+        "Section": "Arabic",
         "Book Type": "Book",
         "Language": "Arabic",
         "CALL NO": "223.1 BUK/S",
@@ -192,6 +196,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     const title = getVal('title');
     const author = getVal('author');
     const category = getVal('category');
+    const section = getVal('section');
     const bookType = getVal('bookType');
     const language = getVal('language');
     const callNumber = getVal('callNumber');
@@ -208,7 +213,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
       title,
       author: author || 'Unknown',
       category: category || 'General',
-      bookType: bookType || 'Book',
+      section: section || '',
+      bookType: bookType || 'General',
       language: language || 'English',
       callNumber,
       publisher,
@@ -365,7 +371,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                     { key: 'bookNumber', label: 'Book / Acc No *' },
                     { key: 'title', label: 'Book Title *' },
                     { key: 'author', label: 'Author' },
-                    { key: 'category', label: 'Section / Category' },
+                    { key: 'category', label: 'Category' },
+                    { key: 'section', label: 'Section (Optional)' },
                     { key: 'bookType', label: 'Book Type' },
                     { key: 'language', label: 'Language' },
                     { key: 'callNumber', label: 'Call Number' },
@@ -427,7 +434,8 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                         <th className="px-3 py-2">Book No.</th>
                         <th className="px-3 py-2">Title</th>
                         <th className="px-3 py-2">Author</th>
-                        <th className="px-3 py-2">Category / Section</th>
+                        <th className="px-3 py-2">Category</th>
+                        <th className="px-3 py-2">Section</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-[#0d2522]">
@@ -447,14 +455,17 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                           <td className="px-3 py-2 font-mono font-semibold text-gray-800 dark:text-white">
                             #{book.bookNumber || '-'}
                           </td>
-                          <td className="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-[200px] truncate">
+                          <td className="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-[180px] truncate">
                             {book.title || <em className="text-gray-400">Missing Title</em>}
                           </td>
-                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[150px] truncate">
+                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[130px] truncate">
                             {book.author}
                           </td>
-                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[150px] truncate">
+                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[120px] truncate">
                             {book.category}
+                          </td>
+                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[120px] truncate">
+                            {book.section || '-'}
                           </td>
                         </tr>
                       ))}

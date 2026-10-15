@@ -60,7 +60,7 @@ const LibraryStudents = () => {
           </div>
           
           {/* Batches Scrollable Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-slim-hover pb-2 pt-0.5">
             {batches.map(batch => (
               <button
                 key={batch}

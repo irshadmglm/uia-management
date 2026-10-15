@@ -5,7 +5,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { 
   Menu, X, Home, Users, GraduationCap, Settings2Icon, 
   ClipboardList, ClipboardCheck, ListTodo, Award, Medal, 
-  Book, HandCoins, DownloadCloud, File, BookOpen, LogOut, Moon, Sun, User, ChevronLeft, UserCheck
+  Book, HandCoins, DownloadCloud, File, BookOpen, LogOut, Moon, Sun, User, ChevronLeft, UserCheck, Briefcase
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -36,9 +36,10 @@ const AdminLayout = () => {
   const navItems = [
     { title: "Dashboard", icon: Home, route: "/dashboard/admin" },
     { title: "Academic Register", icon: ClipboardList, route: "/dashboard/admin/academic-register" },
-    { title: "Assign Duties", icon: GraduationCap, route: "/dashboard/admin/assign-duties" },
+    { title: "Assign Duties", icon: Briefcase, route: "/dashboard/admin/assign-duties" },
     { title: "Manage Academic Info", icon: Settings2Icon, route: "/dashboard/admin/management" },
     { title: "Students' Details", icon: Users, route: "/dashboard/admin/users" },
+    { title: "Alumni", icon: GraduationCap, route: "/dashboard/admin/alumni" },
     { title: "Teachers' Details", icon: UserCheck, route: "/dashboard/admin/teachers" },
     { title: "CE Mark", icon: ClipboardCheck, route: "/dashboard/admin/ce-mark" },
     { title: "Internal Mark", icon: ListTodo, route: "/dashboard/admin/ir-mark" },

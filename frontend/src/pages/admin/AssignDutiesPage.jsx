@@ -307,7 +307,7 @@ useEffect(() => {
             className="w-full border-0 bg-white dark:bg-[#11322f] shadow-sm rounded-xl py-3 px-4 text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-brand-teal appearance-none transition-shadow"
           >
             <option value="" disabled>Select batch</option>
-            {batches.map((b) => (
+            {batches.filter(b => b.isActive !== false).map((b) => (
               <option key={b._id} value={b._id}>{b.name}</option>
             ))}
           </CustomSelect>
@@ -768,7 +768,8 @@ function AssignDutiesPage() {
   const [activeTab, setActiveTab] = useState("subjects")
   const { getBatches, getTeachers, getSemesters, getArtSems, batches, teachers, semesters, artSems } = useAdminStore()
   const { students, getStudents } = useStudentStore()
-  const props = { batches, teachers, semesters, students, artSems }
+  const activeBatches = batches.filter(b => b.isActive !== false)
+  const props = { batches: activeBatches, teachers, semesters, students, artSems }
   const [loading, setLoading] = useState(true)
 
   // Fetch data from API
@@ -831,7 +832,7 @@ function AssignDutiesPage() {
         ) : activeTab === "subjects" ? (
           <SubjectAssignment {...props} />
         ) : activeTab === "artSubjects" ? (
-          <SubjectAssignment batches={batches} teachers={teachers} art={true} />
+          <SubjectAssignment batches={activeBatches} teachers={teachers} art={true} />
         ) : activeTab === "classTeacher" ? (
           <BatchTeacherAssignment {...props} />
         ) : activeTab === "currentSemester" ? (

@@ -63,12 +63,18 @@ const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick, isSelect
       <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mb-3">
         <User size={11} /> {book.author}
       </p>
-
-      {book.category && (
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30 mb-4">
-          <Tag size={9} /> {book.category}
-        </span>
-      )}
+      <div className="flex flex-wrap items-center gap-1.5 mb-4">
+        {book.category && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
+            <Tag size={9} /> {book.category}
+          </span>
+        )}
+        {book.bookType === 'Reference' && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/40">
+            Reference
+          </span>
+        )}
+      </div>
 
       {/* Actions */}
       <div className="flex items-center gap-2 pt-3 border-t border-gray-50 dark:border-[#0d2522]">
@@ -89,14 +95,14 @@ const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick, isSelect
             onClick={(e) => { e.stopPropagation(); onIssue(book); }}
             className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-bold text-brand-teal dark:text-brand-mint bg-brand-mint/10 hover:bg-brand-mint/20 rounded-lg transition-all"
           >
-            <ArrowRightLeft size={13} /> Issue
+            <ArrowRightLeft size={12} /> Issue
           </button>
         ) : (
           <button
             onClick={(e) => { e.stopPropagation(); onReturn(book); }}
             className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 rounded-lg transition-all"
           >
-            <ArrowRightLeft size={13} /> Return
+            <ArrowRightLeft size={12} /> Return
           </button>
         )}
       </div>
@@ -117,11 +123,18 @@ const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn, onClick, isSelecte
       <p className="text-xs text-gray-400">{book.author}</p>
     </td>
     <td className="px-4 py-3 hidden sm:table-cell">
-      {book.category && (
-        <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
-          {book.category}
-        </span>
-      )}
+      <div className="flex flex-wrap items-center gap-1.5">
+        {book.category && (
+          <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
+            {book.category}
+          </span>
+        )}
+        {book.bookType === 'Reference' && (
+          <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/40">
+            Reference
+          </span>
+        )}
+      </div>
     </td>
     <td className="px-4 py-3">
       <StatusBadge status={book.status} studentName={book.studentName} issueDate={book.issueDate} />
@@ -158,6 +171,7 @@ const LibraryBooksTab = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [viewMode, setViewMode] = useState('grid');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [bookTypeFilter, setBookTypeFilter] = useState('All');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [bookToDelete, setBookToDelete] = useState(null);
   const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
@@ -187,9 +201,10 @@ const LibraryBooksTab = () => {
       limit: itemsPerPage,
       search: debouncedSearchTerm,
       category: selectedCategory,
-      status: statusFilter
+      status: statusFilter,
+      bookType: bookTypeFilter
     });
-  }, [currentPage, debouncedSearchTerm, selectedCategory, statusFilter, getBooks]);
+  }, [currentPage, debouncedSearchTerm, selectedCategory, statusFilter, bookTypeFilter, getBooks]);
 
   // Reset to page 1 and clear selection when filters change
   useEffect(() => { 
@@ -197,7 +212,7 @@ const LibraryBooksTab = () => {
     setSelectAll(false);
     setSelectedIds(new Set());
     setDeselectedIds(new Set());
-  }, [debouncedSearchTerm, selectedCategory, statusFilter]);
+  }, [debouncedSearchTerm, selectedCategory, statusFilter, bookTypeFilter]);
 
   const startItem = totalBooks === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalBooks);
@@ -329,7 +344,7 @@ const LibraryBooksTab = () => {
       />
 
       {/* Toolbar & Bulk Actions */}
-      <div className="bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] p-3 sm:p-4 shadow-sm flex flex-col gap-3">
+      <div className="bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] p-3 sm:p-4 shadow-sm flex flex-col gap-3 relative z-30">
         <div className="flex flex-col xl:flex-row items-center gap-3">
           
           {/* Custom Select All & Bulk Delete */}
@@ -380,7 +395,7 @@ const LibraryBooksTab = () => {
           </div>
 
           {/* Filters & Actions */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full xl:w-auto overflow-x-auto no-scrollbar">
+          <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
             <CustomSelect
               className="py-2.5 px-3 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white shrink-0"
               value={selectedCategory}
@@ -396,6 +411,15 @@ const LibraryBooksTab = () => {
               <option value="All">All Status</option>
               <option value="Available">Available</option>
               <option value="Borrowed">Borrowed</option>
+            </CustomSelect>
+            <CustomSelect
+              className="py-2.5 px-3 bg-gray-50 dark:bg-[#0d2522] border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white shrink-0"
+              value={bookTypeFilter}
+              onChange={e => setBookTypeFilter(e.target.value)}
+            >
+              <option value="All">All Types</option>
+              <option value="General">General</option>
+              <option value="Reference">Reference</option>
             </CustomSelect>
 
             {/* View Toggle */}
@@ -436,7 +460,7 @@ const LibraryBooksTab = () => {
 
       {/* Category Chips */}
       {categories && categories.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-slim-hover pb-2 pt-0.5">
           <button
             onClick={() => setSelectedCategory('All')}
             className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border whitespace-nowrap ${

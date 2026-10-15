@@ -22,14 +22,14 @@ import {
 import { useStaffStore } from "../../store/useStaffStore";
 import ConfirmPopup from "../../components/ConfirmPopup";
 import { axiosInstance } from "../../lib/axios";
-import { Trash, Archive } from "lucide-react";
+import { Trash, Archive, RotateCcw } from "lucide-react";
 
 const ManagementPage = () => {
   const { getBatches, getSemesters, getTeachers, getArtSems,
           batches, semesters, teachers, artSems, 
           updateSemester,  updateBatch, updateSelectedTab, updateArtSem,
-          deleteBatch, deleteSemester,  deleteArtSems, deactivateBatch} = useAdminStore();
-  const {deleteTeacher, deactivateTeacher} = useStaffStore();
+          deleteBatch, deleteSemester,  deleteArtSems, deactivateBatch, activateBatch} = useAdminStore();
+  const {deleteTeacher, deactivateTeacher, activateTeacher} = useStaffStore();
     const [selectedTab, setSelectedTab] = useState(() => {
     return localStorage.getItem("selectedTab") || "current Semester";
   });
@@ -50,7 +50,7 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
 
   useEffect(() => {
     if (selectedTab === "current Semester") {
-      setItems(batches);
+      setItems(batches.filter(b => b.isActive !== false));
     } else if (selectedTab === "semester Subjects") {
       setItems(semesters);
     } else if (selectedTab === "arts Subjects") {
@@ -129,6 +129,22 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
       setShowConfirm(true);
     } catch (error) {
       console.error("Error deactivating item:", error);
+    }
+  };
+
+  const handleActivate = async (itemId) => {
+    try {
+      setDeleteAction(() => async () => {
+        if (selectedTab === "alumni") {
+          await activateBatch(itemId);
+        } else if (selectedTab === "old teachers") {
+          await activateTeacher(itemId);
+        }
+      });
+      setConfirmActionType("activate");
+      setShowConfirm(true);
+    } catch (error) {
+      console.error("Error activating item:", error);
     }
   };
   
@@ -345,6 +361,16 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
               </Button>
             )}
 
+            {selectedTab === "alumni" && !isEditing && (
+              <Button
+                onClick={() => handleActivate(item._id)}
+                className="text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 p-2 rounded-lg transition-colors"
+                title="Reactivate Batch (Restore from Alumni to Active Batches)"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </Button>
+            )}
+
             {selectedTab === "teachers" && !isEditing && (
               <Button
                 onClick={() => handleDeactivate(item._id)}
@@ -352,6 +378,16 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
                 title="Deactivate Teacher (Move to Old Teachers)"
               >
                 <Archive className="w-5 h-5" />
+              </Button>
+            )}
+
+            {selectedTab === "old teachers" && !isEditing && (
+              <Button
+                onClick={() => handleActivate(item._id)}
+                className="text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 p-2 rounded-lg transition-colors"
+                title="Reactivate Teacher (Restore to Active Teachers)"
+              >
+                <RotateCcw className="w-5 h-5" />
               </Button>
             )}
 
@@ -375,10 +411,10 @@ const [deleteAction, setDeleteAction] = useState(() => () => {});
         isOpen={showConfirm}
         onClose={() => setShowConfirm(false)}
         onConfirm={deleteAction}
-        variant={confirmActionType === "deactivate" ? "warning" : "danger"}
-        title={confirmActionType === "deactivate" ? "Confirm Deactivation" : "Confirm Action"}
-        confirmText={confirmActionType === "deactivate" ? "Deactivate" : "Delete"}
-        message={`Are you sure you want to ${confirmActionType === "deactivate" ? "deactivate" : "delete"} this ${
+        variant={confirmActionType === "deactivate" ? "warning" : confirmActionType === "activate" ? "success" : "danger"}
+        title={confirmActionType === "deactivate" ? "Confirm Deactivation" : confirmActionType === "activate" ? "Confirm Reactivation" : "Confirm Action"}
+        confirmText={confirmActionType === "deactivate" ? "Deactivate" : confirmActionType === "activate" ? "Restore Active" : "Delete"}
+        message={`Are you sure you want to ${confirmActionType === "deactivate" ? "deactivate" : confirmActionType === "activate" ? "restore to active status" : "delete"} this ${
           selectedTab === "batches" || selectedTab === "alumni" ? "batch" : 
           selectedTab === "teachers" || selectedTab === "old teachers" ? "teacher" : 
           selectedTab.endsWith('s') ? selectedTab.slice(0, -1) : selectedTab

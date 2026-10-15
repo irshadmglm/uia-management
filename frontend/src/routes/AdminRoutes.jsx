@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import AdminHome from "../pages/admin/AdminHome";
 import StudentList from "../pages/admin/StudentList";
+import AlumniList from "../pages/admin/AlumniList";
 import TeacherList from "../pages/admin/TeacherList";
 import StudentForm from "../pages/admin/StudentForm";
 import AdmissionForm from "../pages/admin/AdmissionForm";
@@ -41,6 +42,7 @@ const AdminRoutes = () => {
       <Route path="/" element={<AdminLayout />}>
         <Route index element={<AdminHome />} />
         <Route path="users" element={<StudentList />} />
+        <Route path="alumni" element={<AlumniList />} />
         <Route path="teachers" element={<TeacherList />} />
         <Route path="inactive-std" element={<InactiveStdList />} />
         <Route path="users/add" element={<StudentForm />} />

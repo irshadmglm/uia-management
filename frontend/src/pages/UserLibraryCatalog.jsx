@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  Search, BookOpen, Clock, Filter, User, Tag, LayoutGrid, List, ChevronLeft, ChevronRight 
+  Search, BookOpen, Clock, Filter, User, Tag, LayoutGrid, List, ChevronLeft, ChevronRight, Info 
 } from 'lucide-react';
 import { useBooksStore } from '../store/useBooksStore';
 import CustomSelect from '../components/CustomSelect';
 import { useDebounce } from '../hooks/useDebounce';
+import { BookDetailsModal } from './admin/LibraryModals';
 
 const StatusBadge = ({ status, studentName, issueDate }) => {
-  const days = issueDate
-    ? Math.floor((new Date() - new Date(issueDate)) / (1000 * 86400))
-    : 0;
-
   if (status === 'available') {
     return (
       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/30">
@@ -20,64 +17,119 @@ const StatusBadge = ({ status, studentName, issueDate }) => {
     );
   }
   return (
-    <div className="flex flex-col gap-1 items-end">
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 border border-orange-100 dark:border-orange-800/30">
+    <div className="flex flex-col gap-0.5 items-end">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 border border-orange-100 dark:border-orange-800/30">
         <Clock size={11} />
         Borrowed
       </span>
+      {studentName && (
+        <span className="text-[11px] font-medium text-orange-600 dark:text-orange-400 truncate max-w-[120px] sm:max-w-[160px] text-right">
+          by {studentName}
+        </span>
+      )}
     </div>
   );
 };
 
-const BookCard = ({ book }) => (
-  <div className="group bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
-    {/* Card Top Color Strip */}
-    <div className={`h-1.5 ${book.status === 'available' ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-gradient-to-r from-orange-400 to-amber-500'}`}></div>
+const BookCard = ({ book, onSelect }) => {
+  const days = book.issueDate
+    ? Math.floor((new Date() - new Date(book.issueDate)) / (1000 * 86400))
+    : 0;
 
-    <div className="p-4 sm:p-5">
-      {/* Header Row */}
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2">
-          <div className={`p-2 rounded-xl ${book.status === 'available' ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-orange-50 dark:bg-orange-900/20'}`}>
-            <BookOpen size={16} className={book.status === 'available' ? 'text-emerald-500' : 'text-orange-500'} />
+  return (
+    <div 
+      onClick={() => onSelect(book)}
+      className="group cursor-pointer bg-white dark:bg-[#11322f] rounded-2xl border border-gray-100 dark:border-[#0d2522] shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-brand-teal/40 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+    >
+      <div>
+        {/* Card Top Color Strip */}
+        <div className={`h-1.5 ${book.status === 'available' ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-gradient-to-r from-orange-400 to-amber-500'}`}></div>
+
+        <div className="p-4 sm:p-5">
+          {/* Header Row */}
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <div className={`p-2 rounded-xl ${book.status === 'available' ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-orange-50 dark:bg-orange-900/20'}`}>
+                <BookOpen size={16} className={book.status === 'available' ? 'text-emerald-500' : 'text-orange-500'} />
+              </div>
+              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 font-mono">#{book.bookNumber}</span>
+            </div>
+            <StatusBadge status={book.status} studentName={book.studentName} issueDate={book.issueDate} />
           </div>
-          <span className="text-xs font-bold text-gray-400 dark:text-gray-500 font-mono">#{book.bookNumber}</span>
+
+          {/* Book Info */}
+          <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug mb-1 group-hover:text-brand-teal transition-colors line-clamp-2">
+            {book.title}
+          </h3>
+          <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mb-3">
+            <User size={11} /> {book.author}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {book.category && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
+                <Tag size={9} /> {book.category}
+              </span>
+            )}
+            {book.bookType === 'Reference' && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/40">
+                Reference
+              </span>
+            )}
+          </div>
         </div>
-        <StatusBadge status={book.status} studentName={book.studentName} issueDate={book.issueDate} />
       </div>
 
-      {/* Book Info */}
-      <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug mb-1 group-hover:text-brand-teal transition-colors line-clamp-2">
-        {book.title}
-      </h3>
-      <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mb-3">
-        <User size={11} /> {book.author}
-      </p>
-
-      {book.category && (
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
-          <Tag size={9} /> {book.category}
-        </span>
+      {/* Borrower strip if borrowed or quick view hint */}
+      {book.status !== 'available' ? (
+        <div className="px-4 py-2.5 bg-orange-50/70 dark:bg-orange-950/30 border-t border-orange-100 dark:border-orange-900/30 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-1.5 text-orange-700 dark:text-orange-300 font-medium truncate">
+            <User size={12} className="shrink-0 text-orange-500" />
+            <span className="truncate">
+              By <strong className="font-bold text-gray-900 dark:text-white">{book.studentName || book.borrowedBy || 'Student'}</strong>
+            </span>
+          </div>
+          {book.issueDate && (
+            <span className="text-[10px] text-orange-600 dark:text-orange-400 shrink-0 font-semibold ml-1.5">
+              {days}d ago
+            </span>
+          )}
+        </div>
+      ) : (
+        <div className="px-4 py-2 bg-gray-50/50 dark:bg-[#0a1f1d]/50 border-t border-gray-100 dark:border-[#0d2522] flex items-center justify-between text-[11px] text-gray-400 group-hover:text-brand-teal transition-colors">
+          <span>Click to view details</span>
+          <Info size={12} />
+        </div>
       )}
     </div>
-  </div>
-);
+  );
+};
 
-const BookRow = ({ book }) => (
-  <tr className="group hover:bg-gray-50 dark:hover:bg-[#11322f]/80 transition-colors">
+const BookRow = ({ book, onSelect }) => (
+  <tr 
+    onClick={() => onSelect(book)}
+    className="group cursor-pointer hover:bg-gray-50 dark:hover:bg-[#11322f]/80 transition-colors"
+  >
     <td className="px-4 py-3">
       <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#0d2522] px-2 py-1 rounded-lg">#{book.bookNumber}</span>
     </td>
     <td className="px-4 py-3">
-      <p className="font-semibold text-sm text-gray-900 dark:text-white">{book.title}</p>
+      <p className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-brand-teal transition-colors">{book.title}</p>
       <p className="text-xs text-gray-400">{book.author}</p>
     </td>
     <td className="px-4 py-3 hidden sm:table-cell">
-      {book.category && (
-        <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
-          {book.category}
-        </span>
-      )}
+      <div className="flex flex-wrap items-center gap-1.5">
+        {book.category && (
+          <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
+            {book.category}
+          </span>
+        )}
+        {book.bookType === 'Reference' && (
+          <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/40">
+            Reference
+          </span>
+        )}
+      </div>
     </td>
     <td className="px-4 py-3 text-right">
       <StatusBadge status={book.status} studentName={book.studentName} issueDate={book.issueDate} />
@@ -90,10 +142,12 @@ const UserLibraryCatalog = () => {
     books, categories, totalBooks, totalPages, getBooks, booksLoading
   } = useBooksStore();
   
+  const [selectedBook, setSelectedBook] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [viewMode, setViewMode] = useState('grid');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [bookTypeFilter, setBookTypeFilter] = useState('All');
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -106,13 +160,14 @@ const UserLibraryCatalog = () => {
       limit: itemsPerPage,
       search: debouncedSearchTerm,
       category: selectedCategory,
-      status: statusFilter
+      status: statusFilter,
+      bookType: bookTypeFilter
     });
-  }, [currentPage, debouncedSearchTerm, selectedCategory, statusFilter, getBooks]);
+  }, [currentPage, debouncedSearchTerm, selectedCategory, statusFilter, bookTypeFilter, getBooks]);
 
   useEffect(() => { 
     setCurrentPage(1); 
-  }, [debouncedSearchTerm, selectedCategory, statusFilter]);
+  }, [debouncedSearchTerm, selectedCategory, statusFilter, bookTypeFilter]);
 
   const startItem = totalBooks === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalBooks);
@@ -131,7 +186,7 @@ const UserLibraryCatalog = () => {
       </div>
 
       {/* Toolbar & Filters */}
-      <div className="bg-white dark:bg-[#11322f] rounded-3xl border border-gray-100 dark:border-[#0d2522] p-4 sm:p-5 shadow-sm flex flex-col gap-4">
+      <div className="bg-white dark:bg-[#11322f] rounded-3xl border border-gray-100 dark:border-[#0d2522] p-4 sm:p-5 shadow-sm flex flex-col gap-4 relative z-30">
         <div className="flex flex-col lg:flex-row items-center gap-3">
           
           {/* Search */}
@@ -164,6 +219,15 @@ const UserLibraryCatalog = () => {
               <option value="Available">Available</option>
               <option value="Borrowed">Borrowed</option>
             </CustomSelect>
+            <CustomSelect
+              className="py-3 px-4 bg-gray-50 dark:bg-[#0a1f1d] border-0 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal text-gray-900 dark:text-white shrink-0 shadow-sm"
+              value={bookTypeFilter}
+              onChange={e => setBookTypeFilter(e.target.value)}
+            >
+              <option value="All">All Types</option>
+              <option value="General">General</option>
+              <option value="Reference">Reference</option>
+            </CustomSelect>
 
             {/* View Toggle */}
             <div className="flex bg-gray-50 dark:bg-[#0a1f1d] rounded-2xl p-1 gap-1 shrink-0 shadow-sm border border-gray-100 dark:border-[#0d2522]">
@@ -186,7 +250,7 @@ const UserLibraryCatalog = () => {
 
       {/* Category Chips */}
       {categories && categories.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-slim-hover pb-2 pt-0.5">
           <button
             onClick={() => setSelectedCategory('All')}
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all border whitespace-nowrap ${
@@ -232,7 +296,7 @@ const UserLibraryCatalog = () => {
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {books.map(book => (
-            <BookCard key={book._id} book={book} />
+            <BookCard key={book._id} book={book} onSelect={setSelectedBook} />
           ))}
         </div>
       ) : (
@@ -249,7 +313,7 @@ const UserLibraryCatalog = () => {
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-[#0d2522]">
                 {books.map(book => (
-                  <BookRow key={book._id} book={book} />
+                  <BookRow key={book._id} book={book} onSelect={setSelectedBook} />
                 ))}
               </tbody>
             </table>
@@ -305,6 +369,13 @@ const UserLibraryCatalog = () => {
           </div>
         </div>
       )}
+
+      {/* Book Details Modal */}
+      <BookDetailsModal
+        isOpen={!!selectedBook}
+        onClose={() => setSelectedBook(null)}
+        book={selectedBook}
+      />
     </div>
   );
 };
