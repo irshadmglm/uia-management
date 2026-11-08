@@ -381,20 +381,36 @@ export const saveDailyTeacherAttendance = async (req, res) => {
 
 /**
  * GET /api/management/teacher-attendance/monthly-summary?year=2026&month=11
- * Monthly analytics and per-teacher breakdown
+ * or ?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+ * Comprehensive analytics, per-teacher breakdown, and detailed logs for export
  */
 export const getTeacherAttendanceMonthlySummary = async (req, res) => {
   try {
     const now = new Date();
     const year = parseInt(req.query.year, 10) || now.getFullYear();
     const month = parseInt(req.query.month, 10) || now.getMonth() + 1;
+    const { startDate, endDate } = req.query;
 
     const monthStr = month < 10 ? `0${month}` : `${month}`;
-    const regexPattern = new RegExp(`^${year}-${monthStr}-`);
+    let query = {};
 
-    const dailyDocs = await TeacherAttendance.find({
-      dateString: { $regex: regexPattern },
-    })
+    if (startDate && endDate) {
+      query = {
+        dateString: { $gte: startDate, $lte: endDate },
+      };
+    } else if (startDate) {
+      query = {
+        dateString: { $gte: startDate },
+      };
+    } else {
+      const regexPattern = new RegExp(`^${year}-${monthStr}-`);
+      query = {
+        dateString: { $regex: regexPattern },
+      };
+    }
+
+    const dailyDocs = await TeacherAttendance.find(query)
+      .sort({ dateString: 1 })
       .populate("records.scheduledTeacherId", "name userName profileImage")
       .populate("records.attendedTeacherId", "name userName profileImage");
 
@@ -406,6 +422,8 @@ export const getTeacherAttendanceMonthlySummary = async (req, res) => {
 
     // Per-teacher map
     const teacherMap = {};
+    const detailedLogs = [];
+    const substitutionLogs = [];
 
     dailyDocs.forEach((doc) => {
       doc.records.forEach((r) => {
@@ -455,6 +473,27 @@ export const getTeacherAttendanceMonthlySummary = async (req, res) => {
           }
           teacherMap[attId].substitutesTaken += 1;
         }
+
+        const logItem = {
+          id: r._id,
+          date: doc.dateString,
+          day: doc.dayName,
+          period: r.period,
+          batchName: r.batchName,
+          subjectName: r.subjectName,
+          room: r.room || "",
+          scheduledTeacherName: schedName,
+          attendedTeacherName: r.attendedTeacherName || schedName,
+          status: r.status,
+          isSubstituted: Boolean(r.isSubstituted),
+          remarks: r.remarks || "",
+        };
+
+        detailedLogs.push(logItem);
+
+        if (r.isSubstituted) {
+          substitutionLogs.push(logItem);
+        }
       });
     });
 
@@ -472,6 +511,8 @@ export const getTeacherAttendanceMonthlySummary = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      startDate: startDate || `${year}-${monthStr}-01`,
+      endDate: endDate || `${year}-${monthStr}-31`,
       year,
       month,
       totalDaysTracked,
@@ -486,6 +527,8 @@ export const getTeacherAttendanceMonthlySummary = async (req, res) => {
             : 0,
       },
       teacherStats,
+      detailedLogs,
+      substitutionLogs,
     });
   } catch (error) {
     console.error("Error in getTeacherAttendanceMonthlySummary:", error);
