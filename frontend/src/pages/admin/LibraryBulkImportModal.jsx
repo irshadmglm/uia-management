@@ -8,15 +8,15 @@ const DEFAULT_MAPPING = {
   bookNumber: ['ACCESSION NO', 'ACCESSION', 'ACC NO', 'ACCESSION_NO', 'Sl.No.', 'SL.NO', 'Book Number', 'Book No', 'No.', 'ID'],
   title: ['TITLE', 'Title', 'Book Title', 'Name', 'Book Name', 'NAME OF BOOKS'],
   author: ['AUTHOR', 'Author', 'Writer', 'Author Name', 'NAME OF AUTHOR'],
-  section: ['Section', 'SECTION', 'Library Section', 'Sec', 'Shelf'],
-  bookType: ['Book Type', 'BOOK TYPE', 'Type', 'Format', 'Item Type'],
-  language: ['Language', 'LANGUAGE', 'Lang'],
-  callNumber: ['CALL NO', 'Call No', 'Call Number', 'CALL_NO', 'CallNo'],
-  publisher: ['PUBLISHER', 'Publisher', 'Publication'],
   volume: ['VOLUME', 'Volume', 'Vol', 'VOL'],
+  publisher: ['PUBLISHER', 'Publisher', 'Publication'],
+  callNumber: ['CALL NO', 'Call No', 'Call Number', 'CALL_NO', 'CallNo'],
+  language: ['LANGUAGE', 'Language', 'Lang'],
+  bookType: ['BOOK TYPE', 'Book Type', 'Type', 'Format', 'Item Type'],
+  section: ['SECTION', 'Section', 'Library Section', 'Sec', 'Shelf'],
+  category: ['CATEGORY', 'Category', 'Genre', 'Subject', 'Source Sheet'],
   price: ['PRICE', 'Price', 'Cost', 'Amount'],
-  remarks: ['Remarks', 'REMARKS', 'Notes', 'Comments'],
-  category: ['Category', 'CATEGORY', 'Genre', 'Subject', 'Source Sheet']
+  remarks: ['REMARKS', 'Remarks', 'Notes', 'Comments']
 };
 
 const autoDetectMapping = (headers) => {
@@ -24,15 +24,15 @@ const autoDetectMapping = (headers) => {
     bookNumber: '',
     title: '',
     author: '',
-    section: '',
-    bookType: '',
-    language: '',
-    callNumber: '',
-    publisher: '',
     volume: '',
+    publisher: '',
+    callNumber: '',
+    language: '',
+    bookType: '',
+    section: '',
+    category: '',
     price: '',
-    remarks: '',
-    category: ''
+    remarks: ''
   };
 
   const cleanHeaders = headers.map(h => (h ? String(h).trim() : ''));
@@ -47,7 +47,7 @@ const autoDetectMapping = (headers) => {
     }
   });
 
-  // Fallbacks if not auto-matched
+  // Fallbacks if not auto-matched (following the requested column order)
   if (!mapping.bookNumber) {
     mapping.bookNumber = cleanHeaders.find(h => /accession|book.*num|sl.*no|^id$/i.test(h)) || cleanHeaders[0] || '';
   }
@@ -57,29 +57,32 @@ const autoDetectMapping = (headers) => {
   if (!mapping.author) {
     mapping.author = cleanHeaders.find(h => /author|writer/i.test(h)) || cleanHeaders[2] || '';
   }
-  if (!mapping.section) {
-    mapping.section = cleanHeaders.find(h => /section|shelf/i.test(h)) || cleanHeaders[3] || '';
-  }
-  if (!mapping.bookType) {
-    mapping.bookType = cleanHeaders.find(h => /book.*type|type/i.test(h)) || cleanHeaders[4] || '';
-  }
-  if (!mapping.language) {
-    mapping.language = cleanHeaders.find(h => /lang/i.test(h)) || cleanHeaders[5] || '';
-  }
-  if (!mapping.callNumber) {
-    mapping.callNumber = cleanHeaders.find(h => /call.*no/i.test(h)) || cleanHeaders[6] || '';
+  if (!mapping.volume) {
+    mapping.volume = cleanHeaders.find(h => /vol/i.test(h)) || cleanHeaders[3] || '';
   }
   if (!mapping.publisher) {
-    mapping.publisher = cleanHeaders.find(h => /pub/i.test(h)) || cleanHeaders[7] || '';
+    mapping.publisher = cleanHeaders.find(h => /pub/i.test(h)) || cleanHeaders[4] || '';
   }
-  if (!mapping.volume) {
-    mapping.volume = cleanHeaders.find(h => /vol/i.test(h)) || cleanHeaders[8] || '';
+  if (!mapping.callNumber) {
+    mapping.callNumber = cleanHeaders.find(h => /call.*no/i.test(h)) || cleanHeaders[5] || '';
+  }
+  if (!mapping.language) {
+    mapping.language = cleanHeaders.find(h => /lang/i.test(h)) || cleanHeaders[6] || '';
+  }
+  if (!mapping.bookType) {
+    mapping.bookType = cleanHeaders.find(h => /book.*type|type/i.test(h)) || cleanHeaders[7] || '';
+  }
+  if (!mapping.section) {
+    mapping.section = cleanHeaders.find(h => /section|shelf/i.test(h)) || cleanHeaders[8] || '';
+  }
+  if (!mapping.category) {
+    mapping.category = cleanHeaders.find(h => /category|genre/i.test(h)) || cleanHeaders[9] || '';
   }
   if (!mapping.price) {
-    mapping.price = cleanHeaders.find(h => /price|cost/i.test(h)) || cleanHeaders[9] || '';
+    mapping.price = cleanHeaders.find(h => /price|cost/i.test(h)) || cleanHeaders[10] || '';
   }
   if (!mapping.remarks) {
-    mapping.remarks = cleanHeaders.find(h => /remark|note/i.test(h)) || cleanHeaders[10] || '';
+    mapping.remarks = cleanHeaders.find(h => /remark|note/i.test(h)) || cleanHeaders[11] || '';
   }
 
   return mapping;
@@ -173,27 +176,29 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "ACCESSION NO": 1001,
         "TITLE": "Tafsir Al-Qurtubi Vol 1",
         "AUTHOR": "Imam Al-Qurtubi",
-        "Section": "Arabic",
-        "Book Type": "Book",
-        "Language": "Arabic",
-        "CALL NO": "222.3 QUR/K",
-        "PUBLISHER": "Dar Al-Kotob Al-Ilmiyah",
         "VOLUME": "1",
+        "PUBLISHER": "Dar Al-Kotob Al-Ilmiyah",
+        "CALL NO": "222.3 QUR/K",
+        "LANGUAGE": "Arabic",
+        "BOOK TYPE": "Book",
+        "SECTION": "Arabic",
+        "CATEGORY": "Tafsir",
         "PRICE": 450,
-        "Remarks": "Hardcover"
+        "REMARKS": "Hardcover"
       },
       {
         "ACCESSION NO": 1002,
         "TITLE": "Sahih Al-Bukhari",
         "AUTHOR": "Imam Al-Bukhari",
-        "Section": "Arabic",
-        "Book Type": "Book",
-        "Language": "Arabic",
-        "CALL NO": "223.1 BUK/S",
-        "PUBLISHER": "Darussalam",
         "VOLUME": "1",
+        "PUBLISHER": "Darussalam",
+        "CALL NO": "223.1 BUK/S",
+        "LANGUAGE": "Arabic",
+        "BOOK TYPE": "Book",
+        "SECTION": "Arabic",
+        "CATEGORY": "Hadith",
         "PRICE": 600,
-        "Remarks": "Volume 1"
+        "REMARKS": "Volume 1"
       }
     ];
 
@@ -202,14 +207,15 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "ACCESSION NO",
         "TITLE",
         "AUTHOR",
-        "Section",
-        "Book Type",
-        "Language",
-        "CALL NO",
-        "PUBLISHER",
         "VOLUME",
+        "PUBLISHER",
+        "CALL NO",
+        "LANGUAGE",
+        "BOOK TYPE",
+        "SECTION",
+        "CATEGORY",
         "PRICE",
-        "Remarks"
+        "REMARKS"
       ]
     });
     const wb = XLSX.utils.book_new();
@@ -346,7 +352,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                   <div>
                     <h4 className="text-xs font-bold text-blue-900 dark:text-blue-300">Need a format template?</h4>
                     <p className="text-[11px] text-blue-700/70 dark:text-blue-400">
-                      Standard columns: ACCESSION NO, TITLE, AUTHOR, Section, Book Type, Language, CALL NO, PUBLISHER, VOLUME, PRICE, Remarks
+                      Standard columns: ACCESSION NO, TITLE, AUTHOR, VOLUME, PUBLISHER, CALL NO, LANGUAGE, BOOK TYPE, SECTION, CATEGORY, PRICE, REMARKS
                     </p>
                   </div>
                 </div>
@@ -422,15 +428,15 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                     { key: 'bookNumber', label: '1. ACCESSION NO *' },
                     { key: 'title', label: '2. TITLE *' },
                     { key: 'author', label: '3. AUTHOR *' },
-                    { key: 'section', label: '4. Section' },
-                    { key: 'bookType', label: '5. Book Type' },
-                    { key: 'language', label: '6. Language' },
-                    { key: 'callNumber', label: '7. CALL NO' },
-                    { key: 'publisher', label: '8. PUBLISHER' },
-                    { key: 'volume', label: '9. VOLUME' },
-                    { key: 'price', label: '10. PRICE' },
-                    { key: 'remarks', label: '11. Remarks' },
-                    { key: 'category', label: 'Category (Optional)' }
+                    { key: 'volume', label: '4. VOLUME' },
+                    { key: 'publisher', label: '5. PUBLISHER' },
+                    { key: 'callNumber', label: '6. CALL NO' },
+                    { key: 'language', label: '7. LANGUAGE' },
+                    { key: 'bookType', label: '8. BOOK TYPE' },
+                    { key: 'section', label: '9. SECTION' },
+                    { key: 'category', label: '10. CATEGORY' },
+                    { key: 'price', label: '11. PRICE' },
+                    { key: 'remarks', label: '12. REMARKS' },
                   ].map(({ key, label }) => (
                     <div key={key}>
                       <label className="block text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-1">
@@ -485,14 +491,15 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                         <th className="px-3 py-2 whitespace-nowrap">ACCESSION NO</th>
                         <th className="px-3 py-2 whitespace-nowrap">TITLE</th>
                         <th className="px-3 py-2 whitespace-nowrap">AUTHOR</th>
-                        <th className="px-3 py-2 whitespace-nowrap">Section</th>
-                        <th className="px-3 py-2 whitespace-nowrap">Book Type</th>
-                        <th className="px-3 py-2 whitespace-nowrap">Language</th>
-                        <th className="px-3 py-2 whitespace-nowrap">CALL NO</th>
-                        <th className="px-3 py-2 whitespace-nowrap">PUBLISHER</th>
                         <th className="px-3 py-2 whitespace-nowrap">VOLUME</th>
+                        <th className="px-3 py-2 whitespace-nowrap">PUBLISHER</th>
+                        <th className="px-3 py-2 whitespace-nowrap">CALL NO</th>
+                        <th className="px-3 py-2 whitespace-nowrap">LANGUAGE</th>
+                        <th className="px-3 py-2 whitespace-nowrap">BOOK TYPE</th>
+                        <th className="px-3 py-2 whitespace-nowrap">SECTION</th>
+                        <th className="px-3 py-2 whitespace-nowrap">CATEGORY</th>
                         <th className="px-3 py-2 whitespace-nowrap">PRICE</th>
-                        <th className="px-3 py-2 whitespace-nowrap">Remarks</th>
+                        <th className="px-3 py-2 whitespace-nowrap">REMARKS</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-[#0d2522]">
@@ -519,22 +526,25 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                             {book.author}
                           </td>
                           <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                            {book.section || '-'}
+                            {book.volume || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 max-w-[120px] truncate" title={book.publisher}>
+                            {book.publisher || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 font-mono whitespace-nowrap">
+                            {book.callNumber || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            {book.language || '-'}
                           </td>
                           <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                             {book.bookType || '-'}
                           </td>
                           <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                            {book.language || '-'}
-                          </td>
-                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 font-mono whitespace-nowrap">
-                            {book.callNumber || '-'}
-                          </td>
-                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 max-w-[120px] truncate" title={book.publisher}>
-                            {book.publisher || '-'}
+                            {book.section || '-'}
                           </td>
                           <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                            {book.volume || '-'}
+                            {book.category || '-'}
                           </td>
                           <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                             {book.price ? `₹${book.price}` : '-'}

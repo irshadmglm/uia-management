@@ -124,16 +124,43 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             </div>
           </div>
 
-          {/* 4. Section */}
+          {/* 4. VOLUME */}
           <div>
-            <label className={labelCls}>Section</label>
+            <label className={labelCls}>Volume</label>
             <div className="relative">
               <Layers size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.section} onChange={e => set('section', e.target.value)} placeholder="e.g. Arabic, General, Shelf A" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.volume} onChange={e => set('volume', e.target.value)} placeholder="e.g. Vol 1" />
             </div>
           </div>
 
-          {/* 5. Book Type */}
+          {/* 5. PUBLISHER */}
+          <div>
+            <label className={labelCls}>Publisher</label>
+            <div className="relative">
+              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.publisher} onChange={e => set('publisher', e.target.value)} placeholder="Publisher name" />
+            </div>
+          </div>
+
+          {/* 6. CALL NO */}
+          <div>
+            <label className={labelCls}>Call No.</label>
+            <div className="relative">
+              <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.callNumber} onChange={e => set('callNumber', e.target.value)} placeholder="e.g. 222.3 QUR/K" />
+            </div>
+          </div>
+
+          {/* 7. LANGUAGE */}
+          <div>
+            <label className={labelCls}>Language</label>
+            <div className="relative">
+              <Globe size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.language} onChange={e => set('language', e.target.value)} placeholder="e.g. English, Arabic, Malayalam" />
+            </div>
+          </div>
+
+          {/* 8. BOOK TYPE */}
           <div>
             <label className={labelCls}>Book Type</label>
             <div className="relative">
@@ -158,43 +185,25 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             </div>
           </div>
 
-          {/* 6. Language */}
+          {/* 9. SECTION */}
           <div>
-            <label className={labelCls}>Language</label>
-            <div className="relative">
-              <Globe size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.language} onChange={e => set('language', e.target.value)} placeholder="e.g. English, Arabic, Malayalam" />
-            </div>
-          </div>
-
-          {/* 7. CALL NO */}
-          <div>
-            <label className={labelCls}>Call No.</label>
-            <div className="relative">
-              <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.callNumber} onChange={e => set('callNumber', e.target.value)} placeholder="e.g. 222.3 QUR/K" />
-            </div>
-          </div>
-
-          {/* 8. PUBLISHER */}
-          <div>
-            <label className={labelCls}>Publisher</label>
-            <div className="relative">
-              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.publisher} onChange={e => set('publisher', e.target.value)} placeholder="Publisher name" />
-            </div>
-          </div>
-
-          {/* 9. VOLUME */}
-          <div>
-            <label className={labelCls}>Volume</label>
+            <label className={labelCls}>Section</label>
             <div className="relative">
               <Layers size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.volume} onChange={e => set('volume', e.target.value)} placeholder="e.g. Vol 1" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.section} onChange={e => set('section', e.target.value)} placeholder="e.g. Arabic, General, Shelf A" />
             </div>
           </div>
 
-          {/* 10. PRICE */}
+          {/* 10. CATEGORY */}
+          <div>
+            <label className={labelCls}>Category <span className="text-gray-400 font-normal lowercase">(defaults to Section if blank)</span></label>
+            <div className="relative">
+              <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Tafsir, Fiqh, Science" />
+            </div>
+          </div>
+
+          {/* 11. PRICE */}
           <div>
             <label className={labelCls}>Price</label>
             <div className="relative">
@@ -203,7 +212,7 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
             </div>
           </div>
 
-          {/* 11. Remarks */}
+          {/* 12. REMARKS */}
           <div className="md:col-span-2">
             <label className={labelCls}>Remarks</label>
             <textarea
@@ -213,23 +222,6 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               onChange={e => set('remarks', e.target.value)}
               placeholder="Any additional remarks or notes..."
             />
-          </div>
-
-          {/* Optional Category Accordion */}
-          <div className="md:col-span-2">
-            <details className="group">
-              <summary className="text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-brand-teal dark:hover:text-brand-mint cursor-pointer select-none flex items-center gap-1.5 transition-colors">
-                <ChevronDown size={14} className="group-open:rotate-180 transition-transform" />
-                Additional Options (Category)
-              </summary>
-              <div className="pt-2">
-                <label className={labelCls}>Category <span className="text-gray-400 font-normal lowercase">(defaults to Section if left blank)</span></label>
-                <div className="relative">
-                  <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="text" className={`${inputCls} pl-9`} value={formData.category} onChange={e => set('category', e.target.value)} placeholder="Leave blank to use Section name" />
-                </div>
-              </div>
-            </details>
           </div>
         </div>
 

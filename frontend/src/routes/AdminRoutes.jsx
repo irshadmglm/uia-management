@@ -7,6 +7,7 @@ import StudentForm from "../pages/admin/StudentForm";
 import AdmissionForm from "../pages/admin/AdmissionForm";
 import RegisterdStudents from "../pages/admin/RegisterdStudents";
 import TimetableAsigment from "../pages/admin/TimetableAsigment";
+import AdminTimetablePage from "../pages/admin/AdminTimetablePage";
 import AssignDutiesPage from "../pages/admin/AssignDutiesPage";
 import ManagementPage from "../pages/admin/ManagementPage";
 import AdminAttendance from "../pages/admin/AdminAttendance";
@@ -32,6 +33,7 @@ import AssignFees from "../pages/admin/AssignFees";
 import FeesDashboardAnalytics from "../pages/admin/FeesDashboardAnalytics";
 import FeesRegister from "../pages/admin/FeesRegister";
 import LeaveStatusPage from "../pages/admin/LeaveStatusPage";
+import TeacherAttendancePage from "../pages/admin/TeacherAttendancePage";
 
 import AdminLayout from "../components/AdminLayout";
 import UserLibraryCatalog from "../pages/UserLibraryCatalog";
@@ -49,6 +51,7 @@ const AdminRoutes = () => {
         <Route path="users/edit/:id" element={<StudentForm edit />} />
         <Route path="admission-form" element={<AdmissionForm />} />
         <Route path="registered-students" element={<RegisterdStudents />} />
+        <Route path="timetable" element={<AdminTimetablePage />} />
         <Route path="timetable-Assign" element={<TimetableAsigment />} />
         <Route path="assign-duties" element={<AssignDutiesPage />} />
         <Route path="management" element={<ManagementPage />} />
@@ -81,7 +84,8 @@ const AdminRoutes = () => {
 
         <Route path="academic-register" element={<AcademicRegister  />} />
         <Route path="std-attendance-register" element={<LeaveStatusPage />} />
-        <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
+        <Route path="teacher-attendance" element={<TeacherAttendancePage />} />
+        <Route path="staff-attendance-register" element={<TeacherAttendancePage />} />
         <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
         <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
         <Route path="library" element={<UserLibraryCatalog />} />

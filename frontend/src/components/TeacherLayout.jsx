@@ -5,7 +5,7 @@ import { useThemeStore } from '../store/useThemeStore';
 import { 
   Menu, X, Home, ClipboardList, BookCopyIcon, Award, 
   BookUserIcon, ListChecks, LucideHandCoins, BookMarked, 
-  DownloadCloud, LogOut, Moon, Sun, User, ChevronLeft, GraduationCap, Settings2Icon, BookOpen
+  DownloadCloud, LogOut, Moon, Sun, User, ChevronLeft, GraduationCap, Settings2Icon, BookOpen, Calendar
 } from 'lucide-react';
 
 const downloadsUrl = "https://drive.google.com/drive/folders/1iTo_Ldar0yfnXF_0yUvCXBMfja9KN99w?usp=drive_link";
@@ -37,10 +37,43 @@ const TeacherLayout = () => {
 
   const baseRoute = "/dashboard/teacher";
 
+  const handleBack = () => {
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else if (location.pathname !== baseRoute && location.pathname !== `${baseRoute}/`) {
+      navigate(baseRoute);
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const getPageTitle = (pathname) => {
+    if (pathname.includes('/calss-teacher-home')) return 'Class Teacher';
+    if (pathname.includes('/batch-students')) return 'Batch Students';
+    if (pathname.includes('/attendance')) return 'Attendance';
+    if (pathname.includes('/grace-mark')) return 'Grace Marks';
+    if (pathname.includes('/assigned-subjects')) return 'Assigned Subjects';
+    if (pathname.includes('/timetable')) return 'My Timetable';
+    if (pathname.includes('/ishthiraq')) return 'Ishthiraq';
+    if (pathname.includes('/profile')) return 'My Profile';
+    if (pathname.includes('/library')) return 'Library Catalog';
+    if (pathname.includes('/batches')) return 'Batch Students';
+    if (pathname.includes('/marklist')) return 'Mark List';
+    if (pathname.includes('/achievements')) return 'Achievements';
+    if (pathname.includes('/reading-progress')) return 'Reading Progress';
+    if (pathname.includes('/academic-register')) return 'Academic Register';
+    if (pathname.includes('/leave-register') || pathname.includes('/std-attendance-register')) return 'Leave Register';
+    if (pathname.includes('/staff-attendance-register')) return 'Staff Attendance Register';
+    if (pathname.includes('/subject-status')) return 'Subject Status';
+    if (pathname.includes('/ce-status')) return 'CE Status';
+    return 'Dashboard';
+  };
+
   const navItems = [
     { title: "Dashboard", icon: Home, route: baseRoute },
     { title: "Academic Register", icon: ClipboardList, route: `${baseRoute}/academic-register` },
     { title: "Assigned Subjects", icon: BookCopyIcon, route: `${baseRoute}/assigned-subjects` },
+    { title: "My Timetable", icon: Calendar, route: `${baseRoute}/timetable` },
     { title: "Grace Mark", icon: Award, route: `${baseRoute}/grace-mark` },
     { title: "Student Attendance", icon: ClipboardList, route: `${baseRoute}/std-attendance-register` },
     { title: "Staff Attendance", icon: ClipboardList, route: `${baseRoute}/staff-attendance-register` },
@@ -187,29 +220,63 @@ const TeacherLayout = () => {
       </aside>
 
       {/* Mobile Header (Outside Main Box) */}
-      <header className="lg:hidden absolute top-0 left-0 right-0 h-16 flex items-center justify-between bg-[#11322f] px-4 z-30">
+      <header className="lg:hidden absolute top-0 left-0 right-0 h-16 flex items-center justify-between bg-[#11322f] px-3 z-30 shadow-md">
         <button 
-          className="p-2 text-white/80 hover:bg-white/10 rounded-lg flex items-center gap-1 transition-colors"
-          onClick={() => navigate(-1)}
+          className="px-2.5 py-1.5 text-white/90 hover:text-white active:scale-95 bg-white/10 hover:bg-white/20 rounded-xl flex items-center gap-1 transition-all shadow-sm"
+          onClick={handleBack}
+          aria-label="Go back"
+          title="Go back"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={20} />
+          <span className="text-xs font-semibold">Back</span>
         </button>
         
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-white text-lg tracking-tight">UIA ACADEMICS</span>
+        <div className="flex items-center gap-2 px-2 text-center min-w-0">
+          <span className="font-bold text-white text-base tracking-tight truncate max-w-[190px]">
+            {getPageTitle(location.pathname)}
+          </span>
         </div>
 
         <button 
           className="p-2 text-white/80 hover:bg-white/10 rounded-lg transition-colors"
           onClick={() => setIsSidebarOpen(true)}
+          aria-label="Open menu"
         >
-          <Menu size={24} />
+          <Menu size={22} />
         </button>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col mt-16 mb-16 mx-3 lg:mt-4 lg:mb-4 lg:mx-0 lg:mr-4 bg-[#f3f7f6] dark:bg-[#0d2522] rounded-3xl lg:rounded-[2rem] overflow-hidden shadow-2xl relative h-[calc(100vh-8rem)] lg:h-[calc(100vh-2rem)] border border-white/10 dark:border-[#11322f]/50">
         
+        {/* Desktop Header with Back Button */}
+        <div className="hidden lg:flex items-center justify-between px-6 py-3.5 border-b border-gray-200/60 dark:border-white/10 bg-white/70 dark:bg-[#11322f]/80 backdrop-blur-md sticky top-0 z-20 shrink-0">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleBack}
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#0d2522] text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 shadow-sm border border-gray-200/80 dark:border-white/10 transition-all flex items-center gap-1.5 font-medium text-xs sm:text-sm group active:scale-95"
+              title="Go back"
+            >
+              <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform text-brand-teal dark:text-brand-mint" />
+              <span>Back</span>
+            </button>
+            <div className="h-4 w-px bg-gray-300 dark:bg-white/10"></div>
+            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+              {getPageTitle(location.pathname)}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white bg-white/50 dark:bg-[#0d2522]/50 hover:bg-white dark:hover:bg-[#0d2522] border border-gray-200/60 dark:border-white/10 transition-colors"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            >
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
+          </div>
+        </div>
+
         {/* Page Content */}
         <div className="flex-1 overflow-y-auto overflow-x-auto p-3 sm:p-5 lg:p-10">
           <Outlet />

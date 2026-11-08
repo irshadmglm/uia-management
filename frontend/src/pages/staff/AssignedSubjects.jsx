@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, Calendar } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 
 import { useStaffStore } from "../../store/useStaffStore";
 import { MdAdd, MdAddAlert, MdAddCircle, MdAddHomeWork, MdMarkunread } from "react-icons/md";
 import { useAuthStore } from "../../store/useAuthStore";
-import { useParams } from "react-router-dom";
 
 const AssignedSubjects = () => {
   const { assignedSubjects, getAssignedSubjects, isLoading, } = useStaffStore();
@@ -28,10 +28,19 @@ const AssignedSubjects = () => {
   return (
     <>
       
-      <div className="dark: dark: p-4">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-         Subjects
-        </h2>
+      <div className="dark: dark: p-4 max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white font-oswald">
+            Assigned Subjects
+          </h2>
+          <Link
+            to={authUser?.role === "admin" ? "/dashboard/admin/timetable" : "/dashboard/teacher/timetable"}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-teal/10 hover:bg-brand-teal/20 text-brand-teal dark:text-brand-mint text-xs font-semibold transition border border-brand-teal/20 shadow-sm"
+          >
+            <Calendar size={15} />
+            <span>View Weekly Timetable</span>
+          </Link>
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center h-40">

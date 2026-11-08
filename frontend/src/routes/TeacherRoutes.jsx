@@ -16,6 +16,7 @@ import AcademicRegister from "../pages/staff/StaffAcademicRegister";
 import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
 import LeaveStatusPage from "../pages/admin/LeaveStatusPage";
 import TeacherLayout from "../components/TeacherLayout";
+import TeacherTimetablePage from "../pages/staff/TeacherTimetablePage";
 
 import UserLibraryCatalog from "../pages/UserLibraryCatalog";
 
@@ -29,6 +30,7 @@ const TeacherRoutes = () => {
         <Route path="batch-students/:batchId" element={<BatchStudentsDetails />} />
         <Route path="grace-mark" element={<TeacherAddGraceMark />} />
         <Route path="assigned-subjects" element={<AssignedSubjects />} />
+        <Route path="timetable" element={<TeacherTimetablePage />} />
         <Route path="ishthiraq/:batchId" element={<FeesTeacher />} />
         <Route path="profile" element={<StaffProfile />} />
         <Route path="library" element={<UserLibraryCatalog />} />

@@ -2,12 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 import Card from "../../components/Card";
-import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal,  } from "lucide-react";
+import { Users, GraduationCap, Settings2Icon, LineChart, MousePointer2, ListTodo, LucideCopySlash, ArchiveIcon, ClipboardList, Award, ClipboardCheck, HandCoins, Medal, UserCheck } from "lucide-react";
 
 const AcademicRegister = () => {
   const cards = [
     { title: "Students' Leave Status", icon: ClipboardList , route: "/dashboard/admin/std-attendance-register" },
-    { title: "Teachers' Attendance Register", icon: ListTodo, route: "/dashboard/admin/staff-attendance-register" },
+    { title: "Teachers' Attendance Register", icon: UserCheck, route: "/dashboard/admin/teacher-attendance" },
     { title: "Quarterly Subject Status", icon: GraduationCap, route: "/dashboard/admin/subject-status" },
     { title: "CE Status", icon: Award, route: "/dashboard/admin/ce-status" }
   ];

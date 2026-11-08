@@ -34,8 +34,12 @@ const Header = ({ page, user }) => {
   }
 
   const handleBack = () => {
-    navigate(-1)
-  }
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
 
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
@@ -51,10 +55,13 @@ const Header = ({ page, user }) => {
           {/* Left Side - Sidebar Toggle */}
           <div className="flex items-center">
           <button 
-          onClick={handleBack}
-          className="shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 gap-1 px-2 py-2 rounded-full transition-all duration-200"
+            onClick={handleBack}
+            className="shadow-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-xl transition-all duration-200 flex items-center gap-1 active:scale-95 mr-2 text-gray-700 dark:text-gray-200"
+            title="Go back"
+            aria-label="Go back"
           >
             <ChevronLeft size={18} />
+            <span className="text-xs font-semibold">Back</span>
           </button>
           <button
             onClick={() => setIsSidebarOpen(true)}
