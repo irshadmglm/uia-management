@@ -3,7 +3,8 @@ import {
   Calendar, CheckCircle2, XCircle, AlertCircle, RefreshCw, 
   UserCheck, Users, Search, Clock, BookOpen, Layers, Printer, 
   BarChart2, ChevronLeft, ChevronRight, Sparkles, Filter, Check, 
-  ShieldAlert, Edit3, MessageSquare, ArrowRight, CheckCheck, Undo2
+  ShieldAlert, Edit3, MessageSquare, ArrowRight, CheckCheck, Undo2,
+  Download, FileSpreadsheet
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTeacherAttendanceStore } from "../../store/useTeacherAttendanceStore";
@@ -148,6 +149,38 @@ const TeacherAttendancePage = () => {
     window.print();
   };
 
+  const handleExportToday = async () => {
+    if (!records.length) {
+      alert("No attendance records to export for today.");
+      return;
+    }
+    try {
+      const XLSX = await import("xlsx");
+      const exportData = records.map((r, idx) => ({
+        "Sl No": idx + 1,
+        "Date": currentDate,
+        "Day": dayName,
+        "Period": `Period ${r.period}`,
+        "Batch": r.batchName,
+        "Subject": r.subjectName,
+        "Room": r.room || "-",
+        "Scheduled Teacher": r.scheduledTeacherName,
+        "Attended Teacher": r.attendedTeacherName,
+        "Status": r.status?.toUpperCase(),
+        "Is Proxy": r.isSubstituted ? "YES" : "NO",
+        "Remarks": r.remarks || "",
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Today Attendance");
+      XLSX.writeFile(wb, `Teacher_Attendance_${currentDate}_${dayName}.xlsx`);
+    } catch (err) {
+      console.error("Export today failed:", err);
+      alert("Failed to export today's attendance.");
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
       {/* Top Header & Date Navigation Bar */}
@@ -209,10 +242,20 @@ const TeacherAttendancePage = () => {
 
             <button
               onClick={() => setIsReportModalOpen(true)}
-              className="px-3 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-sm transition-all"
+              className="px-3.5 py-2 text-xs font-bold rounded-xl bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shadow-sm transition-all"
             >
               <BarChart2 size={14} />
-              Monthly Report
+              <span>Report & Export</span>
+            </button>
+
+            <button
+              onClick={handleExportToday}
+              disabled={records.length === 0}
+              className="px-3 py-2 text-xs font-semibold rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40 flex items-center gap-1.5 transition-colors disabled:opacity-40"
+              title="Export Today's Attendance Sheet to Excel"
+            >
+              <Download size={14} />
+              <span className="hidden sm:inline">Export Today</span>
             </button>
 
             <button

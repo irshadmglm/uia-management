@@ -156,16 +156,31 @@ export const useTeacherAttendanceStore = create((set, get) => ({
     }
   },
 
-  fetchMonthlySummary: async (year, month) => {
+  fetchMonthlySummary: async (arg1, arg2) => {
     try {
+      let queryString = "";
+      if (typeof arg1 === "object" && arg1 !== null) {
+        const { startDate, endDate, year, month } = arg1;
+        if (startDate && endDate) {
+          queryString = `startDate=${startDate}&endDate=${endDate}`;
+        } else if (year && month) {
+          queryString = `year=${year}&month=${month}`;
+        }
+      } else if (arg1 && arg2) {
+        queryString = `year=${arg1}&month=${arg2}`;
+      } else {
+        const d = new Date();
+        queryString = `year=${d.getFullYear()}&month=${d.getMonth() + 1}`;
+      }
+
       const res = await axiosInstance.get(
-        `/management/teacher-attendance/monthly-summary?year=${year}&month=${month}`
+        `/management/teacher-attendance/monthly-summary?${queryString}`
       );
       if (res.data.success) {
         set({ monthlySummary: res.data });
       }
     } catch (error) {
-      console.error("Error fetching monthly summary:", error);
+      console.error("Error fetching attendance report:", error);
     }
   },
 }));
