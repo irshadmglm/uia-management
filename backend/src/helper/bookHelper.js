@@ -71,9 +71,18 @@ axios({
         const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
         
         const transformedData = data.map((item) => ({
-            bookNumber: item['ASS. NO'],
-            title: item['NAME OF BOOKS'],
-            author: item['NAME OF AUTHOR'],
+            bookNumber: item['ACCESSION NO'] || item['ASS. NO'] || item.bookNumber,
+            title: item['TITLE'] || item['NAME OF BOOKS'] || item.title,
+            author: item['AUTHOR'] || item['NAME OF AUTHOR'] || item.author,
+            section: item['Section'] || item['SECTION'] || '',
+            bookType: item['Book Type'] || 'General',
+            language: item['Language'] || 'English',
+            callNumber: item['CALL NO'] || '',
+            publisher: item['PUBLISHER'] || '',
+            volume: item['VOLUME'] || '',
+            price: parseFloat(item['PRICE']) || 0,
+            remarks: item['Remarks'] || '',
+            category: item['Category'] || item['Section'] || 'General',
             status: 'available'
           }));
         await db.get().collection(collections.BOOK_COLLECTION).insertMany(transformedData);

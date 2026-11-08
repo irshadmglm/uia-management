@@ -83,27 +83,27 @@ export const getBooks = async (req, res) => {
 export const addBook = async (req, res) => {
     try {
     let { 
-      title, bookNumber, author, category, section, bookType, 
-      language, callNumber, publisher, volume, price, remarks 
+      bookNumber, title, author, section, bookType, 
+      language, callNumber, publisher, volume, price, remarks, category 
     } = req.body;
 
     if (!title || !bookNumber || !author) {
-      return res.status(400).json({ success: false, message: "Missing required fields: title, author, or bookNumber" });
+      return res.status(400).json({ success: false, message: "Missing required fields: Accession No (bookNumber), Title, or Author" });
     }
 
     bookNumber = parseInt(bookNumber, 10);
 
     const existingBook = await Book.findOne({ bookNumber });
     if (existingBook) {
-      return res.status(400).json({ success: false, message: "This bookNumber is already registered" });
+      return res.status(400).json({ success: false, message: "This Accession No is already registered" });
     }
 
     const newBook = new Book({
-      title,
       bookNumber,
+      title,
       author,
-      category: category || "General",
       section: section || "",
+      category: category || section || "General",
       callNumber: callNumber || "",
       publisher: publisher || "",
       volume: volume || "",
@@ -283,26 +283,25 @@ export const bulkImportBooks = async (req, res) => {
 
     for (let i = 0; i < books.length; i++) {
       const item = books[i];
-      const rawNumber = item.bookNumber ?? item.accNo ?? item.slNo;
+      const rawNumber = item.bookNumber ?? item.accNo ?? item.slNo ?? item['ACCESSION NO'] ?? item['Accession No'];
       const parsedNumber = parseInt(rawNumber, 10);
-      const title = item.title?.toString().trim();
-      const author = item.author?.toString().trim() || "Unknown";
-      const category = item.category?.toString().trim() || "General";
-      const section = (item.section ?? item.Section ?? "")?.toString().trim();
-      const bookType = item.bookType?.toString().trim() || "General";
-      const language = item.language?.toString().trim() || "English";
-      const callNumber = item.callNumber?.toString().trim() || "";
-      const publisher = item.publisher?.toString().trim() || "";
-      const volume = item.volume?.toString().trim() || "";
-      const price = parseFloat(item.price) || 0;
-      const remarks = item.remarks?.toString().trim() || "";
+      const title = (item.title ?? item['TITLE'])?.toString().trim();
+      const author = (item.author ?? item['AUTHOR'])?.toString().trim() || "Unknown";
+      const section = (item.section ?? item.Section ?? item['SECTION'] ?? "")?.toString().trim();
+      const bookType = (item.bookType ?? item['Book Type'] ?? item.type)?.toString().trim() || "General";
+      const language = (item.language ?? item['Language'] ?? item.lang)?.toString().trim() || "English";
+      const callNumber = (item.callNumber ?? item['CALL NO'] ?? item['Call No'] ?? item.callNo ?? "")?.toString().trim();
+      const publisher = (item.publisher ?? item['PUBLISHER'] ?? "")?.toString().trim();
+      const volume = (item.volume ?? item['VOLUME'] ?? "")?.toString().trim();
+      const price = parseFloat(item.price ?? item['PRICE']) || 0;
+      const remarks = (item.remarks ?? item['Remarks'] ?? item['REMARKS'] ?? "")?.toString().trim();
+      const category = (item.category ?? item['Category'] ?? item['CATEGORY'])?.toString().trim() || section || "General";
 
       if (!isNaN(parsedNumber) && title) {
         validBooks.push({
           bookNumber: parsedNumber,
           title,
           author,
-          category,
           section,
           bookType,
           language,
@@ -311,6 +310,7 @@ export const bulkImportBooks = async (req, res) => {
           volume,
           price,
           remarks,
+          category,
           status: "available"
         });
       }
@@ -338,7 +338,6 @@ export const bulkImportBooks = async (req, res) => {
             $set: {
               title: b.title,
               author: b.author,
-              category: b.category,
               section: b.section,
               bookType: b.bookType,
               language: b.language,
@@ -346,7 +345,8 @@ export const bulkImportBooks = async (req, res) => {
               publisher: b.publisher,
               volume: b.volume,
               price: b.price,
-              remarks: b.remarks
+              remarks: b.remarks,
+              category: b.category
             },
             $setOnInsert: {
               status: "available"
