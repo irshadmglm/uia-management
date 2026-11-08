@@ -1,5 +1,6 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
+import Batch from '../models/batch.model.js';
 
 const serviceAccountAuth = new JWT({
   email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -16,6 +17,30 @@ const getDoc = async () => {
 };
 
 const DATA_START_ROW = 5;
+
+// Helper to check whether the authenticated user has permission to edit this batch's leaves
+const checkBatchPermission = async (user, batchName) => {
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+
+  if (user.role === 'teacher') {
+    const normalizedName = (batchName || '').trim().toLowerCase();
+    
+    // Check if the teacher is assigned as classTeacher for this batch
+    const teacherBatches = await Batch.find({ classTeacher: user._id }).select('name');
+    
+    return teacherBatches.some(b => {
+      const bName = (b.name || '').trim().toLowerCase();
+      return (
+        bName === normalizedName ||
+        normalizedName.includes(bName) ||
+        bName.includes(normalizedName)
+      );
+    });
+  }
+
+  return false;
+};
 
 // 1. GET DATA
 export const getLeaveStatus = async (req, res) => {
@@ -59,7 +84,10 @@ export const getLeaveStatus = async (req, res) => {
         safe: formattedData.filter(s => parseInt(s.balance) > 10).length
     };
 
-    res.status(200).json({ success: true, data: formattedData, stats });
+    // Check if current user is authorized to edit this batch
+    const canEdit = await checkBatchPermission(req.user, batchName);
+
+    res.status(200).json({ success: true, data: formattedData, stats, canEdit });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
@@ -70,13 +98,26 @@ export const getLeaveStatus = async (req, res) => {
 export const updateLeave = async (req, res) => {
     const { batchName, cicNumber, updates } = req.body;
     try {
+        if (!batchName || !cicNumber || !updates) {
+            return res.status(400).json({ message: "Batch, CIC number, and updates are required" });
+        }
+
+        const isAllowed = await checkBatchPermission(req.user, batchName);
+        if (!isAllowed) {
+            return res.status(403).json({ 
+                success: false, 
+                message: `You are not authorized to edit leaves for "${batchName}". Only the assigned Class Teacher or Admin can edit this class.` 
+            });
+        }
+
         const doc = await getDoc();
         const sheet = doc.sheetsByTitle[batchName];
+        if (!sheet) return res.status(404).json({ message: `Sheet for batch "${batchName}" not found` });
         
         const rows = await sheet.getRows({ offset: 3 });
         const targetIndex = rows.findIndex(r => r._rawData[1]?.toString() === cicNumber.toString());
 
-        if (targetIndex === -1) return res.status(404).json({ message: "Student not found" });
+        if (targetIndex === -1) return res.status(404).json({ message: "Student not found in sheet" });
 
         const rowIndex = targetIndex + DATA_START_ROW;
 
@@ -96,7 +137,7 @@ export const updateLeave = async (req, res) => {
 
         await sheet.saveUpdatedCells();
 
-        res.status(200).json({ success: true, message: "Updated successfully" });
+        res.status(200).json({ success: true, message: "Leave records updated successfully" });
     } catch (error) {
         console.error("Update Error:", error);
         res.status(500).json({ message: "Update Failed", error: error.message });
@@ -107,8 +148,22 @@ export const updateLeave = async (req, res) => {
 export const addStudent = async (req, res) => {
     const { batchName, name, cicNumber } = req.body;
     try {
+        if (!batchName || !name || !cicNumber) {
+            return res.status(400).json({ message: "Batch name, student name, and CIC number are required" });
+        }
+
+        const isAllowed = await checkBatchPermission(req.user, batchName);
+        if (!isAllowed) {
+            return res.status(403).json({ 
+                success: false, 
+                message: `You are not authorized to add students to "${batchName}". Only the assigned Class Teacher or Admin can perform this action.` 
+            });
+        }
+
         const doc = await getDoc();
         const sheet = doc.sheetsByTitle[batchName];
+        if (!sheet) return res.status(404).json({ message: "Sheet not found" });
+
         const rows = await sheet.getRows({ offset: 3 });
 
         const lastRow = rows[rows.length - 1];
@@ -131,7 +186,7 @@ export const addStudent = async (req, res) => {
             balance            // Balance
         ]);
 
-        res.status(200).json({ success: true, message: "Student Added" });
+        res.status(200).json({ success: true, message: "Student added to leave register" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Add Failed" });
@@ -142,8 +197,18 @@ export const addStudent = async (req, res) => {
 export const deleteStudent = async (req, res) => {
     const { batchName, cicNumber } = req.body;
     try {
+        const isAllowed = await checkBatchPermission(req.user, batchName);
+        if (!isAllowed) {
+            return res.status(403).json({ 
+                success: false, 
+                message: `You are not authorized to delete students from "${batchName}". Only the assigned Class Teacher or Admin can perform this action.` 
+            });
+        }
+
         const doc = await getDoc();
         const sheet = doc.sheetsByTitle[batchName];
+        if (!sheet) return res.status(404).json({ message: "Sheet not found" });
+
         const rows = await sheet.getRows({ offset: 3 });
         
         const row = rows.find(r => r._rawData[1]?.toString() === cicNumber.toString());
@@ -161,8 +226,20 @@ export const getLeaveBatches = async (req, res) => {
     try {
         const doc = await getDoc();
         const titles = doc.sheetsByIndex.map(s => s.title);
-        res.status(200).json({ batches: titles });
+        
+        let teacherBatches = [];
+        if (req.user && req.user.role === 'teacher') {
+            const batches = await Batch.find({ classTeacher: req.user._id }).select('name');
+            teacherBatches = batches.map(b => b.name);
+        }
+
+        res.status(200).json({ 
+            batches: titles,
+            teacherBatches,
+            userRole: req.user?.role || 'admin'
+        });
     } catch (error) {
+        console.error("Error fetching batches:", error);
         res.status(500).json({ message: "Error fetching batches" });
     }
 };
