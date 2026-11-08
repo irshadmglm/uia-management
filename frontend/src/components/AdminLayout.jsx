@@ -5,7 +5,8 @@ import { useThemeStore } from '../store/useThemeStore';
 import { 
   Menu, X, Home, Users, GraduationCap, Settings2Icon, 
   ClipboardList, ClipboardCheck, ListTodo, Award, Medal, 
-  Book, HandCoins, DownloadCloud, File, BookOpen, LogOut, Moon, Sun, User, ChevronLeft, UserCheck, Briefcase, Calendar
+  Book, HandCoins, DownloadCloud, File, BookOpen, LogOut, Moon, Sun, User, 
+  ChevronLeft, UserCheck, Briefcase, Calendar, LayoutGrid, List
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -14,8 +15,16 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [sidebarMode, setSidebarMode] = useState(() => {
+    return localStorage.getItem("admin_sidebar_mode") || "grid";
+  });
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
+
+  const handleSetSidebarMode = (mode) => {
+    setSidebarMode(mode);
+    localStorage.setItem("admin_sidebar_mode", mode);
+  };
 
   // Close sidebar on mobile when route changes
   useEffect(() => {
@@ -116,7 +125,7 @@ const AdminLayout = () => {
       <aside 
         className={`fixed z-50 flex flex-col transition-transform duration-300 ease-in-out bg-[#11322f] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] lg:shadow-none
           bottom-0 left-0 right-0 rounded-t-3xl max-h-[85vh]
-          lg:bottom-auto lg:right-auto lg:inset-y-0 lg:left-0 lg:w-72 lg:static lg:rounded-none lg:max-h-full lg:bg-transparent
+          lg:bottom-auto lg:right-auto lg:inset-y-0 lg:left-0 lg:w-80 lg:static lg:rounded-none lg:max-h-full lg:bg-transparent
           ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}
         `}
       >
@@ -125,62 +134,173 @@ const AdminLayout = () => {
           <div className="w-12 h-1.5 bg-white/20 rounded-full"></div>
         </div>
 
-        <div className="flex items-center justify-between px-6 py-5 lg:py-6 border-b border-[#0d2522] mt-3 lg:mt-0">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between px-5 py-4 lg:py-5 border-b border-[#0d2522] mt-3 lg:mt-0">
+          <div className="flex items-center gap-2.5">
             <img 
               src="/web-app-manifest-192x192.png" 
               alt="UIA Academics Logo" 
               className="h-8 w-8 object-contain" 
             />
-            <span className="font-bold text-xl tracking-tight text-white">UIA ACADEMICS</span>
+            <span className="font-extrabold text-lg tracking-tight text-white">UIA ACADEMICS</span>
           </div>
-          <button 
-            className="lg:hidden text-gray-400 hover:text-white bg-white/5 p-1.5 rounded-lg transition-colors"
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <X size={20} />
-          </button>
+
+          <div className="flex items-center gap-1.5">
+            {/* View Mode Switcher (Grid vs List) */}
+            <div className="flex items-center bg-black/25 p-0.5 rounded-lg border border-white/5">
+              <button
+                type="button"
+                onClick={() => handleSetSidebarMode("grid")}
+                className={`p-1 rounded-md transition-all ${
+                  sidebarMode === "grid"
+                    ? "bg-brand-mint text-[#11322f] shadow-xs"
+                    : "text-gray-400 hover:text-white"
+                }`}
+                title="Grid View"
+              >
+                <LayoutGrid size={13} />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetSidebarMode("list")}
+                className={`p-1 rounded-md transition-all ${
+                  sidebarMode === "list"
+                    ? "bg-brand-mint text-[#11322f] shadow-xs"
+                    : "text-gray-400 hover:text-white"
+                }`}
+                title="List View"
+              >
+                <List size={13} />
+              </button>
+            </div>
+
+            <button 
+              className="lg:hidden text-gray-400 hover:text-white bg-white/5 p-1.5 rounded-lg transition-colors ml-1"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1 scrollbar-slim">
-          {navItems.map((item, index) => {
-            const isActive = location.pathname === item.route || (item.route === '/dashboard/admin' && location.pathname === '/dashboard/admin/');
-            
-            const LinkContent = (
-              <>
-                <item.icon size={18} className={isActive ? "text-brand-mint" : "text-gray-400 group-hover:text-white transition-colors"} />
-                <span className="font-medium text-[13px]">{item.title}</span>
-              </>
-            );
+        <nav className="flex-1 overflow-y-auto px-3.5 py-3.5 scrollbar-slim">
+          {sidebarMode === "grid" ? (
+            <div className="grid grid-cols-2 gap-2">
+              {navItems.map((item, index) => {
+                const isHome = item.route === '/dashboard/admin';
+                const isActive = isHome
+                  ? location.pathname === '/dashboard/admin' || location.pathname === '/dashboard/admin/'
+                  : item.route && location.pathname.startsWith(item.route);
 
-            if (item.url) {
-              return (
-                <a 
-                  key={index} 
-                  href={item.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-[#0d2522] hover:text-white transition-colors"
-                >
-                  {LinkContent}
-                </a>
-              );
-            }
-
-            return (
-              <Link
-                key={index}
-                to={item.route}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                const tileClass = `group relative flex flex-col items-center justify-center p-2.5 rounded-2xl transition-all duration-200 min-h-[82px] text-center select-none ${
                   isActive 
-                    ? 'bg-[#0d2522] text-white shadow-sm' 
-                    : 'text-gray-300 hover:bg-[#0d2522] hover:text-white'
-                }`}
-              >
-                {LinkContent}
-              </Link>
-            );
-          })}
+                    ? "bg-gradient-to-b from-brand-mint/25 via-[#0d2522] to-[#0a1f1d] border border-brand-mint/50 text-white shadow-lg shadow-black/30 ring-1 ring-brand-mint/30" 
+                    : "bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/15 text-gray-300 hover:text-white hover:-translate-y-0.5 hover:shadow-md hover:shadow-black/25"
+                }`;
+
+                const TileContent = (
+                  <>
+                    {/* Active glow dot */}
+                    {isActive && (
+                      <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand-mint shadow-[0_0_8px_#00b87c]" />
+                    )}
+                    {item.url && (
+                      <span className="absolute top-1.5 right-2 text-[9px] text-gray-500 group-hover:text-gray-300 font-mono">↗</span>
+                    )}
+
+                    {/* Icon Badge */}
+                    <div 
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 mb-1.5 ${
+                        isActive 
+                          ? "bg-brand-mint text-[#11322f] shadow-md shadow-brand-mint/30 scale-105 font-bold" 
+                          : "bg-white/[0.05] text-gray-300 group-hover:bg-white/[0.12] group-hover:text-brand-mint group-hover:scale-105"
+                      }`}
+                    >
+                      <item.icon size={18} strokeWidth={isActive ? 2.4 : 2} />
+                    </div>
+
+                    {/* Title */}
+                    <span 
+                      className={`text-[11px] leading-tight font-semibold text-center line-clamp-2 px-1 transition-colors ${
+                        isActive 
+                          ? "text-white font-bold" 
+                          : "text-gray-300 group-hover:text-white"
+                      }`}
+                    >
+                      {item.title}
+                    </span>
+                  </>
+                );
+
+                if (item.url) {
+                  return (
+                    <a 
+                      key={index} 
+                      href={item.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={tileClass}
+                    >
+                      {TileContent}
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={index}
+                    to={item.route}
+                    className={tileClass}
+                  >
+                    {TileContent}
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {navItems.map((item, index) => {
+                const isHome = item.route === '/dashboard/admin';
+                const isActive = isHome
+                  ? location.pathname === '/dashboard/admin' || location.pathname === '/dashboard/admin/'
+                  : item.route && location.pathname.startsWith(item.route);
+
+                const LinkContent = (
+                  <>
+                    <item.icon size={18} className={isActive ? "text-brand-mint" : "text-gray-400 group-hover:text-white transition-colors"} />
+                    <span className="font-medium text-[13px]">{item.title}</span>
+                  </>
+                );
+
+                if (item.url) {
+                  return (
+                    <a 
+                      key={index} 
+                      href={item.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 hover:bg-[#0d2522] hover:text-white transition-colors"
+                    >
+                      {LinkContent}
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={index}
+                    to={item.route}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                      isActive 
+                        ? 'bg-[#0d2522] text-white shadow-sm font-semibold' 
+                        : 'text-gray-300 hover:bg-[#0d2522] hover:text-white'
+                    }`}
+                  >
+                    {LinkContent}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </nav>
 
         {/* User Account / Footer */}

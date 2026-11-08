@@ -640,13 +640,15 @@ const AdminTimetablePage = () => {
       )}
 
       {/* Import Modal */}
-      <TimetableImportModal
-        isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
-        systemTeachers={teachers}
-        systemBatches={activeBatches}
-        onImportSuccess={importTimetableData}
-      />
+      {isImportModalOpen && (
+        <TimetableImportModal
+          isOpen={isImportModalOpen}
+          onClose={() => setIsImportModalOpen(false)}
+          systemTeachers={teachers}
+          systemBatches={activeBatches}
+          onImportSuccess={importTimetableData}
+        />
+      )}
     </div>
   );
 };

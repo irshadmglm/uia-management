@@ -79,8 +79,6 @@ const TimetableImportModal = ({
   const [teacherFilter, setTeacherFilter] = useState("all"); // "all" | "unverified" | "verified"
   const [teacherSearch, setTeacherSearch] = useState("");
 
-  if (!isOpen) return null;
-
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -314,6 +312,8 @@ const TimetableImportModal = ({
   const verifiedCount = Object.keys(verifiedTeachers).filter(
     (k) => verifiedTeachers[k] && teacherMappings[k]
   ).length;
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-fadeIn">
