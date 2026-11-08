@@ -64,9 +64,9 @@ const BookCard = ({ book, onEdit, onDelete, onIssue, onReturn, onClick, isSelect
         <User size={11} /> {book.author}
       </p>
       <div className="flex flex-wrap items-center gap-1.5 mb-4">
-        {book.category && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
-            <Tag size={9} /> {book.category}
+        {(book.section || book.category) && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/20 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800/30">
+            <Tag size={9} /> {book.section || book.category}
           </span>
         )}
         {book.bookType === 'Reference' && (
@@ -124,9 +124,9 @@ const BookRow = ({ book, onEdit, onDelete, onIssue, onReturn, onClick, isSelecte
     </td>
     <td className="px-4 py-3 hidden sm:table-cell">
       <div className="flex flex-wrap items-center gap-1.5">
-        {book.category && (
-          <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/30">
-            {book.category}
+        {(book.section || book.category) && (
+          <span className="text-[10px] font-semibold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/20 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800/30">
+            {book.section || book.category}
           </span>
         )}
         {book.bookType === 'Reference' && (
@@ -527,7 +527,7 @@ const LibraryBooksTab = () => {
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">No.</th>
                   <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Book</th>
-                  <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:table-cell">Category</th>
+                  <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:table-cell">Section</th>
                   <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
                   <th className="px-4 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>

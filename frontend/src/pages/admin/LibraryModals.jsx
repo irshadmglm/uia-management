@@ -48,34 +48,43 @@ const ModalHeader = ({ title, subtitle, icon: Icon, onClose, iconBg = 'bg-brand-
 // --- BOOK FORM MODAL (Add / Edit) ---
 export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({ 
-    title: '', author: '', bookNumber: '', category: 'General', section: '',
-    callNumber: '', publisher: '', volume: '', price: '', remarks: '',
-    bookType: 'General', language: 'English'
+    bookNumber: '', title: '', author: '', section: '',
+    bookType: 'General', language: 'English', callNumber: '',
+    publisher: '', volume: '', price: '', remarks: '', category: ''
   });
 
   useEffect(() => {
     if (initialData) {
       setFormData({
-        ...initialData,
+        bookNumber: initialData.bookNumber ?? '',
+        title: initialData.title || '',
+        author: initialData.author || '',
         section: initialData.section || '',
+        bookType: initialData.bookType || 'General',
+        language: initialData.language || 'English',
         callNumber: initialData.callNumber || '',
         publisher: initialData.publisher || '',
         volume: initialData.volume || '',
         price: initialData.price || '',
         remarks: initialData.remarks || '',
-        bookType: initialData.bookType || 'General',
-        language: initialData.language || 'English',
+        category: initialData.category || ''
       });
     } else {
       setFormData({ 
-        title: '', author: '', bookNumber: '', category: 'General', section: '',
-        callNumber: '', publisher: '', volume: '', price: '', remarks: '',
-        bookType: 'General', language: 'English'
+        bookNumber: '', title: '', author: '', section: '',
+        bookType: 'General', language: 'English', callNumber: '',
+        publisher: '', volume: '', price: '', remarks: '', category: ''
       });
     }
   }, [initialData, isOpen]);
 
-  const handleSubmit = (e) => { e.preventDefault(); onSubmit(formData); };
+  const handleSubmit = (e) => { 
+    e.preventDefault(); 
+    onSubmit({
+      ...formData,
+      category: formData.category?.trim() || formData.section?.trim() || 'General'
+    }); 
+  };
   const set = (key, val) => setFormData(prev => ({ ...prev, [key]: val }));
 
   return (
@@ -88,27 +97,25 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
       />
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* 1. ACCESSION NO */}
           <div>
-            <label className={labelCls}>Book Number (ID) <span className="text-red-500">*</span></label>
+            <label className={labelCls}>Accession No. <span className="text-red-500">*</span></label>
             <div className="relative">
               <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input required type="number" className={`${inputCls} pl-9`} value={formData.bookNumber} onChange={e => set('bookNumber', e.target.value)} placeholder="e.g. 123" />
+              <input required type="number" className={`${inputCls} pl-9`} value={formData.bookNumber} onChange={e => set('bookNumber', e.target.value)} placeholder="e.g. 1001" />
             </div>
           </div>
+
+          {/* 2. TITLE */}
           <div>
-            <label className={labelCls}>Call Number</label>
-            <div className="relative">
-              <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.callNumber} onChange={e => set('callNumber', e.target.value)} placeholder="e.g. QA76.73.J38" />
-            </div>
-          </div>
-          <div className="md:col-span-2">
-            <label className={labelCls}>Book Title <span className="text-red-500">*</span></label>
+            <label className={labelCls}>Title <span className="text-red-500">*</span></label>
             <div className="relative">
               <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input required type="text" className={`${inputCls} pl-9`} value={formData.title} onChange={e => set('title', e.target.value)} placeholder="Enter book title" />
             </div>
           </div>
+
+          {/* 3. AUTHOR */}
           <div>
             <label className={labelCls}>Author <span className="text-red-500">*</span></label>
             <div className="relative">
@@ -116,38 +123,21 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               <input required type="text" className={`${inputCls} pl-9`} value={formData.author} onChange={e => set('author', e.target.value)} placeholder="Author name" />
             </div>
           </div>
+
+          {/* 4. Section */}
           <div>
-            <label className={labelCls}>Category</label>
-            <div className="relative">
-              <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input required type="text" className={`${inputCls} pl-9`} value={formData.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Science, Fiction" />
-            </div>
-          </div>
-          <div>
-            <label className={labelCls}>Section <span className="text-gray-400 font-normal lowercase">(optional)</span></label>
+            <label className={labelCls}>Section</label>
             <div className="relative">
               <Layers size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="text" className={`${inputCls} pl-9`} value={formData.section} onChange={e => set('section', e.target.value)} placeholder="e.g. Arabic, General, Shelf A" />
             </div>
           </div>
-          <div>
-            <label className={labelCls}>Publisher</label>
-            <div className="relative">
-              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.publisher} onChange={e => set('publisher', e.target.value)} placeholder="Publisher name" />
-            </div>
-          </div>
-          <div>
-            <label className={labelCls}>Volume</label>
-            <div className="relative">
-              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.volume} onChange={e => set('volume', e.target.value)} placeholder="e.g. Vol 1" />
-            </div>
-          </div>
+
+          {/* 5. Book Type */}
           <div>
             <label className={labelCls}>Book Type</label>
             <div className="relative">
-              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <Bookmark size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               <select
                 className={`${inputCls} pl-9 pr-9 cursor-pointer appearance-none bg-gray-50 dark:bg-[#0d2522] text-gray-900 dark:text-white`}
                 value={formData.bookType || 'General'}
@@ -155,7 +145,10 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               >
                 <option value="General">General</option>
                 <option value="Reference">Reference</option>
-                {formData.bookType && formData.bookType !== "General" && formData.bookType !== "Reference" && (
+                <option value="Book">Book</option>
+                <option value="Magazine">Magazine</option>
+                <option value="Journal">Journal</option>
+                {formData.bookType && !['General', 'Reference', 'Book', 'Magazine', 'Journal'].includes(formData.bookType) && (
                   <option value={formData.bookType}>{formData.bookType}</option>
                 )}
               </select>
@@ -164,20 +157,53 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               </div>
             </div>
           </div>
+
+          {/* 6. Language */}
           <div>
             <label className={labelCls}>Language</label>
             <div className="relative">
-              <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" className={`${inputCls} pl-9`} value={formData.language} onChange={e => set('language', e.target.value)} placeholder="e.g. English, Arabic" />
+              <Globe size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.language} onChange={e => set('language', e.target.value)} placeholder="e.g. English, Arabic, Malayalam" />
             </div>
           </div>
+
+          {/* 7. CALL NO */}
+          <div>
+            <label className={labelCls}>Call No.</label>
+            <div className="relative">
+              <Hash size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.callNumber} onChange={e => set('callNumber', e.target.value)} placeholder="e.g. 222.3 QUR/K" />
+            </div>
+          </div>
+
+          {/* 8. PUBLISHER */}
+          <div>
+            <label className={labelCls}>Publisher</label>
+            <div className="relative">
+              <BookOpen size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.publisher} onChange={e => set('publisher', e.target.value)} placeholder="Publisher name" />
+            </div>
+          </div>
+
+          {/* 9. VOLUME */}
+          <div>
+            <label className={labelCls}>Volume</label>
+            <div className="relative">
+              <Layers size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" className={`${inputCls} pl-9`} value={formData.volume} onChange={e => set('volume', e.target.value)} placeholder="e.g. Vol 1" />
+            </div>
+          </div>
+
+          {/* 10. PRICE */}
           <div>
             <label className={labelCls}>Price</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
-              <input type="number" min="0" step="0.01" className={`${inputCls} pl-8`} value={formData.price} onChange={e => set('price', e.target.value)} placeholder="0.00" />
+              <DollarSign size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="number" min="0" step="0.01" className={`${inputCls} pl-9`} value={formData.price} onChange={e => set('price', e.target.value)} placeholder="0.00" />
             </div>
           </div>
+
+          {/* 11. Remarks */}
           <div className="md:col-span-2">
             <label className={labelCls}>Remarks</label>
             <textarea
@@ -185,8 +211,25 @@ export const BookFormModal = ({ isOpen, onClose, onSubmit, initialData }) => {
               rows={2}
               value={formData.remarks}
               onChange={e => set('remarks', e.target.value)}
-              placeholder="Any additional notes or remarks about this book..."
+              placeholder="Any additional remarks or notes..."
             />
+          </div>
+
+          {/* Optional Category Accordion */}
+          <div className="md:col-span-2">
+            <details className="group">
+              <summary className="text-xs font-semibold text-gray-400 dark:text-gray-500 hover:text-brand-teal dark:hover:text-brand-mint cursor-pointer select-none flex items-center gap-1.5 transition-colors">
+                <ChevronDown size={14} className="group-open:rotate-180 transition-transform" />
+                Additional Options (Category)
+              </summary>
+              <div className="pt-2">
+                <label className={labelCls}>Category <span className="text-gray-400 font-normal lowercase">(defaults to Section if left blank)</span></label>
+                <div className="relative">
+                  <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input type="text" className={`${inputCls} pl-9`} value={formData.category} onChange={e => set('category', e.target.value)} placeholder="Leave blank to use Section name" />
+                </div>
+              </div>
+            </details>
           </div>
         </div>
 
@@ -640,19 +683,7 @@ export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
                   Book Specifications & Metadata
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  
-                  {/* Category - Prominently Displayed */}
-                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
-                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
-                      <Tag size={13} className="text-brand-teal" />
-                      <p className="text-[10px] uppercase font-bold tracking-wider">Category</p>
-                    </div>
-                    <p className="text-xs font-black text-brand-teal dark:text-brand-mint">
-                      {book.category || 'General'}
-                    </p>
-                  </div>
-
-                  {/* Section (Optional) */}
+                  {/* Section */}
                   <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
                     <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
                       <Layers size={13} className="text-brand-teal" />
@@ -660,17 +691,6 @@ export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
                     </div>
                     <p className="text-xs font-bold text-gray-900 dark:text-white">
                       {book.section || 'N/A'}
-                    </p>
-                  </div>
-
-                  {/* Call Number */}
-                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
-                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
-                      <Hash size={13} />
-                      <p className="text-[10px] uppercase font-bold tracking-wider">Call Number</p>
-                    </div>
-                    <p className="text-xs font-bold text-gray-900 dark:text-white font-mono break-words">
-                      {book.callNumber || 'N/A'}
                     </p>
                   </div>
 
@@ -693,6 +713,17 @@ export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
                     </div>
                     <p className="text-xs font-bold text-gray-900 dark:text-white">
                       {book.language || 'English'}
+                    </p>
+                  </div>
+
+                  {/* Call Number */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Hash size={13} />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Call Number</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white font-mono break-words">
+                      {book.callNumber || 'N/A'}
                     </p>
                   </div>
 
@@ -726,6 +757,17 @@ export const BookDetailsModal = ({ isOpen, onClose, book, getBookHistory }) => {
                     </div>
                     <p className="text-xs font-bold text-gray-900 dark:text-white">
                       {book.price ? `₹${book.price}` : 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* Category */}
+                  <div className="p-3 bg-white dark:bg-[#0d2522] border border-gray-100 dark:border-[#11322f] rounded-xl shadow-xs">
+                    <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 mb-1">
+                      <Tag size={13} className="text-brand-teal" />
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Category</p>
+                    </div>
+                    <p className="text-xs font-black text-brand-teal dark:text-brand-mint">
+                      {book.category || 'General'}
                     </p>
                   </div>
 

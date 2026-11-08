@@ -5,18 +5,18 @@ import {
 } from 'lucide-react';
 
 const DEFAULT_MAPPING = {
-  bookNumber: ['ACCESSION NO', 'ACCESSION', 'Sl.No.', 'SL.NO', 'Book Number', 'Book No', 'No.', 'ID'],
-  title: ['TITLE', 'Title', 'Book Title', 'Name', 'Book Name'],
-  author: ['AUTHOR', 'Author', 'Writer', 'Author Name'],
-  category: ['Category', 'CATEGORY', 'Genre', 'Subject', 'Source Sheet'],
+  bookNumber: ['ACCESSION NO', 'ACCESSION', 'ACC NO', 'ACCESSION_NO', 'Sl.No.', 'SL.NO', 'Book Number', 'Book No', 'No.', 'ID'],
+  title: ['TITLE', 'Title', 'Book Title', 'Name', 'Book Name', 'NAME OF BOOKS'],
+  author: ['AUTHOR', 'Author', 'Writer', 'Author Name', 'NAME OF AUTHOR'],
   section: ['Section', 'SECTION', 'Library Section', 'Sec', 'Shelf'],
-  bookType: ['Book Type', 'Type', 'Format', 'Item Type'],
-  language: ['Language', 'Lang'],
-  callNumber: ['CALL NO', 'Call No', 'Call Number', 'CallNo'],
+  bookType: ['Book Type', 'BOOK TYPE', 'Type', 'Format', 'Item Type'],
+  language: ['Language', 'LANGUAGE', 'Lang'],
+  callNumber: ['CALL NO', 'Call No', 'Call Number', 'CALL_NO', 'CallNo'],
   publisher: ['PUBLISHER', 'Publisher', 'Publication'],
   volume: ['VOLUME', 'Volume', 'Vol', 'VOL'],
   price: ['PRICE', 'Price', 'Cost', 'Amount'],
-  remarks: ['Remarks', 'REMARKS', 'Notes', 'Comments']
+  remarks: ['Remarks', 'REMARKS', 'Notes', 'Comments'],
+  category: ['Category', 'CATEGORY', 'Genre', 'Subject', 'Source Sheet']
 };
 
 const autoDetectMapping = (headers) => {
@@ -24,7 +24,6 @@ const autoDetectMapping = (headers) => {
     bookNumber: '',
     title: '',
     author: '',
-    category: '',
     section: '',
     bookType: '',
     language: '',
@@ -32,7 +31,8 @@ const autoDetectMapping = (headers) => {
     publisher: '',
     volume: '',
     price: '',
-    remarks: ''
+    remarks: '',
+    category: ''
   };
 
   const cleanHeaders = headers.map(h => (h ? String(h).trim() : ''));
@@ -49,13 +49,37 @@ const autoDetectMapping = (headers) => {
 
   // Fallbacks if not auto-matched
   if (!mapping.bookNumber) {
-    mapping.bookNumber = cleanHeaders.find(h => /accession|book.*num|sl.*no|id/i.test(h)) || cleanHeaders[0] || '';
+    mapping.bookNumber = cleanHeaders.find(h => /accession|book.*num|sl.*no|^id$/i.test(h)) || cleanHeaders[0] || '';
   }
   if (!mapping.title) {
-    mapping.title = cleanHeaders.find(h => /title|name/i.test(h)) || cleanHeaders[1] || '';
+    mapping.title = cleanHeaders.find(h => /title|name.*book/i.test(h)) || cleanHeaders[1] || '';
   }
   if (!mapping.author) {
     mapping.author = cleanHeaders.find(h => /author|writer/i.test(h)) || cleanHeaders[2] || '';
+  }
+  if (!mapping.section) {
+    mapping.section = cleanHeaders.find(h => /section|shelf/i.test(h)) || cleanHeaders[3] || '';
+  }
+  if (!mapping.bookType) {
+    mapping.bookType = cleanHeaders.find(h => /book.*type|type/i.test(h)) || cleanHeaders[4] || '';
+  }
+  if (!mapping.language) {
+    mapping.language = cleanHeaders.find(h => /lang/i.test(h)) || cleanHeaders[5] || '';
+  }
+  if (!mapping.callNumber) {
+    mapping.callNumber = cleanHeaders.find(h => /call.*no/i.test(h)) || cleanHeaders[6] || '';
+  }
+  if (!mapping.publisher) {
+    mapping.publisher = cleanHeaders.find(h => /pub/i.test(h)) || cleanHeaders[7] || '';
+  }
+  if (!mapping.volume) {
+    mapping.volume = cleanHeaders.find(h => /vol/i.test(h)) || cleanHeaders[8] || '';
+  }
+  if (!mapping.price) {
+    mapping.price = cleanHeaders.find(h => /price|cost/i.test(h)) || cleanHeaders[9] || '';
+  }
+  if (!mapping.remarks) {
+    mapping.remarks = cleanHeaders.find(h => /remark|note/i.test(h)) || cleanHeaders[10] || '';
   }
 
   return mapping;
@@ -142,14 +166,13 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     }
   };
 
-  const handleDownloadSample = async () => {
+  const handleDownloadSample = async (format = 'xlsx') => {
     const XLSX = await import('xlsx');
     const sampleData = [
       {
         "ACCESSION NO": 1001,
         "TITLE": "Tafsir Al-Qurtubi Vol 1",
         "AUTHOR": "Imam Al-Qurtubi",
-        "Category": "Tafseer",
         "Section": "Arabic",
         "Book Type": "Book",
         "Language": "Arabic",
@@ -163,7 +186,6 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
         "ACCESSION NO": 1002,
         "TITLE": "Sahih Al-Bukhari",
         "AUTHOR": "Imam Al-Bukhari",
-        "Category": "Hadith",
         "Section": "Arabic",
         "Book Type": "Book",
         "Language": "Arabic",
@@ -175,10 +197,28 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
       }
     ];
 
-    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const worksheet = XLSX.utils.json_to_sheet(sampleData, {
+      header: [
+        "ACCESSION NO",
+        "TITLE",
+        "AUTHOR",
+        "Section",
+        "Book Type",
+        "Language",
+        "CALL NO",
+        "PUBLISHER",
+        "VOLUME",
+        "PRICE",
+        "Remarks"
+      ]
+    });
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, worksheet, "Sample Books");
-    XLSX.writeFile(wb, "Sample_Book_Catalogue.xlsx");
+    XLSX.utils.book_append_sheet(wb, worksheet, "Books");
+    if (format === 'csv') {
+      XLSX.writeFile(wb, "Sample_Book_Catalogue.csv", { bookType: 'csv' });
+    } else {
+      XLSX.writeFile(wb, "Sample_Book_Catalogue.xlsx");
+    }
   };
 
   // Convert raw rows to parsed book objects based on current column mapping
@@ -195,7 +235,6 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     const bookNumber = getVal('bookNumber');
     const title = getVal('title');
     const author = getVal('author');
-    const category = getVal('category');
     const section = getVal('section');
     const bookType = getVal('bookType');
     const language = getVal('language');
@@ -204,6 +243,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
     const volume = getVal('volume');
     const price = getVal('price');
     const remarks = getVal('remarks');
+    const category = getVal('category') || section || 'General';
 
     const numParsed = parseInt(bookNumber, 10);
     const isValid = !isNaN(numParsed) && title.length > 0;
@@ -212,7 +252,6 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
       bookNumber: isNaN(numParsed) ? bookNumber : numParsed,
       title,
       author: author || 'Unknown',
-      category: category || 'General',
       section: section || '',
       bookType: bookType || 'General',
       language: language || 'English',
@@ -221,6 +260,7 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
       volume,
       price: parseFloat(price) || 0,
       remarks,
+      category,
       isValid
     };
   });
@@ -300,21 +340,32 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
               </div>
 
               {/* Sample File Box */}
-              <div className="flex items-center justify-between p-4 rounded-xl bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30">
                 <div className="flex items-center gap-3">
-                  <FileText className="text-blue-600 dark:text-blue-400" size={20} />
+                  <FileText className="text-blue-600 dark:text-blue-400 shrink-0" size={20} />
                   <div>
                     <h4 className="text-xs font-bold text-blue-900 dark:text-blue-300">Need a format template?</h4>
-                    <p className="text-[11px] text-blue-700/70 dark:text-blue-400">Download a pre-formatted Excel catalogue file with standard headers.</p>
+                    <p className="text-[11px] text-blue-700/70 dark:text-blue-400">
+                      Standard columns: ACCESSION NO, TITLE, AUTHOR, Section, Book Type, Language, CALL NO, PUBLISHER, VOLUME, PRICE, Remarks
+                    </p>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleDownloadSample}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
-                >
-                  <Download size={13} /> Download Template
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadSample('csv')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#11322f] hover:bg-blue-50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg text-xs font-semibold transition-colors shadow-sm"
+                  >
+                    <Download size={13} /> Sample .CSV
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadSample('xlsx')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+                  >
+                    <Download size={13} /> Sample .XLSX
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
@@ -366,20 +417,20 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                   <span className="text-[11px] text-gray-400">Auto-detected matching headers</span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {[
-                    { key: 'bookNumber', label: 'Book / Acc No *' },
-                    { key: 'title', label: 'Book Title *' },
-                    { key: 'author', label: 'Author' },
-                    { key: 'category', label: 'Category' },
-                    { key: 'section', label: 'Section (Optional)' },
-                    { key: 'bookType', label: 'Book Type' },
-                    { key: 'language', label: 'Language' },
-                    { key: 'callNumber', label: 'Call Number' },
-                    { key: 'publisher', label: 'Publisher' },
-                    { key: 'volume', label: 'Volume' },
-                    { key: 'price', label: 'Price' },
-                    { key: 'remarks', label: 'Remarks' }
+                    { key: 'bookNumber', label: '1. ACCESSION NO *' },
+                    { key: 'title', label: '2. TITLE *' },
+                    { key: 'author', label: '3. AUTHOR *' },
+                    { key: 'section', label: '4. Section' },
+                    { key: 'bookType', label: '5. Book Type' },
+                    { key: 'language', label: '6. Language' },
+                    { key: 'callNumber', label: '7. CALL NO' },
+                    { key: 'publisher', label: '8. PUBLISHER' },
+                    { key: 'volume', label: '9. VOLUME' },
+                    { key: 'price', label: '10. PRICE' },
+                    { key: 'remarks', label: '11. Remarks' },
+                    { key: 'category', label: 'Category (Optional)' }
                   ].map(({ key, label }) => (
                     <div key={key}>
                       <label className="block text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-1">
@@ -426,16 +477,22 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                   </div>
                 </div>
 
-                <div className="border border-gray-100 dark:border-[#0d2522] rounded-xl overflow-hidden max-h-60 overflow-y-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-gray-50 dark:bg-[#0d2522] sticky top-0 border-b border-gray-100 dark:border-[#0d2522] text-gray-400 uppercase font-bold">
+                <div className="border border-gray-100 dark:border-[#0d2522] rounded-xl overflow-hidden max-h-60 overflow-y-auto overflow-x-auto">
+                  <table className="w-full text-left text-xs min-w-[950px]">
+                    <thead className="bg-gray-50 dark:bg-[#0d2522] sticky top-0 border-b border-gray-100 dark:border-[#0d2522] text-gray-400 uppercase font-bold text-[10px]">
                       <tr>
                         <th className="px-3 py-2">Status</th>
-                        <th className="px-3 py-2">Book No.</th>
-                        <th className="px-3 py-2">Title</th>
-                        <th className="px-3 py-2">Author</th>
-                        <th className="px-3 py-2">Category</th>
-                        <th className="px-3 py-2">Section</th>
+                        <th className="px-3 py-2 whitespace-nowrap">ACCESSION NO</th>
+                        <th className="px-3 py-2 whitespace-nowrap">TITLE</th>
+                        <th className="px-3 py-2 whitespace-nowrap">AUTHOR</th>
+                        <th className="px-3 py-2 whitespace-nowrap">Section</th>
+                        <th className="px-3 py-2 whitespace-nowrap">Book Type</th>
+                        <th className="px-3 py-2 whitespace-nowrap">Language</th>
+                        <th className="px-3 py-2 whitespace-nowrap">CALL NO</th>
+                        <th className="px-3 py-2 whitespace-nowrap">PUBLISHER</th>
+                        <th className="px-3 py-2 whitespace-nowrap">VOLUME</th>
+                        <th className="px-3 py-2 whitespace-nowrap">PRICE</th>
+                        <th className="px-3 py-2 whitespace-nowrap">Remarks</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-[#0d2522]">
@@ -443,29 +500,47 @@ const LibraryBulkImportModal = ({ isOpen, onClose, onImport, isImporting }) => {
                         <tr key={idx} className={book.isValid ? 'hover:bg-gray-50/50 dark:hover:bg-[#0d2522]/30' : 'bg-red-50/30 dark:bg-red-900/10'}>
                           <td className="px-3 py-2">
                             {book.isValid ? (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                                 <CheckCircle2 size={12} /> Ready
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-400" title="Missing Book Number or Title">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-400 whitespace-nowrap" title="Missing Accession No or Title">
                                 <AlertCircle size={12} /> Incomplete
                               </span>
                             )}
                           </td>
-                          <td className="px-3 py-2 font-mono font-semibold text-gray-800 dark:text-white">
+                          <td className="px-3 py-2 font-mono font-semibold text-gray-800 dark:text-white whitespace-nowrap">
                             #{book.bookNumber || '-'}
                           </td>
-                          <td className="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-[180px] truncate">
+                          <td className="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-[180px] truncate" title={book.title}>
                             {book.title || <em className="text-gray-400">Missing Title</em>}
                           </td>
-                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[130px] truncate">
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 max-w-[130px] truncate" title={book.author}>
                             {book.author}
                           </td>
-                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[120px] truncate">
-                            {book.category}
-                          </td>
-                          <td className="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-[120px] truncate">
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                             {book.section || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            {book.bookType || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            {book.language || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 font-mono whitespace-nowrap">
+                            {book.callNumber || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 max-w-[120px] truncate" title={book.publisher}>
+                            {book.publisher || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            {book.volume || '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            {book.price ? `₹${book.price}` : '-'}
+                          </td>
+                          <td className="px-3 py-2 text-gray-600 dark:text-gray-400 max-w-[150px] truncate" title={book.remarks}>
+                            {book.remarks || '-'}
                           </td>
                         </tr>
                       ))}
