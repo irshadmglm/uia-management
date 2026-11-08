@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { 
-  Users, Award, Medal, Book, ClipboardCheck, ListTodo, HandCoins, ArrowRight 
+  Users, Award, Medal, Book, ClipboardCheck, ListTodo, HandCoins, ArrowRight, CalendarCheck 
 } from 'lucide-react';
 import { useParams, Link } from 'react-router-dom';
 import { useStaffStore } from '../../store/useStaffStore';
@@ -36,6 +36,7 @@ const CalssTeacherHome = () => {
   
   const actions = [
     { title: "Students' Details", icon: Users, route: `/dashboard/teacher/batch-students/${batchId}`, colorClass: "bg-gradient-to-br from-blue-400 to-blue-600" },  
+    { title: "Leave Register", icon: CalendarCheck, route: `/dashboard/teacher/leave-register/${batchId}`, colorClass: "bg-gradient-to-br from-teal-500 to-emerald-600" },
     { title: "Semester Exam Results", icon: Award, route: `/dashboard/teacher/batches/marklist/${batchId}`, colorClass: "bg-gradient-to-br from-purple-400 to-purple-600" },
     { title: "Achivements", icon: Medal, route: `/dashboard/teacher/batches/achievements/${batchId}`, colorClass: "bg-gradient-to-br from-amber-400 to-amber-600" },
     { title: "Reading Progress", icon: Book, route: `/dashboard/teacher/batches/reading-progress/${batchId}`, colorClass: "bg-gradient-to-br from-emerald-400 to-emerald-600" },

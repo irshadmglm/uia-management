@@ -5,23 +5,36 @@ import toast from "react-hot-toast";
 export const useLeaveStore = create((set, get) => ({
   leaveData: [],
   sheetBatches: [],
-  stats: { total: 0, critical: 0, safe: 0 },
+  teacherBatches: [],
+  canEdit: false,
+  stats: { totalStudents: 0, critical: 0, safe: 0 },
   isLoading: false,
 
   fetchSheetBatches: async () => {
     try {
         const res = await axiosInstance.get('/leave/batches');
-        set({ sheetBatches: res.data.batches });
-    } catch (error) { console.error(error); }
+        const batches = res.data.batches || [];
+        const teacherBatches = res.data.teacherBatches || [];
+        set({ sheetBatches: batches, teacherBatches });
+        return { batches, teacherBatches };
+    } catch (error) { 
+        console.error("fetchSheetBatches error:", error);
+        return { batches: [], teacherBatches: [] };
+    }
   },
 
   fetchLeaveData: async (batchName) => {
+    if (!batchName) return;
     set({ isLoading: true });
     try {
-      const res = await axiosInstance.get(`/leave/status?batchName=${batchName}`);
-      set({ leaveData: res.data.data, stats: res.data.stats });
+      const res = await axiosInstance.get(`/leave/status?batchName=${encodeURIComponent(batchName)}`);
+      set({ 
+        leaveData: res.data.data || [], 
+        stats: res.data.stats || { totalStudents: 0, critical: 0, safe: 0 },
+        canEdit: res.data.canEdit ?? false
+      });
     } catch (error) {
-      toast.error("Failed to load data");
+      toast.error(error.response?.data?.message || "Failed to load leave data");
     } finally {
       set({ isLoading: false });
     }
@@ -37,38 +50,44 @@ export const useLeaveStore = create((set, get) => ({
     }));
 
     try {
-        await axiosInstance.put('/leave/update', { batchName, cicNumber, updates });
-        toast.success("Updated");
+        const res = await axiosInstance.put('/leave/update', { batchName, cicNumber, updates });
+        toast.success(res.data.message || "Leave updated successfully");
         // Re-fetch to calculate formulas correctly from sheet
         get().fetchLeaveData(batchName); 
+        return true;
     } catch (error) {
-        toast.error("Update failed");
+        toast.error(error.response?.data?.message || "Update failed");
         set({ leaveData: oldData }); // Revert
+        return false;
     }
   },
 
   addStudent: async (batchName, data) => {
       try {
-          await axiosInstance.post('/leave/add', { batchName, ...data });
-          toast.success("Student Added");
+          const res = await axiosInstance.post('/leave/add', { batchName, ...data });
+          toast.success(res.data.message || "Student Added");
           get().fetchLeaveData(batchName);
+          return true;
       } catch (error) {
-          toast.error("Failed to add");
+          toast.error(error.response?.data?.message || "Failed to add student");
+          return false;
       }
   },
 
   deleteStudent: async (batchName, cicNumber) => {
-      if(!window.confirm("Delete this student from the sheet?")) return;
+      if(!window.confirm("Delete this student from the leave register?")) return;
       
       const oldData = get().leaveData;
       set(state => ({ leaveData: state.leaveData.filter(s => s.cicNumber !== cicNumber) }));
 
       try {
-          await axiosInstance.post('/leave/delete', { batchName, cicNumber });
-          toast.success("Deleted");
+          const res = await axiosInstance.post('/leave/delete', { batchName, cicNumber });
+          toast.success(res.data.message || "Deleted successfully");
+          return true;
       } catch (error) {
-          toast.error("Delete failed");
+          toast.error(error.response?.data?.message || "Delete failed");
           set({ leaveData: oldData });
+          return false;
       }
   }
 }));

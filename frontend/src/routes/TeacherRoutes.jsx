@@ -14,6 +14,7 @@ import AdminAchievementsPage from "../pages/admin/AdminAchievementsPage";
 import AdminReadingProgressPage from "../pages/admin/AdminReadingProgressPage";
 import AcademicRegister from "../pages/staff/StaffAcademicRegister";
 import BatchAcademicStatus from "../pages/admin/BatchAcademicStatus";
+import LeaveStatusPage from "../pages/admin/LeaveStatusPage";
 import TeacherLayout from "../components/TeacherLayout";
 
 import UserLibraryCatalog from "../pages/UserLibraryCatalog";
@@ -38,7 +39,9 @@ const TeacherRoutes = () => {
         <Route path="reading-progress/:studentId" element={<AdminReadingProgressPage />} />
 
         <Route path="academic-register" element={<AcademicRegister  />} />
-        <Route path="std-attendance-register" element={<BatchAcademicStatus item="stdAttendanceRegister" />} />
+        <Route path="std-attendance-register" element={<LeaveStatusPage />} />
+        <Route path="leave-register" element={<LeaveStatusPage />} />
+        <Route path="leave-register/:batchId" element={<LeaveStatusPage />} />
         <Route path="staff-attendance-register" element={<BatchAcademicStatus item="staffAttendanceRegister" />} />
         <Route path="subject-status" element={<BatchAcademicStatus item="subjectStatus" />} />
         <Route path="ce-status" element={<BatchAcademicStatus item="ceStatus" />} />
