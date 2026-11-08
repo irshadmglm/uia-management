@@ -1,13 +1,38 @@
 import express from "express";
-import { getDashboardMetrics, academicStatusLinkDelete, academicStatusLinkUpdate, asignBatchTeacher, asignClassLeader, asignsemester,  asignSubteacher,  asignSubteacherPeriod,  assignedSubjects,  CELinkDelete,  CELinkUpdate,  curruntSemSubjects,  deleteArtSem,  deleteArtSubject,  deleteBatch, deactivateBatch, activateBatch, deleteSemester,  deleteSubject,  getArtSems,  getArtSubjects,  getAssignedBatch,  getAttendance,  getBatch,  getBatches, getSemesters, getSubjects, getTimetable, IRLinkDelete, IRLinkUpdate, postArtSem, postAttendance, postbatches, postSemester, postSubject, postTimetable, updateArtSem, updateArtSubject, updateBatch, updateSemester, updateSubject } from "../controllers/mngController.js";
+import { 
+  getDashboardMetrics, academicStatusLinkDelete, academicStatusLinkUpdate, 
+  asignBatchTeacher, asignClassLeader, asignsemester, asignSubteacher, 
+  asignSubteacherPeriod, assignedSubjects, CELinkDelete, CELinkUpdate, 
+  curruntSemSubjects, deleteArtSem, deleteArtSubject, deleteBatch, 
+  deactivateBatch, activateBatch, deleteSemester, deleteSubject, 
+  getArtSems, getArtSubjects, getAssignedBatch, getAttendance, 
+  getBatch, getBatches, getSemesters, getSubjects, getTimetable, 
+  IRLinkDelete, IRLinkUpdate, postArtSem, postAttendance, postbatches, 
+  postSemester, postSubject, postTimetable, updateArtSem, updateArtSubject, 
+  updateBatch, updateSemester, updateSubject, importTimetable, 
+  getTeacherTimetable, getBatchTimetable, clearTimetable,
+  getTeacherAttendance, updateTeacherAttendanceSlot, bulkMarkTeacherAttendance,
+  saveDailyTeacherAttendance, getTeacherAttendanceMonthlySummary
+} from "../controllers/mngController.js";
 
 const router = express.Router();
 
 router.get('/dashboard-metrics', getDashboardMetrics);
 
+// Timetable
 router.get('/timetable', getTimetable);
-
 router.post('/timetable', postTimetable);
+router.post('/timetable/import', importTimetable);
+router.get('/timetable/teacher/:teacherId', getTeacherTimetable);
+router.get('/timetable/batch/:batchId', getBatchTimetable);
+router.delete('/timetable/clear', clearTimetable);
+
+// Period-Based Teacher Attendance
+router.get('/teacher-attendance', getTeacherAttendance);
+router.patch('/teacher-attendance/slot', updateTeacherAttendanceSlot);
+router.post('/teacher-attendance/bulk-mark', bulkMarkTeacherAttendance);
+router.post('/teacher-attendance/save-day', saveDailyTeacherAttendance);
+router.get('/teacher-attendance/monthly-summary', getTeacherAttendanceMonthlySummary);
 
 router.get('/semester', getSemesters);
 

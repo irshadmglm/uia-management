@@ -11,6 +11,7 @@
  */
 
 export * from "./timetableController.js";
+export * from "./teacherAttendanceController.js";
 export * from "./semesterController.js";
 export * from "./batchController.js";
 export * from "./subjectController.js";
